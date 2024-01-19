@@ -1,12 +1,24 @@
 version: '3.8'
 services:
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile
+      context: './client'
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    ports:
+      - '4200:4200'
+    tty: true
+      
   server:
     build:
-    dockerfile: Dockerfile
-    context: './server'
+      dockerfile: Dockerfile
+      context: './server'
     volumes:
-      - .:/app
+      - ./server:/app
     ports:
-      - '8080:8080'
+      - '8000:8000'
     command: ["air", "-c", ".air.toml"]
     tty: true
