@@ -10,4 +10,4 @@ RUN npm install -g @angular/cli
 
 EXPOSE 4000
 
-CMD ng serve --host 0.0.0.0
+CMD ng serve --host 0.0.0.0 --poll 2000
