@@ -1,11 +1,14 @@
 import { Routes } from '@angular/router';
 
-const SignInComponent = () =>
-  import('@pages/sign-in/sign-in.component').then((m) => m.SignInComponent);
+const HomeComponent = () =>
+  import('@pages/home/home.component').then((m) => m.HomeComponent);
+const UserAuthComponent = () => import('@pages/user-auth/user-auth.component').then((m) => m.UserAuthComponent);
 
 export const routes: Routes = [
+  { path: '', loadComponent: HomeComponent },
+  {path: 'sign-up', loadComponent: UserAuthComponent, data: {isSignUp: true}},
   {
     path: 'sign-in',
-    loadComponent: SignInComponent,
+    loadComponent: UserAuthComponent, data: {isSignUp: false},
   },
 ];

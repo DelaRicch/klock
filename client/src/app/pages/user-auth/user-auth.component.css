@@ -1,0 +1,4 @@
+
+.login-sigup-label {
+    @apply font-black text-white text-2xl md:text-base md:font-medium md:text-black uppercase;
+  }
