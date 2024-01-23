@@ -1,6 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import "primeng/resources/themes/bootstrap4-light-blue/theme.css";
 @import "primeicons/primeicons.css";
-@import "primeng/resources/themes/md-light-deeppurple/theme.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 @layer tailwind-base, primeng, tailwind-utilities;
 
@@ -17,4 +17,3 @@ html {
   scroll-behavior: smooth;
   font-family: "Inter", sans-serif;
 }
-

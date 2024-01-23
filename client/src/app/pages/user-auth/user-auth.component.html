@@ -1,10 +1,115 @@
-<div class="flex flex-col">
-    <div class="w-full h-auto relative">
-        <img src="assets/auth-bg.png" class="h-full w-full" alt="auth-bg">
-        <div class="absolute w-full h-full left-0 top-0 border border-red-700 flex flex-col gap-8 justify-center items-center">
-            <app-logo innerColor="#FFFFFF" outerColor="#1D2939" labelColor="#FFFFFF" />
-            <h4 class="login-sigup-label">sign up</h4>
-        </div>
+<section class="flex flex-col">
+  <div class="container h-auto relative sm:hidden">
+    <img src="assets/auth-bg.png" class="h-full w-full" alt="auth-bg" />
+    <div
+      class="absolute w-full h-full left-0 top-0 flex flex-col gap-4 sm:gap-8 justify-center items-center z-10"
+    >
+      <app-logo
+        innerColor="#FFFFFF"
+        outerColor="#1D2939"
+        labelColor="#FFFFFF"
+      />
+      <h4 class="login-sigup-label">{{isSignUp ? 'sign up' : 'sign in'}}</h4>
     </div>
-    <div class=""></div>
-</div>
+  </div>
+  <div
+    class="py-8 px-[6vw] sm:flex sm:items-center sm:justify-center sm:h-screen"
+  >
+    <form
+      class="bg-[#FBFBFB] rounded-lg flex flex-col gap-8 h-max px-4 py-6 sm:px-8 md:px-10 w-full sm:w-[30rem] md:w-[33rem]"
+      [formGroup]="userAuthForm"
+    >
+      <div
+        class="w-full h-full left-0 top-0 hidden sm:flex flex-col gap-8 justify-center items-center"
+      >
+        <app-logo
+          innerColor="#1D2939"
+          outerColor="#FFFFFF"
+          labelColor="#1D2939"
+        />
+        <h4 class="login-sigup-label">{{isSignUp ? 'sign up' : 'sign in'}}</h4>
+      </div>
+
+      @if (isSignUp) {
+      <div class="flex flex-col gap-3">
+        <label for="name">Name</label>
+        <input
+          inputId="name"
+          type="text"
+          placeholder="Enter your full name"
+          pInputText
+          formControlName="name"
+          class="p-3 rounded-lg"
+        />
+      </div>
+      }
+
+      <div class="flex flex-col gap-3">
+        <label for="email">Email</label>
+        <input
+          inputId="email"
+          type="email"
+          placeholder="Enter your email"
+          pInputText
+          formControlName="email"
+          class="p-3 rounded-lg"
+        />
+      </div>
+
+      <div class="flex flex-col gap-3 relative">
+        <label for="password">Password</label>
+        <input
+          inputId="password"
+          type="password"
+          placeholder="Enter your password"
+          pInputText
+          formControlName="password"
+          class="p-3 rounded-lg w-full"
+        />
+        <div class="eye-position absolute right-2">
+          <i class="pi pi-eye"></i>
+        </div>
+      </div>
+
+      @if (isSignUp) {
+      <div class="flex flex-col gap-3 relative">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          inputId="confirmPassword"
+          type="password"
+          placeholder="Confirm your password"
+          pInputText
+          formControlName="confirmPassword"
+          class="p-3 rounded-lg w-full"
+        />
+        <div class="eye-position absolute right-2">
+          <i class="pi pi-eye"></i>
+        </div>
+      </div>
+      }
+
+      <div [ngClass]="{'justify-between': !isSignUp}" class="flex items-center gap-1 text-sm">
+        <div class="flex items-center gap-2">
+          <input
+            [formControlName]="isSignUp ? 'termsAndConditions' : 'rememberMe'"
+            id="terms"
+            type="checkbox"
+          />
+          <label for="terms">{{ isSignUp ? "I agree the" : "Remember Me" }}</label>
+        </div>
+        <span class="link">{{ isSignUp ? "Terms and Conditions" : "Forgot PAssword?" }}</span>
+      </div>
+
+      <button
+        class="rounded-lg bg-[#1D2939] h-12 font-semibold text-white uppercase"
+      >
+      {{ isSignUp ? "sign up" : "sign in" }}
+      </button>
+
+      <div class="flex items-center justify-center gap-1 text-sm">
+        <span>{{ isSignUp ? "Alredy have an account?" : "Don’t have an account?" }}</span>
+        <span class="link">{{ isSignUp ? "Sign In" : "Sign Up" }}</span>
+      </div>
+    </form>
+  </div>
+</section>
