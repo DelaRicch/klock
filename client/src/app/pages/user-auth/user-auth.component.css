@@ -25,3 +25,12 @@ label {
 .link {
   @apply text-[#181CF9];
 }
+
+input[type="text"],
+input[type="password"] {
+  @apply !pr-7;
+}
+
+input::placeholder {
+  @apply text-sm;
+}
