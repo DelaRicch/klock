@@ -28,14 +28,13 @@ export class UserAuthComponent implements OnInit {
    }
 
   userAuthForm = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    name: new FormControl(''),
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/)]),
-    confirmPassword: new FormControl('', [Validators.required]),
-    termsAndConditions: new FormControl('', [Validators.required]),
-    rememberMe: new FormControl('', [Validators.required])
+    password: new FormControl('', [Validators.required]),
+    confirmPassword: new FormControl(''),
+    termsAndConditions: new FormControl(''),
+    rememberMe: new FormControl('')
   },
-  {validators: this.confirmPasswordValidator}
    );
 
    confirmPasswordValidator(control: AbstractControl) {
@@ -50,6 +49,12 @@ export class UserAuthComponent implements OnInit {
    }
 
    ngOnInit(): void {
-       
+       if (this.isSignUp) {
+          this.userAuthForm.get("name")?.setValidators([Validators.required, Validators.minLength(4)])
+          this.userAuthForm.get("password")?.setValidators([Validators.required , Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/)])
+          this.userAuthForm.get("confirmPassword")?.setValidators([Validators.required])
+          this.userAuthForm.get("termsAndConditions")?.setValidators([Validators.required])
+          this.userAuthForm.setValidators(this.confirmPasswordValidator )
+       }
    }
 }

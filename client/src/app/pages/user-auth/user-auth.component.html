@@ -9,7 +9,7 @@
         outerColor="#1D2939"
         labelColor="#FFFFFF"
       />
-      <h4 class="login-sigup-label">{{isSignUp ? 'sign up' : 'sign in'}}</h4>
+      <h4 class="login-sigup-label">{{ isSignUp ? "sign up" : "sign in" }}</h4>
     </div>
   </div>
   <div
@@ -28,7 +28,9 @@
           outerColor="#FFFFFF"
           labelColor="#1D2939"
         />
-        <h4 class="login-sigup-label">{{isSignUp ? 'sign up' : 'sign in'}}</h4>
+        <h4 class="login-sigup-label">
+          {{ isSignUp ? "sign up" : "sign in" }}
+        </h4>
       </div>
 
       @if (isSignUp) {
@@ -43,16 +45,18 @@
           formControlName="name"
           aria-describedby="username"
           class="p-3 rounded-lg"
-          [ngClass]="{'border-error  ring-2 ring-error': userAuthForm.controls.name.touched && userAuthForm.controls.name.invalid}"
+          [ngClass]="{
+            'border-error  ring-2 ring-error':
+              userAuthForm.controls.name.touched &&
+              userAuthForm.controls.name.invalid
+          }"
         />
-          <small id="username" class="text-error -mt-2">
-            @if (userAuthForm.controls.name.touched && userAuthForm.controls.name.hasError('required')) {
-              Name is required.
-            }
-            @if (userAuthForm.controls.name.hasError('minlength')) {
-              Name must be at least 4 characters long.
-            }
-          </small>
+        <small id="username" class="text-error -mt-2">
+          @if (userAuthForm.controls.name.touched &&
+          userAuthForm.controls.name.hasError('required')) { Name is required. }
+          @if (userAuthForm.controls.name.hasError('minlength')) { Name must be
+          at least 4 characters long. }
+        </small>
       </div>
       }
 
@@ -66,19 +70,26 @@
           formControlName="email"
           aria-describedby="email"
           class="p-3 rounded-lg"
-          [ngClass]="{'border-error  ring-2 ring-error': userAuthForm.controls.email.touched && userAuthForm.controls.email.invalid}"
+          [ngClass]="{
+            'border-error  ring-2 ring-error':
+              userAuthForm.controls.email.touched &&
+              userAuthForm.controls.email.invalid
+          }"
         />
         <small id="email" class="text-error -mt-2">
-          @if (userAuthForm.controls.email.touched && userAuthForm.controls.email.hasError('required')) {
-            Email is required.
-          }
-          @if (userAuthForm.controls.email.hasError('email')) {
-            Enter a valid email address.
-          }
+          @if (userAuthForm.controls.email.touched &&
+          userAuthForm.controls.email.hasError('required')) { Email is required.
+          } @if (userAuthForm.controls.email.hasError('email')) { Enter a valid
+          email address. }
         </small>
       </div>
 
-      <div class="flex flex-col gap-3 relative" [ngClass]="{'mb-4' : userAuthForm.controls.password.hasError('pattern')}">
+      <div
+        class="flex flex-col gap-3 relative"
+        [ngClass]="{
+          'mb-4': userAuthForm.controls.password.hasError('pattern')
+        }"
+      >
         <label for="password">Password</label>
         <input
           inputId="password"
@@ -88,22 +99,33 @@
           formControlName="password"
           aria-describedby="password"
           class="p-3 rounded-lg w-full"
-          [ngClass]="{'border-error  ring-2 ring-error': userAuthForm.controls.password.touched && userAuthForm.controls.password.invalid}"
+          [ngClass]="{
+            'border-error  ring-2 ring-error':
+              userAuthForm.controls.password.touched &&
+              userAuthForm.controls.password.invalid
+          }"
         />
-        <small id="password" class="text-error absolute left-0 -bottom-6" [ngClass]="{'-bottom-11' : userAuthForm.controls.password.hasError('pattern')}">
-          @if (userAuthForm.controls.password.touched && userAuthForm.controls.password.hasError('required')) {
-            Password is required.
-          }
-          @if (userAuthForm.controls.password.hasError('pattern')) {
-            Password must contain a number, special character, and be at least 8 characters
-          }
+        <small
+          id="password"
+          class="text-error absolute left-0 -bottom-6"
+          [ngClass]="{
+            '-bottom-11': userAuthForm.controls.password.hasError('pattern')
+          }"
+        >
+          @if (userAuthForm.controls.password.touched &&
+          userAuthForm.controls.password.hasError('required')) { Password is
+          required. } @if (userAuthForm.controls.password.hasError('pattern')) {
+          Password must contain a number, special character, and be at least 8
+          characters }
         </small>
-        <div (click)="displayPassword = !displayPassword" class="eye-position absolute right-2 cursor-pointer">
+        <div
+          (click)="displayPassword = !displayPassword"
+          class="eye-position absolute right-2 cursor-pointer"
+        >
           @if (displayPassword) {
-            <i class="pi pi-eye-slash"></i>
-          }
-          @else {
-            <i class="pi pi-eye"></i>
+          <i class="pi pi-eye-slash"></i>
+          } @else {
+          <i class="pi pi-eye"></i>
           }
         </div>
       </div>
@@ -119,53 +141,83 @@
           formControlName="confirmPassword"
           aria-describedby="confirmPassword"
           class="p-3 rounded-lg w-full"
-          [ngClass]="{'border-error  ring-2 ring-error': userAuthForm.errors?.['mismatch'] && userAuthForm.controls.confirmPassword.touched}"
+          [ngClass]="{'border-error  ring-2 ring-error': (userAuthForm.errors?.['mismatch'] || userAuthForm.controls.confirmPassword.hasError('required')) && userAuthForm.controls.confirmPassword.touched}"
         />
-        <small id="confirmPassword" class="text-error absolute left-0 -bottom-6">
-          @if (userAuthForm.controls.confirmPassword.touched && userAuthForm.controls.confirmPassword.hasError('required')) {
-            Confirm Password is required.
-          }
-          @if (userAuthForm.errors?.['mismatch'] && userAuthForm.controls.confirmPassword.touched) {
-            Passwords do not match.
-          }
+        <small
+          id="confirmPassword"
+          class="text-error absolute left-0 -bottom-6"
+        >
+          @if (userAuthForm.controls.confirmPassword.touched &&
+          userAuthForm.controls.confirmPassword.hasError('required')) { Confirm
+          Password is required. } @if (userAuthForm.errors?.['mismatch'] &&
+          userAuthForm.controls.confirmPassword.touched) { Passwords do not
+          match. }
         </small>
-        <div (click)="displayConfirmPassword = !displayConfirmPassword" class="eye-position absolute right-2 cursor-pointer">
+        <div
+          (click)="displayConfirmPassword = !displayConfirmPassword"
+          class="eye-position absolute right-2 cursor-pointer"
+        >
           @if (displayConfirmPassword) {
-            <i class="pi pi-eye-slash"></i>
-          }
-          @else {
-            <i class="pi pi-eye"></i>
+          <i class="pi pi-eye-slash"></i>
+          } @else {
+          <i class="pi pi-eye"></i>
           }
         </div>
       </div>
       }
 
-      <div [ngClass]="{'justify-between': !isSignUp}" class="flex items-center gap-1 text-sm">
+      <div
+        [ngClass]="{ 'justify-between': !isSignUp }"
+        class="relative flex items-center gap-1 text-sm"
+      >
         <div class="flex items-center gap-2">
           <input
             [formControlName]="isSignUp ? 'termsAndConditions' : 'rememberMe'"
             id="terms"
             type="checkbox"
+            class="border-2 border-red-500"
           />
-          <label for="terms">{{ isSignUp ? "I agree the" : "Remember Me" }}</label>
+          <label for="terms">{{
+            isSignUp ? "I agree the" : "Remember Me"
+          }}</label>
         </div>
-        <span class="link">{{ isSignUp ? "Terms and Conditions" : "Forgot Password?" }}</span>
+        <span class="link">{{
+          isSignUp ? "Terms and Conditions" : "Forgot Password?"
+        }}</span>
+        @if (isSignUp &&
+        userAuthForm.controls.termsAndConditions.hasError('required')){
+        <span class="text-error absolute -bottom-5"
+          >Please agree to the terms.</span
+        >
+        }
       </div>
 
       <button
-      type="submit"
-      [disabled]="isSubmitting || userAuthForm.invalid"
+        type="submit"
+        [disabled]="isSubmitting || userAuthForm.invalid"
         class="rounded-lg bg-[#1D2939] h-12 font-semibold text-white uppercase flex items-center justify-center gap-4 disabled:bg-[#294468] hover:opacity-90 transition-all duration-300 ease-linear disabled:hover:opacity-100"
       >
-      @if (isSubmitting) {
-        <p-progressSpinner styleClass="w-[2rem] h-[2rem]" strokeWidth="5"></p-progressSpinner>
-      }
-      {{ isSignUp ? "sign up" : "sign in" }}
-    </button>
+        @if (isSubmitting) {
+        <p-progressSpinner
+          styleClass="w-[2rem] h-[2rem]"
+          strokeWidth="5"
+        ></p-progressSpinner>
+        } @if (isSubmitting) {
+        <span>Submitting...</span>
+        } @else {
+        <span>
+          {{ isSignUp ? "sign up" : "sign in" }}
+        </span>
+        }
+      </button>
 
       <div class="flex items-center justify-center gap-1 text-sm">
-        <span>{{ isSignUp ? "Alredy have an account?" : "Don’t have an account?" }}</span>
-        <a [routerLink]="isSignUp ? '/sign-in' : '/sign-up'" class="link">{{ isSignUp ? "Sign In" : "Sign Up" }}</a>
+        <span>{{
+          isSignUp ? "Alredy have an account?" : "Don’t have an account?"
+        }}</span>
+        <a [routerLink]="isSignUp ? '/sign-in' : '/sign-up'" class="link">{{
+          isSignUp ? "Sign In" : "Sign Up"
+        }}</a>
       </div>
     </form>
   </div>
