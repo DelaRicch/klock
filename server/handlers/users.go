@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/helpers"
@@ -19,7 +20,6 @@ func RegisterUser(ctx *gin.Context)  {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
 		return 
 	}
-
 	
 	// Check if the user with the given email already exists
 	var existingUser models.User
@@ -60,7 +60,7 @@ func RegisterUser(ctx *gin.Context)  {
 		return 
 	}
 
-	ctx.SetCookie("access_token", token, int(exp), "/", "localhost", false, true)
+	ctx.SetCookie("access_token", token, int(time.Hour*1), "/", "localhost", true, true)
 
 	accessToken := models.Token{
 		Value:      token,
@@ -77,6 +77,60 @@ func RegisterUser(ctx *gin.Context)  {
 		"success":      true,
 		"accessToken":  accessToken,
 		"refreshToken": refreshToken})
+}
+
+func LoginUser(ctx *gin.Context) {
+	loginUser := new(models.User)
+	if err := ctx.ShouldBindJSON(loginUser); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
+		return 
+	}
+
+	// extend access token duration if remember me is true
+	var tokenExpiry time.Time
+	if loginUser.RememberMe {
+		tokenExpiry = time.Now().Add(time.Hour * 24)
+	} else {
+		tokenExpiry = time.Now().Add(time.Minute * 1)
+	}
+
+	// Retrieve the user with the given email
+	var user models.User
+	result := database.DB.Where("email = ?", loginUser.Email).First(&user)
+	if result.RowsAffected == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": invalidEmailOrPass, "success": false})
+		return
+	}
+
+	// Verify the password using Argon2id
+	if !helpers.VerifyPassword(user.Password, loginUser.Password) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": invalidEmailOrPass, "success": false})
+	}
+
+	// Generate JWt
+	refreshTkn, token, _, rfExp, err := helpers.CreateJwtToken(&user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": errorRfTokenMsg, "success": false})
+		return 
+	}
+
+	ctx.SetCookie("access_token", token, int(tokenExpiry.Unix()), "/", "localhost", true, true)
+
+	accessToken := models.Token{
+		Value: token,
+		Expiration: tokenExpiry.Unix(),
+	}
+
+	refreshToken := models.Token{
+		Value: refreshTkn,
+		Expiration: rfExp,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      fmt.Sprintf("Welcome %v", user.Name),
+		"success":      true,
+		"access_oken":  accessToken,
+		"refresh_token": refreshToken})
 }
 
 func DeleteAllUsers(ctx *gin.Context) {
