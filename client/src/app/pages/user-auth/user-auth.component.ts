@@ -42,6 +42,15 @@ export class UserAuthComponent implements OnInit {
      ? null : { mismatch: true };
    }
 
+   termsAndConditionsValidator(control: AbstractControl) {
+    const { name, email, password, confirmPassword, termsAndConditions } = control.value;
+    if (name && email && password && confirmPassword && !termsAndConditions) {
+      return { termsNotAccepted: true };
+    }
+  
+    return null;
+  }
+
    onSubmit(event: SubmitEvent) {
     event.preventDefault();
      this.isSubmitting = true;
@@ -55,6 +64,7 @@ export class UserAuthComponent implements OnInit {
           this.userAuthForm.get("confirmPassword")?.setValidators([Validators.required])
           this.userAuthForm.get("termsAndConditions")?.setValidators([Validators.required])
           this.userAuthForm.setValidators(this.confirmPasswordValidator )
+          this.userAuthForm.setValidators(this.termsAndConditionsValidator )
        }
    }
 }

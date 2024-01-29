@@ -185,9 +185,10 @@
           isSignUp ? "Terms and Conditions" : "Forgot Password?"
         }}</span>
         @if (isSignUp &&
-        userAuthForm.controls.termsAndConditions.hasError('required')){
+        userAuthForm.errors?.['termsNotAccepted']){
         <span class="text-error absolute -bottom-5"
-          >Please agree to the terms.</span
+          >  Please accept the terms and conditions to proceed.
+          </span
         >
         }
       </div>
