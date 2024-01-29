@@ -41,6 +41,7 @@ func VerifyPassword(hashedPassword, password string) bool {
 	return match
 }
 
+
 func CreateJwtToken(user *models.User) (string, string, int64, int64, error) {
 	exp := time.Now().Add(time.Hour * 1).Unix()
 	rfExp := time.Now().Add(time.Hour * 24 * 30).Unix()

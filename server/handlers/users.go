@@ -20,13 +20,15 @@ func RegisterUser(ctx *gin.Context)  {
 		return 
 	}
 
-	// Check for existing user
+	
+	// Check if the user with the given email already exists
 	var existingUser models.User
 	result := database.DB.Where("email = ?", user.Email).First(&existingUser)
 	if result.RowsAffected > 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "User already exists", "success": false})
+		ctx.JSON(http.StatusConflict, gin.H{"message": "User already exist", "success": false})
 		return 
 	}
+
 
 	// Set the default role to "USER" if not specified
 	if user.Role == "" {
@@ -75,4 +77,12 @@ func RegisterUser(ctx *gin.Context)  {
 		"success":      true,
 		"accessToken":  accessToken,
 		"refreshToken": refreshToken})
+}
+
+func DeleteAllUsers(ctx *gin.Context) {
+	if err := database.DB.Exec("DELETE FROM users").Error; err != nil {
+		fmt.Println("Error deleting users")
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully deleted all users", "success": true})
 }

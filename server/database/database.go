@@ -14,7 +14,7 @@ var DB *gorm.DB
 
 func ConnectDb() {
 
-	dsn := fmt.Sprintf("postgresql://%s:%s@ep-delicate-flower-a5cx4s25-pooler.us-east-2.aws.neon.tech/klock?sslmode=require", os.Getenv("NEON_USER"), os.Getenv("NEON_PASSWORD"))
+	dsn := fmt.Sprintf("postgresql://%s:%s@klock-go-13287.8nj.gcp-europe-west1.cockroachlabs.cloud:26257/go-klock?sslmode=verify-full", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"))
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
