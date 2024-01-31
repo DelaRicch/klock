@@ -59,8 +59,6 @@ func RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("access_token", token, int(time.Hour*1), "/", "localhost", true, true)
-
 	accessToken := models.Token{
 		Value:      token,
 		Expiration: exp,
@@ -121,8 +119,6 @@ func LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("access_token", token, int(tokenExpiry.Unix()), "/", "localhost", true, true)
-
 	accessToken := models.Token{
 		Value:      token,
 		Expiration: tokenExpiry.Unix(),
@@ -136,8 +132,8 @@ func LoginUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":       fmt.Sprintf("Welcome %v", user.Name),
 		"success":       true,
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+		"accessToken":  accessToken,
+		"refreshToken": refreshToken,
 	})
 
 }

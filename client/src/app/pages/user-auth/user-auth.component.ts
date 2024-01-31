@@ -15,6 +15,11 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserService } from '@services/user/user.service';
 import { User } from '../../../types';
 import { ToastService } from '@services/toast/toast.service';
+import { Store } from '@ngrx/store';
+import {
+  LoginUserFailure,
+  LoginUserSuccess,
+} from '../../store/auth/auth.actions';
 
 @Component({
   selector: 'app-user-auth',
@@ -37,7 +42,12 @@ export class UserAuthComponent implements OnInit {
   displayPassword = false;
   displayConfirmPassword = false;
 
-  constructor(private route: ActivatedRoute, private userService: UserService, private toastService: ToastService) {
+  constructor(
+    private route: ActivatedRoute,
+    private userService: UserService,
+    private toastService: ToastService,
+    private store: Store
+  ) {
     this.route.data.subscribe((data) => {
       this.isSignUp = data['isSignUp'];
     });
@@ -87,7 +97,7 @@ export class UserAuthComponent implements OnInit {
           const res = {
             message: msg.message,
             success: true,
-          }
+          };
           this.toastService.showToast(res);
           this.userAuthForm.reset();
           this.isSubmitting = false;
@@ -96,7 +106,7 @@ export class UserAuthComponent implements OnInit {
           const err = {
             message: error.error.message,
             success: false,
-          }
+          };
           this.toastService.showToast(err);
           this.isSubmitting = false;
         },
@@ -113,16 +123,35 @@ export class UserAuthComponent implements OnInit {
           const res = {
             message: msg.message,
             success: true,
-          }
+          };
+          this.store.dispatch(LoginUserSuccess({ res: msg }));
           this.toastService.showToast(res);
           this.userAuthForm.reset();
           this.isSubmitting = false;
+
+          this.userService.getProfile().subscribe({
+            next: (user) => {
+              console.log(user);
+              // this.store.dispatch(LoginUserSuccess({res: user}));
+            },
+            error: (error) => {
+              console.log(error);
+              // const err = {
+              //   message: error.error.message,
+              //   success: false,
+              // }
+              // this.store.dispatch(LoginUserFailure({error: err}));
+              // this.toastService.showToast(err);
+              // this.isSubmitting = false;
+            },
+          });
         },
         error: (error) => {
           const err = {
             message: error.error.message,
             success: false,
-          }
+          };
+          this.store.dispatch(LoginUserFailure({ error: err }));
           this.toastService.showToast(err);
           this.isSubmitting = false;
         },

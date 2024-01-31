@@ -2,7 +2,6 @@ export interface UserStateType {
     isLoading: boolean;
     error: string | null;
     user: User | null;
-    response: ApiResponse | null;
 }
 
 export interface User {
@@ -19,7 +18,7 @@ export interface User {
     gender?: string;
 }
 
-export interface ApiResponse {
+export interface AuthStateType {
     success: boolean;
     message: string;
     accessToken: {
@@ -30,5 +29,4 @@ export interface ApiResponse {
         value: string;
         expiration: number;
     };
-    user?: User;
 }

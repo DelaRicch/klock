@@ -2,21 +2,21 @@ import { ApplicationConfig, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideState, provideStore } from '@ngrx/store';
-import { userReducer } from './store/user/user.reducer';
+import {  provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { provideEffects } from '@ngrx/effects';
-import { UserEffects } from './store/user/user.effects';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { metaReducers, storeReducers } from './store/app.store';
+import { authAndRefreshInterceptor } from './interceptor/interceptors.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withFetch(), 
+    withInterceptors([authAndRefreshInterceptor])
+    ),
     provideRouter(routes),
-    provideStore(),
+    provideStore(storeReducers, {metaReducers}),
     provideAnimations(),
-    provideState({ name: 'user', reducer: userReducer }),
     provideStoreDevtools({
       maxAge: 25, // Retains last 25 states
       logOnly: !isDevMode(), // Restrict extension to log-only mode
@@ -25,6 +25,5 @@ export const appConfig: ApplicationConfig = {
       traceLimit: 75, // maximum stack trace frames to be stored (in case trace option was provided as true)
       connectInZone: true, // If set to true, the connection is established within the Angular zone
     }),
-    provideEffects(UserEffects),
   ],
 };
