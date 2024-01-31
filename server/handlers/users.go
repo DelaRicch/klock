@@ -14,21 +14,20 @@ import (
 const errorRfTokenMsg string = "Error generating refresh token"
 const invalidEmailOrPass string = "Invalid email or password"
 
-func RegisterUser(ctx *gin.Context)  {
+func RegisterUser(ctx *gin.Context) {
 	user := new(models.User)
 	if err := ctx.ShouldBindJSON(user); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
-		return 
+		return
 	}
-	
+
 	// Check if the user with the given email already exists
 	var existingUser models.User
 	result := database.DB.Where("email = ?", user.Email).First(&existingUser)
 	if result.RowsAffected > 0 {
 		ctx.JSON(http.StatusConflict, gin.H{"message": "User already exist", "success": false})
-		return 
+		return
 	}
-
 
 	// Set the default role to "USER" if not specified
 	if user.Role == "" {
@@ -38,7 +37,7 @@ func RegisterUser(ctx *gin.Context)  {
 	hashedPassword, err := helpers.HashPassword(user.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Error hashing the password", "success": false})
-		return 
+		return
 	}
 
 	user.Password = hashedPassword
@@ -50,14 +49,14 @@ func RegisterUser(ctx *gin.Context)  {
 	result = database.DB.Create(&user)
 	if result.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating the user", "success": false})
-		return 
+		return
 	}
 
 	// Generate JWT
 	refreshTkn, token, exp, rfExp, err := helpers.CreateJwtToken(user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": errorRfTokenMsg, "success": false})
-		return 
+		return
 	}
 
 	ctx.SetCookie("access_token", token, int(time.Hour*1), "/", "localhost", true, true)
@@ -72,7 +71,7 @@ func RegisterUser(ctx *gin.Context)  {
 		Expiration: rfExp,
 	}
 
-	 ctx.JSON(http.StatusCreated, gin.H{
+	ctx.JSON(http.StatusCreated, gin.H{
 		"message":      fmt.Sprintf("Successfully registered %v", user.Name),
 		"success":      true,
 		"accessToken":  accessToken,
@@ -81,11 +80,10 @@ func RegisterUser(ctx *gin.Context)  {
 }
 
 func LoginUser(ctx *gin.Context) {
-	loginUser := new(models.User)
-	fmt.Println(loginUser.RememberMe, ":::login user request")
-	if err := ctx.ShouldBindJSON(loginUser); err != nil {
+	var loginUser models.User
+	if err := ctx.ShouldBindJSON(&loginUser); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
-		return 
+		return
 	}
 
 	// extend access token duration if remember me is true
@@ -113,25 +111,32 @@ func LoginUser(ctx *gin.Context) {
 	refreshTkn, token, _, rfExp, err := helpers.CreateJwtToken(&user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": errorRfTokenMsg, "success": false})
-		return 
+		return
+	}
+
+	// Set the remember me value provided by the user
+	result = database.DB.Model(&user).Update("remember_me", loginUser.RememberMe)
+	if result.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error", "success": false})
+		return
 	}
 
 	ctx.SetCookie("access_token", token, int(tokenExpiry.Unix()), "/", "localhost", true, true)
 
 	accessToken := models.Token{
-		Value: token,
+		Value:      token,
 		Expiration: tokenExpiry.Unix(),
 	}
 
 	refreshToken := models.Token{
-		Value: refreshTkn,
+		Value:      refreshTkn,
 		Expiration: rfExp,
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message":      fmt.Sprintf("Welcome %v", user.Name),
-		"success":      true,
-		"access_oken":  accessToken,
+		"message":       fmt.Sprintf("Welcome %v", user.Name),
+		"success":       true,
+		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	})
 
@@ -140,28 +145,28 @@ func LoginUser(ctx *gin.Context) {
 func GetUserProfile(ctx *gin.Context) {
 	user, err := helpers.ValidateAccessToken(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid access token", "success": false})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized", "success": false})
 		return
 	}
 
 	userProfile := models.UserProfile{
-		Name: user.Name,
-		Email: user.Email,
-		UserID: user.UserID,
-		Role: user.Role,
-		Photo: user.Photo,
-		Phone: user.Phone,
+		Name:     user.Name,
+		Email:    user.Email,
+		UserID:   user.UserID,
+		Role:     user.Role,
+		Photo:    user.Photo,
+		Phone:    user.Phone,
 		Location: user.Location,
-		Gender: user.Gender,
+		Gender:   user.Gender,
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"user": userProfile, "success": true})
 }
 
 func DeleteAllUsers(ctx *gin.Context) {
-	if err := database.DB.Exec("DELETE FROM users").Error; err != nil {
-		fmt.Println("Error deleting users")
+	if err := database.DB.Exec("DELETE FROM users WHERE role = 'USER'").Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
+		return
 	}
-
 	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully deleted all users", "success": true})
 }

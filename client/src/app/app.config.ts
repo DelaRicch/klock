@@ -8,12 +8,14 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideEffects } from '@ngrx/effects';
 import { UserEffects } from './store/user/user.effects';
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
     provideRouter(routes),
     provideStore(),
+    provideAnimations(),
     provideState({ name: 'user', reducer: userReducer }),
     provideStoreDevtools({
       maxAge: 25, // Retains last 25 states

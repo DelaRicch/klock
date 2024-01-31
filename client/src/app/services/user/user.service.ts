@@ -11,7 +11,7 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   login(body: User) {
-    console.log(body)
+    console.log(body, "body")
     return this.http.post<ApiResponse>(this.apiUrl + 'login', body)
   }
   

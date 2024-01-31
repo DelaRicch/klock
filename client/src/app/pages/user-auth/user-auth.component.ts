@@ -14,6 +14,7 @@ import { NgClass } from '@angular/common';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserService } from '@services/user/user.service';
 import { User } from '../../../types';
+import { ToastService } from '@services/toast/toast.service';
 
 @Component({
   selector: 'app-user-auth',
@@ -36,7 +37,7 @@ export class UserAuthComponent implements OnInit {
   displayPassword = false;
   displayConfirmPassword = false;
 
-  constructor(private route: ActivatedRoute, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private userService: UserService, private toastService: ToastService) {
     this.route.data.subscribe((data) => {
       this.isSignUp = data['isSignUp'];
     });
@@ -80,18 +81,23 @@ export class UserAuthComponent implements OnInit {
         password: this.userAuthForm.value.password,
         rememberMe: this.userAuthForm.value.rememberMe,
       };
-      // this.userService.register(this.userAuthForm.value as User).subscribe((res) => {
-      //   console.log(res);
-      // })
+
       this.userService.register(request as User).subscribe({
-        next: (res) => {
-          console.log(res);
-        },
-        error: (err) => {
-          console.log(err);
-        },
-        complete: () => {
+        next: (msg) => {
+          const res = {
+            message: msg.message,
+            success: true,
+          }
+          this.toastService.showToast(res);
           this.userAuthForm.reset();
+          this.isSubmitting = false;
+        },
+        error: (error) => {
+          const err = {
+            message: error.error.message,
+            success: false,
+          }
+          this.toastService.showToast(err);
           this.isSubmitting = false;
         },
       });
@@ -99,18 +105,25 @@ export class UserAuthComponent implements OnInit {
       const request = {
         email: this.userAuthForm.value.email,
         password: this.userAuthForm.value.password,
-        rememberMe: this.userAuthForm.value.rememberMe,
+        remember: this.userAuthForm.value.rememberMe,
       };
 
       this.userService.login(request as User).subscribe({
-        next: (res) => {
-          console.log(res);
-        },
-        error: (err) => {
-          console.log(err);
-        },
-        complete: () => {
+        next: (msg) => {
+          const res = {
+            message: msg.message,
+            success: true,
+          }
+          this.toastService.showToast(res);
           this.userAuthForm.reset();
+          this.isSubmitting = false;
+        },
+        error: (error) => {
+          const err = {
+            message: error.error.message,
+            success: false,
+          }
+          this.toastService.showToast(err);
           this.isSubmitting = false;
         },
       });
