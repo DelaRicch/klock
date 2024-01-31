@@ -76,11 +76,13 @@ func RegisterUser(ctx *gin.Context)  {
 		"message":      fmt.Sprintf("Successfully registered %v", user.Name),
 		"success":      true,
 		"accessToken":  accessToken,
-		"refreshToken": refreshToken})
+		"refreshToken": refreshToken,
+	})
 }
 
 func LoginUser(ctx *gin.Context) {
 	loginUser := new(models.User)
+	fmt.Println(loginUser.RememberMe, ":::login user request")
 	if err := ctx.ShouldBindJSON(loginUser); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
 		return 
@@ -130,7 +132,12 @@ func LoginUser(ctx *gin.Context) {
 		"message":      fmt.Sprintf("Welcome %v", user.Name),
 		"success":      true,
 		"access_oken":  accessToken,
-		"refresh_token": refreshToken})
+		"refresh_token": refreshToken,
+	})
+}
+
+func GetUserProfile(ctx *gin.Context) {
+	
 }
 
 func DeleteAllUsers(ctx *gin.Context) {

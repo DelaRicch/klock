@@ -149,7 +149,8 @@
         >
           @if (userAuthForm.controls.confirmPassword.touched &&
           userAuthForm.controls.confirmPassword.hasError('required')) { Confirm
-          Password is required. } @if (userAuthForm.errors?.['mismatch'] &&
+          Password is required. }
+           @if (userAuthForm.errors?.['mismatch'] &&
           userAuthForm.controls.confirmPassword.touched) { Passwords do not
           match. }
         </small>
@@ -184,12 +185,10 @@
         <span class="link">{{
           isSignUp ? "Terms and Conditions" : "Forgot Password?"
         }}</span>
-        @if (isSignUp &&
-        userAuthForm.errors?.['termsNotAccepted']){
-        <span class="text-error absolute -bottom-5"
-          >  Please accept the terms and conditions to proceed.
-          </span
-        >
+        @if (isSignUp && userAuthForm.errors?.['termsNotAccepted']){
+        <span class="text-error absolute -bottom-5">
+          Please accept the terms and conditions to proceed.
+        </span>
         }
       </div>
 

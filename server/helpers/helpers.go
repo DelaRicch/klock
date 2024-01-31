@@ -3,10 +3,13 @@ package helpers
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
+	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/models"
 	"github.com/alexedwards/argon2id"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -41,7 +44,6 @@ func VerifyPassword(hashedPassword, password string) bool {
 	return match
 }
 
-
 func CreateJwtToken(user *models.User) (string, string, int64, int64, error) {
 	exp := time.Now().Add(time.Hour * 1).Unix()
 	rfExp := time.Now().Add(time.Hour * 24 * 30).Unix()
@@ -69,5 +71,49 @@ func CreateJwtToken(user *models.User) (string, string, int64, int64, error) {
 	}
 
 	return refreshTkn, tkn, exp, rfExp, nil
+}
 
+func ValidateAccessToken(ctx *gin.Context) (*models.User, error) {
+	accessToken := ctx.GetHeader("Authorization")
+
+	if accessToken == "" {
+		return nil, fmt.Errorf("Unauthrized")
+	}
+
+	tokenParts := strings.Split(accessToken, " ")
+	if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+		return nil, fmt.Errorf("invalid access token format")		
+	}
+
+	accessToken = tokenParts[1]
+
+	// parse and validate access token 
+	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte("secret"), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("invalid access token: %v", err)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return nil, fmt.Errorf("invalid access token")
+	}
+
+	userId, ok := claims["userId"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid user ID in token claims")
+	}
+
+	var user models.User
+	result := database.DB.Where("user_id = ?", userId).First(&user)
+
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	return &user, nil
 }
