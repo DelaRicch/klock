@@ -134,10 +134,28 @@ func LoginUser(ctx *gin.Context) {
 		"access_oken":  accessToken,
 		"refresh_token": refreshToken,
 	})
+
 }
 
 func GetUserProfile(ctx *gin.Context) {
-	
+	user, err := helpers.ValidateAccessToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid access token", "success": false})
+		return
+	}
+
+	userProfile := models.UserProfile{
+		Name: user.Name,
+		Email: user.Email,
+		UserID: user.UserID,
+		Role: user.Role,
+		Photo: user.Photo,
+		Phone: user.Phone,
+		Location: user.Location,
+		Gender: user.Gender,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"user": userProfile, "success": true})
 }
 
 func DeleteAllUsers(ctx *gin.Context) {
