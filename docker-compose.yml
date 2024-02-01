@@ -5,6 +5,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: './client'
+      args:
+        - "--no-cache"
     volumes:
       - /app/node_modules
       - ./client:/app
@@ -16,6 +18,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: './server'
+      args:
+        - "--no-cache"
     volumes:
       - ./server:/app
     ports:
