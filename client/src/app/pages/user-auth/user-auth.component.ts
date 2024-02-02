@@ -9,18 +9,21 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserService } from '@services/user/user.service';
-import { User } from '../../../types';
+import { User } from '../../../types/types';
 import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
 import {
   LoginUserFailure,
   LoginUserSuccess,
 } from '../../store/auth/auth.actions';
-import { UserProfileFailure, UserProfileSuccess } from '../../store/user/user.actions';
+import {
+  UserProfileFailure,
+  UserProfileSuccess,
+} from '../../store/user/user.actions';
 
 @Component({
   selector: 'app-user-auth',
@@ -45,6 +48,7 @@ export class UserAuthComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private userService: UserService,
     private toastService: ToastService,
     private store: Store
@@ -90,7 +94,7 @@ export class UserAuthComponent implements OnInit {
         name: this.userAuthForm.value.name,
         email: this.userAuthForm.value.email,
         password: this.userAuthForm.value.password,
-        rememberMe: this.userAuthForm.value.rememberMe,
+        remember: this.userAuthForm.value.rememberMe,
       };
 
       this.userService.register(request as User).subscribe({
@@ -102,6 +106,15 @@ export class UserAuthComponent implements OnInit {
           this.toastService.showToast(res);
           this.userAuthForm.reset();
           this.isSubmitting = false;
+          this.userService.getProfile().subscribe({
+            next: (res) => {
+              this.store.dispatch(UserProfileSuccess({ res }));
+            },
+            error: (error) => {
+              this.store.dispatch(UserProfileFailure({ error }));
+            },
+          });
+          this.router.navigate(['admin-dashboard']);
         },
         error: (error) => {
           const err = {
@@ -129,7 +142,6 @@ export class UserAuthComponent implements OnInit {
           this.toastService.showToast(res);
           this.userAuthForm.reset();
           this.isSubmitting = false;
-
           this.userService.getProfile().subscribe({
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
@@ -138,6 +150,7 @@ export class UserAuthComponent implements OnInit {
               this.store.dispatch(UserProfileFailure({ error }));
             },
           });
+          this.router.navigate(['admin-dashboard']);
         },
         error: (err) => {
           const error = {

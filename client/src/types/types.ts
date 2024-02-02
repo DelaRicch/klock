@@ -1,3 +1,8 @@
+export interface AppState {
+    user: UserStateType;
+    auth: AuthStateType;
+  }
+
 export interface UserStateType {
     isLoading?: boolean;
     success: boolean;

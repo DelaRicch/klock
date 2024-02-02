@@ -1,5 +1,5 @@
 import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import {  provideStore } from '@ngrx/store';
@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), 
     withInterceptors([authAndRefreshInterceptor])
     ),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideStore(storeReducers, {metaReducers}),
     provideAnimations(),
     provideStoreDevtools({
