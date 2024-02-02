@@ -1,7 +1,8 @@
 export interface UserStateType {
-    isLoading: boolean;
-    error: string | null;
+    isLoading?: boolean;
+    success: boolean;
     user: User | null;
+    message?: string;
 }
 
 export interface User {

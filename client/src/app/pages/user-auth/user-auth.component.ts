@@ -20,6 +20,7 @@ import {
   LoginUserFailure,
   LoginUserSuccess,
 } from '../../store/auth/auth.actions';
+import { UserProfileFailure, UserProfileSuccess } from '../../store/user/user.actions';
 
 @Component({
   selector: 'app-user-auth',
@@ -130,28 +131,20 @@ export class UserAuthComponent implements OnInit {
           this.isSubmitting = false;
 
           this.userService.getProfile().subscribe({
-            next: (user) => {
-              console.log(user);
-              // this.store.dispatch(LoginUserSuccess({res: user}));
+            next: (res) => {
+              this.store.dispatch(UserProfileSuccess({ res }));
             },
             error: (error) => {
-              console.log(error);
-              // const err = {
-              //   message: error.error.message,
-              //   success: false,
-              // }
-              // this.store.dispatch(LoginUserFailure({error: err}));
-              // this.toastService.showToast(err);
-              // this.isSubmitting = false;
+              this.store.dispatch(UserProfileFailure({ error }));
             },
           });
         },
-        error: (error) => {
-          const err = {
-            message: error.error.message,
+        error: (err) => {
+          const error = {
+            message: err.error.message,
             success: false,
           };
-          this.store.dispatch(LoginUserFailure({ error: err }));
+          this.store.dispatch(LoginUserFailure({ error }));
           this.toastService.showToast(err);
           this.isSubmitting = false;
         },
