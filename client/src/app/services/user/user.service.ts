@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environment/environment.development';
-import { AuthStateType, User } from '../../../types';
+import { AuthStateType, User, UserStateType } from '../../../types';
 import { Store } from '@ngrx/store';
 
 
@@ -21,6 +21,6 @@ export class UserService {
   }
 
   getProfile() {
-    return this.http.get<User>(this.apiUrl + 'user-profile')
+    return this.http.get<UserStateType>(this.apiUrl + 'user-profile')
   }
 }
