@@ -22,6 +22,7 @@
     "@ngrx/effects": "^17.1.0",
     "@ngrx/store": "^17.1.0",
     "@ngrx/store-devtools": "^17.1.0",
+    "chart.js": "^4.4.1",
     "ngrx-store-localstorage": "^16.1.0",
     "primeicons": "^6.0.1",
     "primeng": "^17.3.3",
