@@ -1,15 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
-import { UserStateType } from '../../../types/types';
 import {
   UserProfileFailure,
   UserProfileLoading,
   UserProfileSuccess,
 } from './user.actions';
+import { UserInfoType, UserStateType } from '@type/types';
 
 export const UserState: UserStateType = {
   isLoading: false,
   success: false,
-  user: null,
+  user: {} as UserInfoType,
   message: '',
 };
 

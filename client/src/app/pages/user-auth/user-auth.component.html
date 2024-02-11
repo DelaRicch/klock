@@ -42,6 +42,7 @@
           placeholder="Enter your full name"
           pInputText
           required
+          autocomplete="name"
           formControlName="name"
           aria-describedby="username"
           class="p-3 rounded-lg"
@@ -65,6 +66,7 @@
         <input
           inputId="email"
           type="email"
+          autocomplete="email"
           placeholder="Enter your email"
           pInputText
           formControlName="email"
@@ -93,6 +95,7 @@
         <label for="password">Password</label>
         <input
           inputId="password"
+          autocomplete="current-password"
           [type]="displayPassword ? 'text' : 'password'"
           placeholder="Enter your password"
           pInputText
@@ -135,6 +138,7 @@
         <label for="confirmPassword">Confirm Password</label>
         <input
           inputId="confirmPassword"
+          autocomplete="new-password"
           [type]="displayConfirmPassword ? 'text' : 'password'"
           placeholder="Confirm your password"
           pInputText
@@ -149,8 +153,7 @@
         >
           @if (userAuthForm.controls.confirmPassword.touched &&
           userAuthForm.controls.confirmPassword.hasError('required')) { Confirm
-          Password is required. }
-           @if (userAuthForm.errors?.['mismatch'] &&
+          Password is required. } @if (userAuthForm.errors?.['mismatch'] &&
           userAuthForm.controls.confirmPassword.touched) { Passwords do not
           match. }
         </small>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectUser } from '@store/user/user.selector';
-import { User } from '@type/types';
+import { User, UserInfoType } from '@type/types';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
@@ -14,11 +14,11 @@ import { GetInitialsPipe } from '@pipes/get-initials.pipe';
   styleUrl: './topbar.component.css',
 })
 export class TopbarComponent implements OnInit {
-  user = {} as User;
+  user = {} as Readonly<UserInfoType> ;
   display = false;
   constructor(private store: Store) {
     this.store.select(selectUser).subscribe((user) => {
-      this.user = user!;
+      this.user = user;
     });
   }
 

@@ -6,23 +6,29 @@ export interface AppState {
 export interface UserStateType {
   isLoading?: boolean;
   success: boolean;
-  user: User | null;
+  user: UserInfoType;
   message?: string;
 }
 
 export interface User {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   email: string;
   password: string;
-  confirmPassword?: string;
-  termsAndConditions?: boolean;
-  rememberMe?: boolean;
-  role?: string;
-  photo?: string;
-  location?: string;
-  gender?: string;
+  confirmPassword: string;
+  termsAndConditions: boolean;
+  rememberMe: boolean;
+  role: string;
+  photo: string;
+  location: string;
+  gender: string;
 }
+
+export type RegisterUserType = Pick<User, "name" | "email" | "password">;
+
+export type LoginUserType = Pick<User, "email" | "password">;
+
+export type UserInfoType = Omit<User, "password" | "confirmPassword" | "termsAndConditions" | "rememberMe">
 
 export interface AuthStateType {
   success: boolean;

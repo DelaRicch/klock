@@ -13,7 +13,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserService } from '@services/user/user.service';
-import { User } from '../../../types/types';
 import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
 import {
@@ -24,6 +23,8 @@ import {
   UserProfileFailure,
   UserProfileSuccess,
 } from '../../store/user/user.actions';
+import { LoginUserType, RegisterUserType } from '@type/types';
+
 
 @Component({
   selector: 'app-user-auth',
@@ -97,7 +98,7 @@ export class UserAuthComponent implements OnInit {
         remember: this.userAuthForm.value.rememberMe,
       };
 
-      this.userService.register(request as User).subscribe({
+      this.userService.register(request as RegisterUserType).subscribe({
         next: (msg) => {
           const res = {
             message: msg.message,
@@ -132,7 +133,7 @@ export class UserAuthComponent implements OnInit {
         remember: this.userAuthForm.value.rememberMe,
       };
 
-      this.userService.login(request as User).subscribe({
+      this.userService.login(request as LoginUserType).subscribe({
         next: (msg) => {
           const res = {
             message: msg.message,
