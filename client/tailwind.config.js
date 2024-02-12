@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         error: "#EF0816",
         "grey-500": "#667085",
+        primary: "#1D2939",
       }
     },
   },

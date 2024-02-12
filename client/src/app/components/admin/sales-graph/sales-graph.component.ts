@@ -1,12 +1,9 @@
-import { ButtonModule } from 'primeng/button';
 import { Component, OnInit } from '@angular/core';
-import { ChartModule } from 'primeng/chart';
-import { Chart, LineController, elements, plugins } from 'chart.js';
 
 @Component({
   selector: 'app-sales-graph',
   standalone: true,
-  imports: [ButtonModule, ChartModule],
+  imports: [],
   templateUrl: './sales-graph.component.html',
   styleUrl: './sales-graph.component.css',
 })
@@ -32,7 +29,6 @@ export class SalesGraphComponent implements OnInit {
           borderColor: '#4B4EFC',
           tension: 0.5,
           capBezierPoints: true,
-          showLine: true,
           spanGaps: true,
         },
         point: {
@@ -60,7 +56,7 @@ export class SalesGraphComponent implements OnInit {
           backgroundColor: '#4B4EFC',
           titleColor: '#FFFFFF',
           yAlign: 'bottom',
-          position: 'nearest',
+          position: 'average',
           displayColors: false,
           padding: 10,
           bodyAlign: 'center',
@@ -86,7 +82,7 @@ export class SalesGraphComponent implements OnInit {
         },
         y: {
           display: false,
-          // offset: true,
+          offset: true,
           beginAtZero: true,
         },
       },

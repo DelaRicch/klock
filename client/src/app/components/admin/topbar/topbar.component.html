@@ -32,13 +32,13 @@
 
   <button pButton pRipple class="rounded-full" (click)="display = !display">
     @if (user.photo! === '' ) {
-    <p-avatar
+    <!-- <p-avatar
       label="{{ user.name! | getInitials }}"
       size="large"
       shape="circle"
-    ></p-avatar>
+    ></p-avatar> -->
     } @else {
-    <p-avatar [image]="user.photo!" size="large" shape="circle"></p-avatar>
+    <!-- <p-avatar [image]="user.photo!" size="large" shape="circle"></p-avatar> -->
     }
   </button>
 

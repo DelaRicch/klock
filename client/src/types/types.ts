@@ -24,11 +24,14 @@ export interface User {
   gender: string;
 }
 
-export type RegisterUserType = Pick<User, "name" | "email" | "password">;
+export type RegisterUserType = Pick<User, 'name' | 'email' | 'password'>;
 
-export type LoginUserType = Pick<User, "email" | "password">;
+export type LoginUserType = Pick<User, 'email' | 'password'>;
 
-export type UserInfoType = Omit<User, "password" | "confirmPassword" | "termsAndConditions" | "rememberMe">
+export type UserInfoType = Omit<
+  User,
+  'password' | 'confirmPassword' | 'termsAndConditions' | 'rememberMe'
+>;
 
 export interface AuthStateType {
   success: boolean;
@@ -41,4 +44,13 @@ export interface AuthStateType {
     value: string;
     expiration: number;
   };
+}
+
+export interface ClientOrders {
+  name: string;
+  orderId: string;
+  date: string;
+  customerName: string;
+  status: string;
+  amount: number;
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LogoComponent } from '../../icons/logo/logo.component';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+
 import {
   AbstractControl,
   FormControl,
@@ -11,7 +10,6 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserService } from '@services/user/user.service';
 import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
@@ -25,17 +23,13 @@ import {
 } from '../../store/user/user.actions';
 import { LoginUserType, RegisterUserType } from '@type/types';
 
-
 @Component({
   selector: 'app-user-auth',
   standalone: true,
   imports: [
     LogoComponent,
-    InputTextModule,
-    ButtonModule,
     ReactiveFormsModule,
     NgClass,
-    ProgressSpinnerModule,
     RouterLink,
   ],
   templateUrl: './user-auth.component.html',
@@ -159,7 +153,7 @@ export class UserAuthComponent implements OnInit {
             success: false,
           };
           this.store.dispatch(LoginUserFailure({ error }));
-          this.toastService.showToast(err);
+          this.toastService.showToast(error);
           this.isSubmitting = false;
         },
       });

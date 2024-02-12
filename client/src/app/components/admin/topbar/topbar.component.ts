@@ -2,14 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectUser } from '@store/user/user.selector';
 import { User, UserInfoType } from '@type/types';
-import { ButtonModule } from 'primeng/button';
-import { AvatarModule } from 'primeng/avatar';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [ButtonModule, AvatarModule, GetInitialsPipe],
+  imports: [GetInitialsPipe],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css',
 })
