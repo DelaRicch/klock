@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ToastService } from '@services/toast/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -13,23 +12,5 @@ import { ToastService } from '@services/toast/toast.service';
 export class AppComponent {
   title = 'Klock Ecommerce';
 
-  // constructor(private toastService: ToastService) {
-  //   this.toastService.toast$.subscribe((toast) => {
-  //     if (toast.res.success) {
-  //       this.messageService.add({
-  //         severity: 'success',
-  //         summary: 'Success',
-  //         detail: toast.res.message,
-  //         life: 5000,
-  //       });
-  //     } else {
-  //       this.messageService.add({
-  //         severity: 'error',
-  //         summary: 'Error',
-  //         detail: toast.res.message,
-  //         life: 5000,
-  //       });
-  //     }
-  //   });
 
   }

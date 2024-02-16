@@ -13,15 +13,14 @@ import { NgClass } from '@angular/common';
 import { UserService } from '@services/user/user.service';
 import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
-import {
-  LoginUserFailure,
-  LoginUserSuccess,
-} from '../../store/auth/auth.actions';
+
+import { LoginUserType, RegisterUserType } from '@type/types';
 import {
   UserProfileFailure,
   UserProfileSuccess,
-} from '../../store/user/user.actions';
-import { LoginUserType, RegisterUserType } from '@type/types';
+} from '@store/user/user.actions';
+import { LoginUserFailure, LoginUserSuccess } from '@store/auth/auth.actions';
+import { InputComponent } from '@components/shared/input/input.component';
 
 @Component({
   selector: 'app-user-auth',
@@ -31,6 +30,7 @@ import { LoginUserType, RegisterUserType } from '@type/types';
     ReactiveFormsModule,
     NgClass,
     RouterLink,
+    InputComponent,
   ],
   templateUrl: './user-auth.component.html',
   styleUrl: './user-auth.component.css',
@@ -40,6 +40,7 @@ export class UserAuthComponent implements OnInit {
   isSubmitting = false;
   displayPassword = false;
   displayConfirmPassword = false;
+  emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   constructor(
     private route: ActivatedRoute,
@@ -55,7 +56,7 @@ export class UserAuthComponent implements OnInit {
 
   userAuthForm = new FormGroup({
     name: new FormControl(''),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [Validators.required, Validators.pattern(this.emailPattern)]),
     password: new FormControl('', [Validators.required]),
     confirmPassword: new FormControl(''),
     termsAndConditions: new FormControl(false),
@@ -181,7 +182,6 @@ export class UserAuthComponent implements OnInit {
         ?.setValidators([Validators.required]);
       this.userAuthForm.setValidators([
         this.termsAndConditionsValidator,
-        this.confirmPasswordValidator,
       ]);
     }
   }

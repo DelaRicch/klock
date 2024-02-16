@@ -3,11 +3,12 @@ import { Store } from '@ngrx/store';
 import { selectUser } from '@store/user/user.selector';
 import { User, UserInfoType } from '@type/types';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
+import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.directive';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [GetInitialsPipe],
+  imports: [GetInitialsPipe, ButtonRippleDirective],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css',
 })

@@ -34,140 +34,41 @@
       </div>
 
       @if (isSignUp) {
-      <div class="flex flex-col gap-3">
-        <label for="name">Name</label>
-        <input
-          inputId="name"
-          type="text"
-          placeholder="Enter your full name"
-          pInputText
-          required
-          autocomplete="name"
-          formControlName="name"
-          aria-describedby="username"
-          class="p-3 rounded-lg"
-          [ngClass]="{
-            'border-error  ring-2 ring-error':
-              userAuthForm.controls.name.touched &&
-              userAuthForm.controls.name.invalid
-          }"
-        />
-        <small id="username" class="text-error -mt-2">
-          @if (userAuthForm.controls.name.touched &&
-          userAuthForm.controls.name.hasError('required')) { Name is required. }
-          @if (userAuthForm.controls.name.hasError('minlength')) { Name must be
-          at least 4 characters long. }
-        </small>
-      </div>
+      <app-input
+        id="name"
+        placeholder="Enter your full name"
+        label="name"
+        [control]="userAuthForm.controls.name"
+      />
       }
 
-      <div class="flex flex-col gap-3">
-        <label for="email">Email</label>
-        <input
-          inputId="email"
-          type="email"
-          autocomplete="email"
-          placeholder="Enter your email"
-          pInputText
-          formControlName="email"
-          aria-describedby="email"
-          class="p-3 rounded-lg"
-          [ngClass]="{
-            'border-error  ring-2 ring-error':
-              userAuthForm.controls.email.touched &&
-              userAuthForm.controls.email.invalid
-          }"
+      <app-input
+        id="email"
+        placeholder="Enter your email"
+        label="email"
+        type="email"
+        [control]="userAuthForm.controls.email"
         />
-        <small id="email" class="text-error -mt-2">
-          @if (userAuthForm.controls.email.touched &&
-          userAuthForm.controls.email.hasError('required')) { Email is required.
-          } @if (userAuthForm.controls.email.hasError('email')) { Enter a valid
-          email address. }
-        </small>
-      </div>
 
-      <div
-        class="flex flex-col gap-3 relative"
-        [ngClass]="{
-          'mb-4': userAuthForm.controls.password.hasError('pattern')
-        }"
-      >
-        <label for="password">Password</label>
-        <input
-          inputId="password"
-          autocomplete="current-password"
-          [type]="displayPassword ? 'text' : 'password'"
-          placeholder="Enter your password"
-          pInputText
-          formControlName="password"
-          aria-describedby="password"
-          class="p-3 rounded-lg w-full"
-          [ngClass]="{
-            'border-error  ring-2 ring-error':
-              userAuthForm.controls.password.touched &&
-              userAuthForm.controls.password.invalid
-          }"
-        />
-        <small
-          id="password"
-          class="text-error absolute left-0 -bottom-6"
-          [ngClass]="{
-            '-bottom-11': userAuthForm.controls.password.hasError('pattern')
-          }"
-        >
-          @if (userAuthForm.controls.password.touched &&
-          userAuthForm.controls.password.hasError('required')) { Password is
-          required. } @if (userAuthForm.controls.password.hasError('pattern')) {
-          Password must contain a number, special character, and be at least 8
-          characters }
-        </small>
-        <div
-          (click)="displayPassword = !displayPassword"
-          class="eye-position absolute right-2 cursor-pointer"
-        >
-          @if (displayPassword) {
-          <i class="pi pi-eye-slash"></i>
-          } @else {
-          <i class="pi pi-eye"></i>
-          }
-        </div>
-      </div>
+      <app-input
+        id="password"
+        label="password"
+        placeholder="Enter your password"
+        type="password"
+        [control]="userAuthForm.controls.password"
+        [isPassword]="true"
+      />
 
       @if (isSignUp) {
-      <div class="flex flex-col gap-3 relative">
-        <label for="confirmPassword">Confirm Password</label>
-        <input
-          inputId="confirmPassword"
-          autocomplete="new-password"
-          [type]="displayConfirmPassword ? 'text' : 'password'"
-          placeholder="Confirm your password"
-          pInputText
-          formControlName="confirmPassword"
-          aria-describedby="confirmPassword"
-          class="p-3 rounded-lg w-full"
-          [ngClass]="{'border-error  ring-2 ring-error': (userAuthForm.errors?.['mismatch'] || userAuthForm.controls.confirmPassword.hasError('required')) && userAuthForm.controls.confirmPassword.touched}"
+      <app-input
+        id="confirm-password"
+        label="confirm password"
+        placeholder="Confirm password"
+        type="password"
+        [control]="userAuthForm.controls.confirmPassword"
+        [isPassword]="true"
+        [mismatch]="userAuthForm.controls.password"
         />
-        <small
-          id="confirmPassword"
-          class="text-error absolute left-0 -bottom-6"
-        >
-          @if (userAuthForm.controls.confirmPassword.touched &&
-          userAuthForm.controls.confirmPassword.hasError('required')) { Confirm
-          Password is required. } @if (userAuthForm.errors?.['mismatch'] &&
-          userAuthForm.controls.confirmPassword.touched) { Passwords do not
-          match. }
-        </small>
-        <div
-          (click)="displayConfirmPassword = !displayConfirmPassword"
-          class="eye-position absolute right-2 cursor-pointer"
-        >
-          @if (displayConfirmPassword) {
-          <i class="pi pi-eye-slash"></i>
-          } @else {
-          <i class="pi pi-eye"></i>
-          }
-        </div>
-      </div>
       }
 
       <div
@@ -201,10 +102,7 @@
         class="rounded-lg bg-[#1D2939] h-12 font-semibold text-white uppercase flex items-center justify-center gap-4 disabled:bg-[#294468] hover:opacity-90 transition-all duration-300 ease-linear disabled:hover:opacity-100"
       >
         @if (isSubmitting) {
-        <!-- <p-progressSpinner
-          styleClass="w-[2rem] h-[2rem]"
-          strokeWidth="5"
-        ></p-progressSpinner> -->
+
         } @if (isSubmitting) {
         <span>Submitting...</span>
         } @else {
