@@ -18,10 +18,11 @@ import {
   UserProfileFailure,
   UserProfileSuccess,
 } from '@store/user/user.actions';
-import { LoginUserFailure, LoginUserSuccess } from '@store/auth/auth.actions';
+import { LoginUserFailure, LoginUserSuccess, RegisterUser } from '@store/auth/auth.actions';
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
 import { CheckboxComponent } from '@components/checkbox/checkbox.component';
+import { selectAuth } from '@store/auth/auth.selector';
 
 @Component({
   selector: 'app-user-auth',
@@ -104,6 +105,7 @@ export class UserAuthComponent implements OnInit {
             title: 'Success',
             message: msg.message,
           }
+          this.store.dispatch(RegisterUser({ res: msg }));
 
           this.alertService.showAlert(alert);
           setTimeout(() => {
@@ -111,13 +113,13 @@ export class UserAuthComponent implements OnInit {
           }, 5000)
           this.userAuthForm.reset();
           this.isSubmitting = false;
-          this.userService.getProfile().subscribe({
-            next: (res) => {
-              this.store.dispatch(UserProfileSuccess({ res }));
-            },
-            error: (error) => {
-              this.store.dispatch(UserProfileFailure({ error }));
-            },
+            this.userService.getProfile().subscribe({
+              next: (res) => {
+                this.store.dispatch(UserProfileSuccess({ res }));
+              },
+              error: (error) => {
+                this.store.dispatch(UserProfileFailure({ error }));
+              },
           });
           this.router.navigate(['admin-dashboard']);
         },
@@ -146,7 +148,6 @@ export class UserAuthComponent implements OnInit {
 
       this.userService.login(request as LoginUserType).subscribe({
         next: (msg) => {
-
           const alert: AlertProps = {
             display: true,
             status: 'success',

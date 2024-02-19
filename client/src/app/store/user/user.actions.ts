@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { UserStateType } from '../../../types/types';
+import { UserStateType } from '@type/types';
 
 export const UserProfile = createAction('[User] User Profile');
 export const UserProfileLoading = createAction(
@@ -14,3 +14,6 @@ export const UserProfileFailure = createAction(
   '[User] User Profile Failure',
   props<{ error: { message: string; success: boolean } }>()
 );
+
+
+export const LogOut = createAction('[User] Log Out');

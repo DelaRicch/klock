@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { AuthStateType } from '../../../types/types';
+import { AuthStateType } from '@type/types';
 
 export const LoginUser = createAction(
   '[Auth] Login User',

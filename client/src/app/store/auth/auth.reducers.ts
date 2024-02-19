@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
-import { AuthStateType } from '../../../types/types';
 import {
   LoginUserFailure,
   LoginUserSuccess,
   LogoutUser,
   RegisterUser,
 } from './auth.actions';
+import { AuthStateType } from '@type/types';
 
 export const AuthState: AuthStateType = {
   success: false,

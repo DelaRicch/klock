@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import {
+  LogOut,
   UserProfileFailure,
   UserProfileLoading,
   UserProfileSuccess,
@@ -37,6 +38,15 @@ export const userReducer = createReducer(
       ...state,
       error: action.error.success,
       message: action.error.message,
+    };
+  }),
+
+  on(LogOut, (state) => {
+    return {
+      ...state,
+      success: false,
+      message: "",
+      user: {} as UserInfoType,
     };
   })
 );

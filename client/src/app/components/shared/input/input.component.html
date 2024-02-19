@@ -25,7 +25,6 @@
     *ngFor="let err of control.errors | keyvalue"
     class="text-error font-medium text-xs -mt-1.5 absolute left-0 -bottom-6"
   >
-    {{ err.key }}
     {{ getErrorMessages()[err.key] }}</span
   >
   }
