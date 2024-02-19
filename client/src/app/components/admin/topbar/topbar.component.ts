@@ -5,11 +5,12 @@ import { selectUser } from '@store/user/user.selector';
 import { UserInfoType } from '@type/types';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
 import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.directive';
+import { AvatarComponent } from '@components/shared/avatar/avatar.component';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [GetInitialsPipe, ButtonRippleDirective],
+  imports: [GetInitialsPipe, ButtonRippleDirective, AvatarComponent],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css',
 })
@@ -26,6 +27,8 @@ export class TopbarComponent implements OnInit {
     this.userService.logOut();
     
   }
+
+  
 
   ngOnInit(): void {
     console.log(this.user)

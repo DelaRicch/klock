@@ -21,8 +21,7 @@ import {
 import { LoginUserFailure, LoginUserSuccess, RegisterUser } from '@store/auth/auth.actions';
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
-import { CheckboxComponent } from '@components/checkbox/checkbox.component';
-import { selectAuth } from '@store/auth/auth.selector';
+import { CheckboxComponent } from '@components/shared/checkbox/checkbox.component';
 
 @Component({
   selector: 'app-user-auth',

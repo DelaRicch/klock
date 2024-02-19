@@ -56,7 +56,7 @@ export interface ClientOrders {
 }
 
 export interface AlertProps {
-  status: "success" | "error";
+  status: 'success' | 'error';
   title: string;
   message: string;
   display: boolean;
