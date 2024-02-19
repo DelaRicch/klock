@@ -54,3 +54,10 @@ export interface ClientOrders {
   status: string;
   amount: number;
 }
+
+export interface AlertProps {
+  status: "success" | "error";
+  title: string;
+  message: string;
+  display: boolean;
+}

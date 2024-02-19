@@ -14,13 +14,14 @@ import { UserService } from '@services/user/user.service';
 import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
 
-import { LoginUserType, RegisterUserType } from '@type/types';
+import { AlertProps, LoginUserType, RegisterUserType } from '@type/types';
 import {
   UserProfileFailure,
   UserProfileSuccess,
 } from '@store/user/user.actions';
 import { LoginUserFailure, LoginUserSuccess } from '@store/auth/auth.actions';
 import { InputComponent } from '@components/shared/input/input.component';
+import { AlertService } from '@services/alert/alert.service';
 
 @Component({
   selector: 'app-user-auth',
@@ -47,7 +48,8 @@ export class UserAuthComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private toastService: ToastService,
-    private store: Store
+    private store: Store,
+    private alertService: AlertService
   ) {
     this.route.data.subscribe((data) => {
       this.isSignUp = data['isSignUp'];
@@ -95,11 +97,18 @@ export class UserAuthComponent implements OnInit {
 
       this.userService.register(request as RegisterUserType).subscribe({
         next: (msg) => {
-          const res = {
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'success',
+            title: 'Success',
             message: msg.message,
-            success: true,
-          };
-          this.toastService.showToast(res);
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.userAuthForm.reset();
           this.isSubmitting = false;
           this.userService.getProfile().subscribe({
@@ -113,11 +122,18 @@ export class UserAuthComponent implements OnInit {
           this.router.navigate(['admin-dashboard']);
         },
         error: (error) => {
-          const err = {
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'error',
+            title: 'Error',
             message: error.error.message,
-            success: false,
-          };
-          this.toastService.showToast(err);
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.isSubmitting = false;
         },
       });
@@ -130,13 +146,20 @@ export class UserAuthComponent implements OnInit {
 
       this.userService.login(request as LoginUserType).subscribe({
         next: (msg) => {
-          const res = {
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'success',
+            title: 'Success',
             message: msg.message,
-            success: true,
-          };
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.store.dispatch(LoginUserSuccess({ res: msg }));
-          this.toastService.showToast(res);
-          this.userAuthForm.reset();
+          // this.userAuthForm.reset();
           this.isSubmitting = false;
           this.userService.getProfile().subscribe({
             next: (res) => {
@@ -146,15 +169,26 @@ export class UserAuthComponent implements OnInit {
               this.store.dispatch(UserProfileFailure({ error }));
             },
           });
-          this.router.navigate(['admin-dashboard']);
+          // this.router.navigate(['admin-dashboard']);
         },
         error: (err) => {
           const error = {
             message: err.error.message,
             success: false,
           };
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'error',
+            title: 'Error',
+            message: err.error.message,
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.store.dispatch(LoginUserFailure({ error }));
-          this.toastService.showToast(error);
           this.isSubmitting = false;
         },
       });
