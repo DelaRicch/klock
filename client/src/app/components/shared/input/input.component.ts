@@ -30,7 +30,7 @@ export class InputComponent implements OnInit {
   @Input() mismatch?: FormControl;
 
   getErrorMessages(): Record<string, string> {
-    if (this.type === 'password') {
+    if (this.type === 'password' || this.mismatch) {
       return {
         required: "Field can't be empty",
         minlength: 'Field should be at least eight characters',

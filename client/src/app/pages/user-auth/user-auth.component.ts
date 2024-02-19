@@ -1,5 +1,5 @@
+import { LogoComponent } from './../../icons/logo/logo.component';
 import { Component, OnInit } from '@angular/core';
-import { LogoComponent } from '../../icons/logo/logo.component';
 
 import {
   AbstractControl,
@@ -11,7 +11,6 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { UserService } from '@services/user/user.service';
-import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
 
 import { AlertProps, LoginUserType, RegisterUserType } from '@type/types';
@@ -22,6 +21,7 @@ import {
 import { LoginUserFailure, LoginUserSuccess } from '@store/auth/auth.actions';
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
+import { CheckboxComponent } from '@components/checkbox/checkbox.component';
 
 @Component({
   selector: 'app-user-auth',
@@ -32,6 +32,7 @@ import { AlertService } from '@services/alert/alert.service';
     NgClass,
     RouterLink,
     InputComponent,
+    CheckboxComponent
   ],
   templateUrl: './user-auth.component.html',
   styleUrl: './user-auth.component.css',
@@ -47,7 +48,6 @@ export class UserAuthComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
-    private toastService: ToastService,
     private store: Store,
     private alertService: AlertService
   ) {
@@ -159,7 +159,7 @@ export class UserAuthComponent implements OnInit {
             alert.display = false;
           }, 5000)
           this.store.dispatch(LoginUserSuccess({ res: msg }));
-          // this.userAuthForm.reset();
+          this.userAuthForm.reset();
           this.isSubmitting = false;
           this.userService.getProfile().subscribe({
             next: (res) => {
@@ -169,13 +169,15 @@ export class UserAuthComponent implements OnInit {
               this.store.dispatch(UserProfileFailure({ error }));
             },
           });
-          // this.router.navigate(['admin-dashboard']);
+          this.router.navigate(['admin-dashboard']);
         },
         error: (err) => {
           const error = {
             message: err.error.message,
             success: false,
           };
+
+          console.log(err);
 
           const alert: AlertProps = {
             display: true,
