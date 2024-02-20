@@ -41,6 +41,7 @@ func RegisterUser(ctx *gin.Context) {
 	}
 
 	user.Password = hashedPassword
+	user.Provider = "Klock"
 
 	// Generate User ID
 	user.UserID = helpers.GenerateID("KLOCK-USER")
@@ -103,6 +104,7 @@ func LoginUser(ctx *gin.Context) {
 	// Verify the password using Argon2id
 	if !helpers.VerifyPassword(user.Password, loginUser.Password) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"message": invalidEmailOrPass, "success": false})
+		return
 	}
 
 	// Generate JWt
@@ -141,6 +143,7 @@ func LoginUser(ctx *gin.Context) {
 func GetUserProfile(ctx *gin.Context) {
 	user, err := helpers.ValidateAccessToken(ctx)
 	if err != nil {
+		fmt.Println(err.Error())
 		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized", "success": false})
 		return
 	}
@@ -164,5 +167,5 @@ func DeleteAllUsers(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "success": false})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully deleted all users", "success": true})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully delete all users", "success": true})
 }
