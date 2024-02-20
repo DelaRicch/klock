@@ -23,8 +23,9 @@ func GenerateRandomStrings(length int) string {
 }
 
 func GenerateID(value string) string {
+	currentTime := time.Now().Unix()
 	randomString := GenerateRandomStrings(15)
-	generatedID := fmt.Sprintf("%s-%s", value, randomString)
+	generatedID := fmt.Sprintf("%s-%s%v", value, randomString, currentTime)
 	return generatedID
 }
 

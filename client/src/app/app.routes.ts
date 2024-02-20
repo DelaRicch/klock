@@ -1,14 +1,39 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from '@pages/home/home.component';
 
-const HomeComponent = () =>
-  import('@pages/home/home.component').then((m) => m.HomeComponent);
-const UserAuthComponent = () => import('@pages/user-auth/user-auth.component').then((m) => m.UserAuthComponent);
+const UserAuthComponent = () =>
+  import('@pages/user-auth/user-auth.component').then(
+    (m) => m.UserAuthComponent
+  );
+const AdminDashboardLayout = () =>
+  import('@pages/admin/dashboard/dashboard.component').then(
+    (m) => m.DashboardComponent
+  );
+const AdminDashboard = () =>
+  import('@components/admin/dashboard/dashboard.component').then(
+    (m) => m.DashboardComponent
+  );
 
 export const routes: Routes = [
-  { path: '', loadComponent: HomeComponent },
-  {path: 'sign-up', loadComponent: UserAuthComponent, data: {isSignUp: true}},
+  { path: '', component: HomeComponent },
+  {
+    path: 'sign-up',
+    loadComponent: UserAuthComponent,
+    data: { isSignUp: true },
+  },
   {
     path: 'sign-in',
-    loadComponent: UserAuthComponent, data: {isSignUp: false},
+    loadComponent: UserAuthComponent,
+    data: { isSignUp: false },
+  },
+  {
+    path: 'admin-dashboard',
+    loadComponent: AdminDashboardLayout,
+    children: [
+      {
+        path: '',
+        loadComponent: AdminDashboard,
+      },
+    ],
   },
 ];

@@ -1,7 +1,6 @@
+import { LogoComponent } from './../../icons/logo/logo.component';
 import { Component, OnInit } from '@angular/core';
-import { LogoComponent } from '../../icons/logo/logo.component';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+
 import {
   AbstractControl,
   FormControl,
@@ -9,30 +8,31 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserService } from '@services/user/user.service';
-import { User } from '../../../types';
-import { ToastService } from '@services/toast/toast.service';
 import { Store } from '@ngrx/store';
+
+import { AlertProps, LoginUserType, RegisterUserType } from '@type/types';
 import {
-  LoginUserFailure,
-  LoginUserSuccess,
-} from '../../store/auth/auth.actions';
-import { UserProfileFailure, UserProfileSuccess } from '../../store/user/user.actions';
+  UserProfileFailure,
+  UserProfileSuccess,
+} from '@store/user/user.actions';
+import { LoginUserFailure, LoginUserSuccess, RegisterUser } from '@store/auth/auth.actions';
+import { InputComponent } from '@components/shared/input/input.component';
+import { AlertService } from '@services/alert/alert.service';
+import { CheckboxComponent } from '@components/shared/checkbox/checkbox.component';
 
 @Component({
   selector: 'app-user-auth',
   standalone: true,
   imports: [
     LogoComponent,
-    InputTextModule,
-    ButtonModule,
     ReactiveFormsModule,
     NgClass,
-    ProgressSpinnerModule,
     RouterLink,
+    InputComponent,
+    CheckboxComponent
   ],
   templateUrl: './user-auth.component.html',
   styleUrl: './user-auth.component.css',
@@ -42,12 +42,14 @@ export class UserAuthComponent implements OnInit {
   isSubmitting = false;
   displayPassword = false;
   displayConfirmPassword = false;
+  emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private userService: UserService,
-    private toastService: ToastService,
-    private store: Store
+    private store: Store,
+    private alertService: AlertService
   ) {
     this.route.data.subscribe((data) => {
       this.isSignUp = data['isSignUp'];
@@ -56,7 +58,7 @@ export class UserAuthComponent implements OnInit {
 
   userAuthForm = new FormGroup({
     name: new FormControl(''),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [Validators.required, Validators.pattern(this.emailPattern)]),
     password: new FormControl('', [Validators.required]),
     confirmPassword: new FormControl(''),
     termsAndConditions: new FormControl(false),
@@ -90,25 +92,49 @@ export class UserAuthComponent implements OnInit {
         name: this.userAuthForm.value.name,
         email: this.userAuthForm.value.email,
         password: this.userAuthForm.value.password,
-        rememberMe: this.userAuthForm.value.rememberMe,
+        remember: this.userAuthForm.value.rememberMe,
       };
 
-      this.userService.register(request as User).subscribe({
+      this.userService.register(request as RegisterUserType).subscribe({
         next: (msg) => {
-          const res = {
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'success',
+            title: 'Success',
             message: msg.message,
-            success: true,
-          };
-          this.toastService.showToast(res);
+          }
+          this.store.dispatch(RegisterUser({ res: msg }));
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.userAuthForm.reset();
           this.isSubmitting = false;
+            this.userService.getProfile().subscribe({
+              next: (res) => {
+                this.store.dispatch(UserProfileSuccess({ res }));
+              },
+              error: (error) => {
+                this.store.dispatch(UserProfileFailure({ error }));
+              },
+          });
+          this.router.navigate(['admin-dashboard']);
         },
         error: (error) => {
-          const err = {
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'error',
+            title: 'Error',
             message: error.error.message,
-            success: false,
-          };
-          this.toastService.showToast(err);
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.isSubmitting = false;
         },
       });
@@ -119,17 +145,22 @@ export class UserAuthComponent implements OnInit {
         remember: this.userAuthForm.value.rememberMe,
       };
 
-      this.userService.login(request as User).subscribe({
+      this.userService.login(request as LoginUserType).subscribe({
         next: (msg) => {
-          const res = {
+          const alert: AlertProps = {
+            display: true,
+            status: 'success',
+            title: 'Success',
             message: msg.message,
-            success: true,
-          };
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.store.dispatch(LoginUserSuccess({ res: msg }));
-          this.toastService.showToast(res);
           this.userAuthForm.reset();
           this.isSubmitting = false;
-
           this.userService.getProfile().subscribe({
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
@@ -138,14 +169,28 @@ export class UserAuthComponent implements OnInit {
               this.store.dispatch(UserProfileFailure({ error }));
             },
           });
+          this.router.navigate(['admin-dashboard']);
         },
         error: (err) => {
           const error = {
             message: err.error.message,
             success: false,
           };
+
+          console.log(err);
+
+          const alert: AlertProps = {
+            display: true,
+            status: 'error',
+            title: 'Error',
+            message: err.error.message,
+          }
+
+          this.alertService.showAlert(alert);
+          setTimeout(() => {
+            alert.display = false;
+          }, 5000)
           this.store.dispatch(LoginUserFailure({ error }));
-          this.toastService.showToast(err);
           this.isSubmitting = false;
         },
       });
@@ -173,7 +218,6 @@ export class UserAuthComponent implements OnInit {
         ?.setValidators([Validators.required]);
       this.userAuthForm.setValidators([
         this.termsAndConditionsValidator,
-        this.confirmPasswordValidator,
       ]);
     }
   }

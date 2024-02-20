@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/DelaRicch/klock/server/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -23,7 +24,16 @@ func ConnectDb() {
 
 	db.Logger = logger.Default.LogMode(logger.Info)
 
-	// TODO: Auto migrate models here
+	// Migrate db models
+	if os.Getenv("APP_ENV") == "development" {
+		if err := db.AutoMigrate(&models.User{}); err != nil {
+			log.Fatalf("Error migrating user model: %v", err)
+		}
+
+		if err := db.AutoMigrate(&models.Token{}); err != nil {
+			log.Fatalf("Error migrating token model: %v", err)
+		}
+	}
 
 	DB = db
 }

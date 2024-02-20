@@ -29,6 +29,11 @@
       "@components/*": ["./src/app/components/*"],
       "@assets/*": ["./src/assets/*"],
       "@services/*": ["./src/app/services/*"],
+      "@store/*":["./src/app/store/*"],
+      "@type/*":["./src/types/*"],
+      "@utils/*":["./src/app/utils/*"],
+      "@pipes/*":["./src/app/pipes/*"],
+      "@directives/*":["./src/app/directives/*"],
     }
   },
   "angularCompilerOptions": {

@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+
 	loadEnv()
 	loadDatabase()
 	app := gin.Default()
@@ -24,16 +25,16 @@ func main() {
 		})
 	})
 
-	// set cors 
+	// set cors
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*", "http://localhost:4200/"},
+		AllowOrigins: []string{"*", "http://localhost:4200/"},
 		// AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 		// ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
 
-	// set routes 
+	// set routes
 	setUpRoutes(app)
 
 	go func() {
