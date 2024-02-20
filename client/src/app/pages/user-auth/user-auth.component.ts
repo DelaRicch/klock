@@ -18,7 +18,11 @@ import {
   UserProfileFailure,
   UserProfileSuccess,
 } from '@store/user/user.actions';
-import { LoginUserFailure, LoginUserSuccess, RegisterUser } from '@store/auth/auth.actions';
+import {
+  LoginUserFailure,
+  LoginUserSuccess,
+  RegisterUser,
+} from '@store/auth/auth.actions';
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
 import { CheckboxComponent } from '@components/shared/checkbox/checkbox.component';
@@ -32,7 +36,7 @@ import { CheckboxComponent } from '@components/shared/checkbox/checkbox.componen
     NgClass,
     RouterLink,
     InputComponent,
-    CheckboxComponent
+    CheckboxComponent,
   ],
   templateUrl: './user-auth.component.html',
   styleUrl: './user-auth.component.css',
@@ -58,7 +62,10 @@ export class UserAuthComponent implements OnInit {
 
   userAuthForm = new FormGroup({
     name: new FormControl(''),
-    email: new FormControl('', [Validators.required, Validators.pattern(this.emailPattern)]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern(this.emailPattern),
+    ]),
     password: new FormControl('', [Validators.required]),
     confirmPassword: new FormControl(''),
     termsAndConditions: new FormControl(false),
@@ -97,44 +104,45 @@ export class UserAuthComponent implements OnInit {
 
       this.userService.register(request as RegisterUserType).subscribe({
         next: (msg) => {
-
           const alert: AlertProps = {
             display: true,
             status: 'success',
             title: 'Success',
             message: msg.message,
-          }
+          };
           this.store.dispatch(RegisterUser({ res: msg }));
 
           this.alertService.showAlert(alert);
           setTimeout(() => {
             alert.display = false;
-          }, 5000)
-          this.userAuthForm.reset();
-          this.isSubmitting = false;
-            this.userService.getProfile().subscribe({
-              next: (res) => {
-                this.store.dispatch(UserProfileSuccess({ res }));
-              },
-              error: (error) => {
-                this.store.dispatch(UserProfileFailure({ error }));
-              },
+          }, 5000);
+        
+          this.userService.getProfile().subscribe({
+            next: (res) => {
+              this.store.dispatch(UserProfileSuccess({ res }));
+              setTimeout(() => {
+                this.router.navigate(['admin-dashboard']);
+                this.userAuthForm.reset();
+                this.isSubmitting = false;
+              }, 1000);
+            },
+            error: (error) => {
+              this.store.dispatch(UserProfileFailure({ error }));
+            },
           });
-          this.router.navigate(['admin-dashboard']);
         },
         error: (error) => {
-
           const alert: AlertProps = {
             display: true,
             status: 'error',
             title: 'Error',
             message: error.error.message,
-          }
+          };
 
           this.alertService.showAlert(alert);
           setTimeout(() => {
             alert.display = false;
-          }, 5000)
+          }, 5000);
           this.isSubmitting = false;
         },
       });
@@ -152,24 +160,27 @@ export class UserAuthComponent implements OnInit {
             status: 'success',
             title: 'Success',
             message: msg.message,
-          }
+          };
 
           this.alertService.showAlert(alert);
           setTimeout(() => {
             alert.display = false;
-          }, 5000)
+          }, 5000);
           this.store.dispatch(LoginUserSuccess({ res: msg }));
-          this.userAuthForm.reset();
-          this.isSubmitting = false;
+        
           this.userService.getProfile().subscribe({
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
+              setTimeout(() => {
+                this.router.navigate(['admin-dashboard']);
+                this.userAuthForm.reset();
+                this.isSubmitting = false;
+              }, 1000);
             },
             error: (error) => {
               this.store.dispatch(UserProfileFailure({ error }));
             },
           });
-          this.router.navigate(['admin-dashboard']);
         },
         error: (err) => {
           const error = {
@@ -177,19 +188,17 @@ export class UserAuthComponent implements OnInit {
             success: false,
           };
 
-          console.log(err);
-
           const alert: AlertProps = {
             display: true,
             status: 'error',
             title: 'Error',
             message: err.error.message,
-          }
+          };
 
           this.alertService.showAlert(alert);
           setTimeout(() => {
             alert.display = false;
-          }, 5000)
+          }, 5000);
           this.store.dispatch(LoginUserFailure({ error }));
           this.isSubmitting = false;
         },
@@ -216,9 +225,7 @@ export class UserAuthComponent implements OnInit {
       this.userAuthForm
         .get('termsAndConditions')
         ?.setValidators([Validators.required]);
-      this.userAuthForm.setValidators([
-        this.termsAndConditionsValidator,
-      ]);
+      this.userAuthForm.setValidators([this.termsAndConditionsValidator]);
     }
   }
 }
