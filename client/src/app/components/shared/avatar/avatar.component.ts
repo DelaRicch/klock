@@ -3,7 +3,7 @@ import { UserInfoType } from '@type/types';
 import { Component } from '@angular/core';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
 import { Store } from '@ngrx/store';
-import { AlertService } from '@services/alert/alert.service';
+import { DropdownService } from '@services/dropdown/dropdown.service';
 
 @Component({
   selector: 'app-avatar',
@@ -26,13 +26,13 @@ import { AlertService } from '@services/alert/alert.service';
 export class AvatarComponent {
   user = {} as UserInfoType;
 
-  constructor(private store: Store, private alertService: AlertService) {
+  constructor(private store: Store, private dropdownService: DropdownService) {
     this.store.select(selectUser).subscribe((user) => {
       this.user = user;
     });
   }
 
   toggleDropdownUserMenu() {
-    this.alertService.toggleDropdown();
+    this.dropdownService.toggleDropdown();
   }
 }

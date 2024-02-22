@@ -1,12 +1,15 @@
+import { AuthService } from '@services/auth/auth.service';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component, ElementRef, HostListener, effect } from '@angular/core';
-import { AlertService } from '@services/alert/alert.service';
+import { DropdownService } from '@services/dropdown/dropdown.service';
+import { DropdownItemProp } from '@type/types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dropdown-menu',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, NgFor],
   templateUrl: './dropdown-menu.component.html',
   styleUrl: './dropdown-menu.component.css',
   animations: [
@@ -14,30 +17,37 @@ import { AlertService } from '@services/alert/alert.service';
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(-20px)' }),
         animate(
-          '500ms ease-in',
+          '250ms ease-in',
           style({ opacity: 1, transform: 'translateY(0)' })
         ),
-      ]),
+        ]),
 
       transition(':leave', [
         animate(
-          '500ms ease-out',
+          '250ms ease-out',
           style({ opacity: 0, transform: 'translateY(-20px)' })
         ),
       ]),
     ]),
+
   ],
 })
 export class DropdownMenuComponent {
   displayMenu = false;
+  dropdownItems = [] as DropdownItemProp[]
 
   constructor(
-    private alertService: AlertService,
-    private elementRef: ElementRef
+    private dropdownService: DropdownService,
+    private elementRef: ElementRef,
+    private authService: AuthService,
+    private router: Router
   ) {
     effect(() => {
-      this.displayMenu = this.alertService.dropdownMenu();
+      this.displayMenu = this.dropdownService.dropdownMenu();
+      this.dropdownItems = this.dropdownService.dropdownItems();
     });
+
+    console.log(this.dropdownItems, "dropdown items")
   }
 
   @HostListener('document:click', ['$event.target'])
@@ -49,7 +59,19 @@ export class DropdownMenuComponent {
       targetElement.id !== 'avatar' &&
       !this.elementRef.nativeElement.contains(targetElement)
     ) {
-      this.alertService.closeDropdown();
+      this.dropdownService.closeDropdown();
     }
   }
+
+  handleNavigate(dropdown: DropdownItemProp) {
+    if (dropdown.name === 'Log Out') {
+      this.authService.logOut();
+      this.router.navigate(['/sign-in']);
+    } else {
+      this.router.navigate([`/${dropdown.path}`]);
+    }
+
+    this.dropdownService.closeDropdown()
+  }
+
 }
