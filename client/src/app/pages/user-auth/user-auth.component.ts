@@ -121,7 +121,11 @@ export class UserAuthComponent implements OnInit {
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
               setTimeout(() => {
-                this.router.navigate(['admin-dashboard']);
+                if(res.user.role === 'ADMIN'){
+                  this.router.navigate(['admin-dashboard']);
+                  } else {
+                    this.router.navigate(['']);
+                  }
                 this.userAuthForm.reset();
                 this.isSubmitting = false;
               }, 1000);
@@ -172,7 +176,11 @@ export class UserAuthComponent implements OnInit {
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
               setTimeout(() => {
+                if(res.user.role === 'ADMIN'){
                 this.router.navigate(['admin-dashboard']);
+                } else {
+                  this.router.navigate(['']);
+                }
                 this.userAuthForm.reset();
                 this.isSubmitting = false;
               }, 1000);

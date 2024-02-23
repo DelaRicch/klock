@@ -27,21 +27,11 @@ export class AuthService {
       this.auth = auth;
     });
 
-    if (this.auth.accessToken.value && this.user.role === 'ADMIN') {
+    if (this.auth.accessToken.value) {
       this.isAuthenticated = true;
     } else {
       this.isAuthenticated = false;
     }
-  }
-
-  canActivate() {
-    return this.auth.accessToken.value && this.user.role === 'ADMIN'
-      ? true
-      : false;
-  }
-
-  canDecline() {
-    return this.auth.accessToken.value ? false : true;
   }
 
   logOut() {

@@ -2,19 +2,26 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '@services/auth/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router: Router = inject(Router);
 
-  if (authService.canActivate()) {
+  if (authService.isAuthenticated && authService.user.role === 'ADMIN') {
     return true;
   } else {
-    return router.navigate(['/']);
+    return router.navigate(['']);
   }
 };
 
-export const signInGuard: CanActivateFn = () => {
+export const notLoggedInGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
+  const router: Router = inject(Router);
 
-  return authService.canDecline() ? true : false;
+  if (!authService.isAuthenticated) {
+    return true;
+  } else if (authService.isAuthenticated && authService.user.role === 'ADMIN') {
+    return router.navigate(['admin-dashboard']);
+  } else {
+    return router.navigate(['']);
+  }
 };
