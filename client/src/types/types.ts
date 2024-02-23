@@ -61,3 +61,8 @@ export interface AlertProps {
   message: string;
   display: boolean;
 }
+
+export interface DropdownItemProp {
+  name: string;
+  path?: string; 
+}

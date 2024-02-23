@@ -1,13 +1,13 @@
-<div 
-*ngIf="displayMenu"
-[@menuAnimation]="displayMenu"
-class="flex flex-col z-[100] gap-3 rounded-lg shadow-md p-4 w-[300px] absolute right-8 top-[5rem] bg-white">
-    <span>Hello</span>
-    <span>Hello</span>
-    <span>Hello</span>
-    <span>Hello</span>
-    <span>Hello</span>
-    <span>Hello</span>
-    <span>Hello</span>
-    <span>Hello</span>
+<div
+  *ngIf="displayMenu"
+  [@menuAnimation]="displayMenu"
+  class="flex flex-col z-[100] gap-3 rounded-lg shadow-md p-4 w-[250px] absolute right-11 top-[5rem] bg-white"
+>
+  <span
+    *ngFor="let dropdown of dropdownItems"
+    [id]="dropdown?.name"
+    class="item cursor-pointer hover:pl-4 transition-all duration-200 ease-linear"
+    (click)="handleNavigate(dropdown)"
+    >{{ dropdown?.name }}</span
+  >
 </div>

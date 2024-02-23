@@ -1,4 +1,3 @@
-import { UserService } from '@services/user/user.service';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectUser } from '@store/user/user.selector';
@@ -17,21 +16,17 @@ import { AvatarComponent } from '@components/shared/avatar/avatar.component';
 export class TopbarComponent implements OnInit {
   user = {} as Readonly<UserInfoType> ;
   display = false;
-  constructor(private store: Store, private userService: UserService) {
+  constructor(private store: Store) {
     this.store.select(selectUser).subscribe((user) => {
       this.user = user;
     });
   }
 
-  logOut() {
-    this.userService.logOut();
-    
-  }
 
   
 
   ngOnInit(): void {
-    console.log(this.user)
+    // console.log(this.user)
     }
     
 }

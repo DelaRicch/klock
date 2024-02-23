@@ -34,6 +34,7 @@ import { AlertProps } from '@type/types';
         animate(
           '500ms ease-in',
           style({ opacity: 1, transform: 'translateY(0)' })
+        
         ),
       ]),
 

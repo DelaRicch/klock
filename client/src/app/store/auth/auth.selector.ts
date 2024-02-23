@@ -6,3 +6,4 @@ export const selectAuthState = createFeatureSelector<AuthStateType>('auth');
 
 export const selectAuth = createSelector(selectAuthState, (state) => state);
 export const selectAuthError = createSelector(selectAuthState, (state) => state.message);
+
