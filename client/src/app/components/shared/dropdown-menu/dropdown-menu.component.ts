@@ -46,8 +46,6 @@ export class DropdownMenuComponent {
       this.displayMenu = this.dropdownService.dropdownMenu();
       this.dropdownItems = this.dropdownService.dropdownItems();
     });
-
-    console.log(this.dropdownItems, "dropdown items")
   }
 
   @HostListener('document:click', ['$event.target'])

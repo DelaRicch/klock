@@ -14,8 +14,6 @@ export class AuthService {
   user = {} as UserInfoType;
   auth = {} as AuthStateType;
 
-  isAuthenticated = false;
-
   constructor(
     private store: Store,
     private router: Router
@@ -26,12 +24,6 @@ export class AuthService {
     this.store.select(selectAuth).subscribe((auth) => {
       this.auth = auth;
     });
-
-    if (this.auth.accessToken.value) {
-      this.isAuthenticated = true;
-    } else {
-      this.isAuthenticated = false;
-    }
   }
 
   logOut() {

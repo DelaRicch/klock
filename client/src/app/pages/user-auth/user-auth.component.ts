@@ -181,7 +181,6 @@ export class UserAuthComponent implements OnInit {
                 } else {
                   this.router.navigate(['']);
                 }
-                this.userAuthForm.reset();
                 this.isSubmitting = false;
               }, 1000);
             },

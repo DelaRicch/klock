@@ -1,4 +1,4 @@
-import { Injectable, OnInit, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectUser } from '@store/user/user.selector';
 import { DropdownItemProp, UserInfoType } from '@type/types';
@@ -6,7 +6,7 @@ import { DropdownItemProp, UserInfoType } from '@type/types';
 @Injectable({
   providedIn: 'root',
 })
-export class DropdownService implements OnInit {
+export class DropdownService {
   user = {} as UserInfoType;
 
   dropdownMenu = signal<boolean>(false);
@@ -32,8 +32,6 @@ export class DropdownService implements OnInit {
         },
       ]);
     }
-
-    console.log(this.dropdownItems(), this.user);
   }
 
   toggleDropdown() {
@@ -42,9 +40,5 @@ export class DropdownService implements OnInit {
 
   closeDropdown() {
     this.dropdownMenu.set(false);
-  }
-
-  ngOnInit(): void {
-    console.log(this.user);
   }
 }

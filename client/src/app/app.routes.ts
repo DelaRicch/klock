@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
     path: 'sign-up',
+
     title: 'Klock Ecommerce | Sign Up',
     canActivate: [notLoggedInGuard],
     loadComponent: UserAuthComponent,
@@ -44,8 +45,8 @@ export const routes: Routes = [
       },
     ],
   },
-  {
-    path: '**',
-    redirectTo: '',
-  }
+  // {
+  //   path: '**',
+  //   redirectTo: '',
+  // }
 ];
