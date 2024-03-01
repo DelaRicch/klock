@@ -1,4 +1,3 @@
-import { LogoComponent } from './../../icons/logo/logo.component';
 import { Component, OnInit } from '@angular/core';
 
 import {
@@ -26,6 +25,7 @@ import {
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
 import { CheckboxComponent } from '@components/shared/checkbox/checkbox.component';
+import { LogoComponent } from '@icons/logo/logo.component';
 
 @Component({
   selector: 'app-user-auth',

@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.directive';
 
 @Component({
@@ -8,11 +8,12 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
   imports: [ButtonRippleDirective, NgClass],
   template: `
     <button
+    (click)="handleButtonClick()"
       appButtonRipple
       [isRipple]="isRipple"
       [ngClass]="{
-        'w-9 h-9': isIcon,
-        'w-full h-9': !isIcon,
+        'w-10 h-10 rounded-lg hover:border-[#686868] border border-transparent bg-transparent': isIcon,
+        'w-full h-9 rounded-md ': !isIcon,
         'bg-button': variant === 'primary',
         'bg-error': variant === 'error',
         'bg-opacity-60 hover:bg-opacity-60, cursor-not-allowed': isDisabled,
@@ -20,7 +21,7 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
       }"
       [class]="className"
       [disabled]="isDisabled"
-      class="rounded-md flex items-center justify-center gap-2 px-4 text-white hover:ring-1 ring-offset-2 hover:ring-blue focus:ring-1 focus:ring-blue outline-none"
+      class="flex items-center justify-center gap-2 px-4 text-white hover:ring-1 ring-offset-2 hover:ring-blue focus:ring-1 focus:ring-blue outline-none"
     >
       <ng-content></ng-content>
       @if(isLoading) {
@@ -34,11 +35,18 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
   styleUrl: './button.component.css',
 })
 export class ButtonComponent {
-  @Input() label = 'button';
+  @Input() label = '';
   @Input() isIcon = false;
   @Input() isRipple = false;
   @Input() className = '';
   @Input() variant: 'primary' | 'secondary' | 'error' = 'primary';
   @Input() isLoading = false;
   @Input() isDisabled = false;
+  @Input() type: 'button' | 'submit' | 'reset' = 'button';
+
+  @Output() buttonClick = new EventEmitter();
+
+  handleButtonClick() {
+    this.buttonClick.emit()
+  }
 }
