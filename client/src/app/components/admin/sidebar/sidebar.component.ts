@@ -3,6 +3,7 @@ import { NavigationEnd, Router, RouterLinkActive } from '@angular/router';
 import { SidebarIconComponent } from '@components/admin/sidebar-icon/sidebar-icon.component';
 import { ButtonComponent } from '@components/shared/button/button.component';
 import { LogoComponent } from '@icons/logo/logo.component';
+import { AuthService } from '@services/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,7 +19,7 @@ import { LogoComponent } from '@icons/logo/logo.component';
 })
 export class SidebarComponent {
   activeRoute = '';
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.activeRoute = event.url;
@@ -44,5 +45,13 @@ export class SidebarComponent {
 
   handleNavigateRoute(path: string) {
     this.router.navigate([`/${path}`]);
+  }
+
+  handleGoBackHome(){
+    this.router.navigate([''])
+  }
+
+  handleLogOut() {
+    this.authService.logOut()
   }
 }

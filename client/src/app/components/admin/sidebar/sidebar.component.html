@@ -1,9 +1,10 @@
 <aside
-  class="bg-[#F9FAFB] border-r h-full hidden md:flex md:flex-col gap-2 justify-between md:w-[180px] lg:w-[254px] px-1.5 py-3 pb-4 border-[#D0D5DD]"
+  class="bg-[#F9FAFB] border-r h-full hidden md:flex md:flex-col gap-2 justify-between md:w-[180px] lg:w-[254px] px-1.5 py-3 border-[#D0D5DD]"
 >
   <div class="flex flex-col gap-4 border-b-2 border-primary/50 h-full">
     <app-logo
       class="transform scale-75 cursor-pointer mx-auto"
+      (click)="handleGoBackHome()"
       innerColor="#1D2939"
       outerColor="#FFFFFF"
       labelColor="#1D2939"
@@ -27,7 +28,7 @@
     </div>
   </div>
 
-  <app-button [isRipple]="true" variant="secondary">
+  <app-button (buttonClick)="handleLogOut()" [isRipple]="true" variant="secondary">
     <div class="flex gap-4">
       <app-sidebar-icon
         [icon]="'logout'"
