@@ -7,13 +7,19 @@ const UserAuthComponent = () =>
     (m) => m.UserAuthComponent
   );
 const AdminDashboardLayout = () =>
-  import('@pages/admin/dashboard/dashboard.component').then(
+  import('@pages/admin/dashboard-layout/dashboard-layout.component').then(
     (m) => m.DashboardComponent
   );
 const AdminDashboard = () =>
-  import('@components/admin/dashboard/dashboard.component').then(
+  import('@pages/admin/dashboard/dashboard.component').then(
     (m) => m.DashboardComponent
   );
+const AdminAllProducts = () => import('@pages/admin/all-products/all-products.component').then(
+  m => m.AllProductsComponent
+);
+const AdminOrderList = () => import('@pages/admin/order-list/order-list.component').then(
+  m => m.OrderListComponent
+)
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -36,17 +42,29 @@ export const routes: Routes = [
     path: 'admin-dashboard',
     title: 'Klock Ecommerce | Admin Dashboard',
     canActivate: [adminGuard],
-  
+
     loadComponent: AdminDashboardLayout,
     children: [
       {
+        title: 'Dashboard',
         path: '',
         loadComponent: AdminDashboard,
       },
+      {
+        title: 'All Products',
+        path: 'all-products',
+        loadComponent: AdminAllProducts,
+      },
+      {
+        title: 'Order List',
+        path: 'order-list',
+        loadComponent: AdminOrderList,
+      },
+
     ],
   },
-  // {
-  //   path: '**',
-  //   redirectTo: '',
-  // }
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];

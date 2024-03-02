@@ -19,11 +19,11 @@ html {
 
 .ripple-button .ripple {
   position: absolute;
-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   z-index: 20;
   opacity: 1;
-  animation: ripple 1s linear infinite;
+  animation: ripple 1.5s linear infinite;
 }
 
 @keyframes ripple {
@@ -33,8 +33,8 @@ transform: translate(-50%, -50%);
     opacity: 0.6;
   }
   to {
-    width: 500px;
-    height: 500px;
+    width: 100rem;
+    height: 100rem;
     opacity: 0;
   }
 }

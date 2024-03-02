@@ -8,13 +8,14 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
   imports: [ButtonRippleDirective, NgClass],
   template: `
     <button
-    (click)="handleButtonClick()"
+      (click)="handleButtonClick()"
       appButtonRipple
       [isRipple]="isRipple"
       [ngClass]="{
         'w-10 h-10 rounded-lg hover:border-[#686868] border border-transparent bg-transparent': isIcon,
-        'w-full h-9 rounded-md ': !isIcon,
-        'bg-button': variant === 'primary',
+        'w-full h-11 rounded-md ': !isIcon,
+        'bg-button text-white': variant === 'primary',
+        'bg-transparent text-black': variant === 'secondary',
         'bg-error': variant === 'error',
         'bg-opacity-60 hover:bg-opacity-60, cursor-not-allowed': isDisabled,
         'bg-opacity-90 hover:bg-opacity-100': !(isDisabled && isIcon),
@@ -25,11 +26,11 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
     >
       <ng-content></ng-content>
       @if(isLoading) {
-        <span
+      <span
         class="w-4 h-4 rounded-full border-2 border-t-transparent border-slate-200 animate-spin"
-        ></span>
+      ></span>
       }
-        {{ label }}
+      {{ label }}
     </button>
   `,
   styleUrl: './button.component.css',
@@ -47,6 +48,6 @@ export class ButtonComponent {
   @Output() buttonClick = new EventEmitter();
 
   handleButtonClick() {
-    this.buttonClick.emit()
+    this.buttonClick.emit();
   }
 }
