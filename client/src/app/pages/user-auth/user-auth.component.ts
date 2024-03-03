@@ -28,7 +28,7 @@ import { CheckboxComponent } from '@components/shared/checkbox/checkbox.componen
 import { LogoComponent } from '@icons/logo/logo.component';
 
 @Component({
-  selector: 'app-user-auth',
+  selector: 'klock-user-auth',
   standalone: true,
   imports: [
     LogoComponent,
@@ -116,16 +116,16 @@ export class UserAuthComponent implements OnInit {
           setTimeout(() => {
             alert.display = false;
           }, 5000);
-        
+
           this.userService.getProfile().subscribe({
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
               setTimeout(() => {
-                if(res.user.role === 'ADMIN'){
+                if (res.user.role === 'ADMIN') {
                   this.router.navigate(['admin-dashboard']);
-                  } else {
-                    this.router.navigate(['']);
-                  }
+                } else {
+                  this.router.navigate(['']);
+                }
                 this.userAuthForm.reset();
                 this.isSubmitting = false;
               }, 1000);
@@ -171,13 +171,13 @@ export class UserAuthComponent implements OnInit {
             alert.display = false;
           }, 5000);
           this.store.dispatch(LoginUserSuccess({ res: msg }));
-        
+
           this.userService.getProfile().subscribe({
             next: (res) => {
               this.store.dispatch(UserProfileSuccess({ res }));
               setTimeout(() => {
-                if(res.user.role === 'ADMIN'){
-                this.router.navigate(['admin-dashboard']);
+                if (res.user.role === 'ADMIN') {
+                  this.router.navigate(['admin-dashboard']);
                 } else {
                   this.router.navigate(['']);
                 }

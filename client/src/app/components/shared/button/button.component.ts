@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.directive';
 
 @Component({
-  selector: 'app-button',
+  selector: 'klock-button',
   standalone: true,
   imports: [ButtonRippleDirective, NgClass],
   template: `
@@ -13,7 +13,7 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
       [isRipple]="isRipple"
       [ngClass]="{
         'w-10 h-10 rounded-lg hover:border-[#686868] border border-transparent bg-transparent': isIcon,
-        'w-full h-11 rounded-md ': !isIcon,
+        'w-full h-11 rounded-md  gap-2 px-4': !isIcon,
         'bg-button text-white': variant === 'primary',
         'bg-transparent text-black': variant === 'secondary',
         'bg-error': variant === 'error',
@@ -22,7 +22,7 @@ import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.d
       }"
       [class]="className"
       [disabled]="isDisabled"
-      class="flex items-center justify-center gap-2 px-4 text-white hover:ring-1 ring-offset-2 hover:ring-blue focus:ring-1 focus:ring-blue outline-none"
+      class="flex items-center justify-center text-white hover:ring-1 ring-offset-2 hover:ring-blue focus:ring-1 focus:ring-blue outline-none"
     >
       <ng-content></ng-content>
       @if(isLoading) {

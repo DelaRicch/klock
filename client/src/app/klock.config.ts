@@ -1,12 +1,12 @@
 import { ApplicationConfig, isDevMode } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
-import { routes } from './app.routes';
+import { routes } from './klock.routes';
 import {  provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { metaReducers, storeReducers } from './store/app.store';
+import { metaReducers, storeReducers } from './store/klock.store';
 import { authAndRefreshInterceptor } from './interceptor/interceptors.interceptor';
 
 export const appConfig: ApplicationConfig = {

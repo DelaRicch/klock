@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-order-list',
+  selector: 'klock-order-list',
   standalone: true,
   imports: [],
   templateUrl: './order-list.component.html',
-  styleUrl: './order-list.component.css'
+  styleUrl: './order-list.component.css',
 })
-export class OrderListComponent {
-
-}
+export class OrderListComponent {}

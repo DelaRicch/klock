@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-sales-graph',
+  selector: 'klock-sales-graph',
   standalone: true,
   imports: [],
   templateUrl: './sales-graph.component.html',

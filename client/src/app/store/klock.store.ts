@@ -1,8 +1,8 @@
 import { ActionReducer, ActionReducerMap, MetaReducer } from '@ngrx/store';
-import { userReducer } from './user/user.reducer';
 import { localStorageSync } from 'ngrx-store-localstorage';
-import { AppState } from '../../types/types';
-import { authReducer } from './auth/auth.reducers';
+import { authReducer } from '@store/auth/auth.reducers';
+import { userReducer } from '@store/user/user.reducer';
+import { AppState } from '@type/types';
 
 export function localStorageSyncReducer(
   reducer: ActionReducer<AppState>

@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-all-products',
+  selector: 'klock-all-products',
   standalone: true,
   imports: [],
   templateUrl: './all-products.component.html',
-  styles: ``
+  styles: ``,
 })
-export class AllProductsComponent {
-
-}
+export class AllProductsComponent {}

@@ -5,12 +5,15 @@ import { RecentOrdersComponent } from '@components/admin/recent-orders/recent-or
 import { SalesGraphComponent } from '@components/admin/sales-graph/sales-graph.component';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'klock-dashboard',
   standalone: true,
-  imports: [OrdersComponent, SalesGraphComponent, BestSellersComponent, RecentOrdersComponent],
+  imports: [
+    OrdersComponent,
+    SalesGraphComponent,
+    BestSellersComponent,
+    RecentOrdersComponent,
+  ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent {
-
-}
+export class DashboardComponent {}

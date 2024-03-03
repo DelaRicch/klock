@@ -6,7 +6,7 @@ import { LogoComponent } from '@icons/logo/logo.component';
 import { AuthService } from '@services/auth/auth.service';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'klock-sidebar',
   standalone: true,
   imports: [
     ButtonComponent,
@@ -47,11 +47,11 @@ export class SidebarComponent {
     this.router.navigate([`/${path}`]);
   }
 
-  handleGoBackHome(){
-    this.router.navigate([''])
+  handleGoBackHome() {
+    this.router.navigate(['']);
   }
 
   handleLogOut() {
-    this.authService.logOut()
+    this.authService.logOut();
   }
 }

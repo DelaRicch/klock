@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-logo',
+  selector: 'klock-logo',
   standalone: true,
   imports: [],
   template: `

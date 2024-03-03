@@ -4,11 +4,9 @@ import { SidebarComponent } from '@components/admin/sidebar/sidebar.component';
 import { TopbarComponent } from '@components/admin/topbar/topbar.component';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'klock-dashboard',
   standalone: true,
   imports: [SidebarComponent, TopbarComponent, RouterOutlet],
   templateUrl: './dashboard-layout.component.html',
 })
-export class DashboardComponent {
-
-}
+export class DashboardComponent {}
