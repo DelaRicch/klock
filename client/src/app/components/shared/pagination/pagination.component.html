@@ -1,0 +1,12 @@
+<nav class="flex gap-4">
+  <ul class="border border-yellow-600 flex gap-4">
+    @for((button of range()); track button){
+
+    <li>
+      <button class="h-10 w-10 flex items-center justify-center">
+        {{ button }}
+      </button>
+    </li>
+    }
+  </ul>
+</nav>

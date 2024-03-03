@@ -1,3 +1,5 @@
+import { ElementRef } from '@angular/core';
+
 export interface AppState {
   user: UserStateType;
   auth: AuthStateType;
@@ -64,5 +66,8 @@ export interface AlertProps {
 
 export interface DropdownItemProp {
   name: string;
-  path?: string; 
+  path?: string;
 }
+
+
+export type PaginationItem = number | '...';
