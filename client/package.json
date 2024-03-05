@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -24,6 +24,7 @@
     "@ngrx/store-devtools": "^17.1.0",
     "chart.js": "^4.4.1",
     "ngrx-store-localstorage": "^16.1.0",
+    "ngx-pagination": "^6.0.3",
     "primeicons": "^6.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
