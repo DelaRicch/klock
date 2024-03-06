@@ -6,12 +6,48 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/DelaRicch/klock/server/database"
-	"github.com/DelaRicch/klock/server/models"
+	"github.com/DelaRicch/klock/server/graphql/generated"
+	"github.com/DelaRicch/klock/server/graphql/models"
+	 "github.com/DelaRicch/klock/server/graphql/resolvers"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
+
+func loadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+}
+
+func loadDatabase() {
+	database.Connect()
+	database.DB.AutoMigrate(&models.User{})
+}
+
+
+func graphqlHandler() gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	h := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: &resolver.Resolver{}}))
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// Defining the Playground handler
+func playgroundHandler() gin.HandlerFunc {
+	h := playground.Handler("GraphQL", "/query")
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
 
 func main() {
 
@@ -19,11 +55,8 @@ func main() {
 	loadDatabase()
 	app := gin.Default()
 
-	app.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Klock E-commerce!",
-		})
-	})
+	app.POST("/query", graphqlHandler())
+	app.GET("/", playgroundHandler())
 
 	// set cors
 	app.Use(cors.New(cors.Config{
@@ -34,8 +67,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// set routes
-	setUpRoutes(app)
+	app.Use(resolver.GinContextToContextMiddleware())
 
 	go func() {
 		c := make(chan os.Signal, 1)
@@ -43,24 +75,13 @@ func main() {
 		<-c
 
 		// Call the CloseDb function before exiting
-		database.CloseDb()
+		database.Close()
 
 		// Stop the application gracefully
 		os.Exit(0)
 	}()
 
-	if err := app.Run(":8000"); err != nil {
+	if err := app.Run(":8080"); err != nil {
 		panic(err)
 	}
-}
-
-func loadEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-}
-
-func loadDatabase() {
-	database.ConnectDb()
-	database.DB.AutoMigrate(&models.User{})
 }

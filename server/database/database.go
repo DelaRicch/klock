@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/DelaRicch/klock/server/models"
+	"github.com/DelaRicch/klock/server/graphql/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -13,7 +13,7 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDb() {
+func Connect() {
 
 	dsn := fmt.Sprintf("postgresql://%s:%s@klock-go-13287.8nj.gcp-europe-west1.cockroachlabs.cloud:26257/go-klock?sslmode=verify-full", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"))
 
@@ -38,7 +38,7 @@ func ConnectDb() {
 	DB = db
 }
 
-func CloseDb() {
+func Close() {
 	sqlDB, err := DB.DB()
 	if err != nil {
 		log.Fatalf("Failed to get DB instance: %v", err)

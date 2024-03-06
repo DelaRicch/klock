@@ -7,11 +7,12 @@ import (
 	"time"
 
 	"github.com/DelaRicch/klock/server/database"
-	"github.com/DelaRicch/klock/server/models"
+	"github.com/DelaRicch/klock/server/graphql/models"
 	"github.com/alexedwards/argon2id"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt"
 )
+
 
 func GenerateRandomStrings(length int) string {
 	const charset = "01234ABCDEFGHIJKLM567890NOPQRSTUVWXYZ"

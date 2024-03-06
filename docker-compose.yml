@@ -23,6 +23,6 @@ services:
     volumes:
       - ./server:/app
     ports:
-      - '8000:8000'
+      - '8080:8080'
     command: ["air", "-c", ".air.toml"]
     tty: true

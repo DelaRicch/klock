@@ -1,0 +1,62 @@
+type Token {
+	value: String!
+	expiration: Int!
+}
+
+type User {
+	name: String!
+	email: String!
+	userID: String!
+	role: String!
+	password: String!
+	rememberMe: Boolean
+	provider: String
+	photo: String
+	phone: String
+	location: String
+	gender: String
+}
+
+type UserProfile {
+	name: String
+	email: String
+	userID: String
+	role: String
+	photo: String
+	phone: String
+	location: String
+	gender: String
+}
+
+type DeleteUserResponse {
+	userID: String!
+	status: String!
+}
+
+type Query {
+	Users: [UserProfile]
+	User(UserID: String!): UserProfile!
+}
+
+type Mutation {
+	CreateUser(input: CreateNewUser!): User!
+	UpdateUser(UserID: String!, input: UpdateUser!): User!
+	DeleteUser(UserID: String!): DeleteUserResponse!
+}
+
+input CreateNewUser {
+	name: String!
+	email: String!
+	password: String!
+}
+
+input UpdateUser {
+	name: String
+	email: String
+	password: String
+	role: String
+	photo: String
+	phone: String
+	location: String
+	gender: String
+}
