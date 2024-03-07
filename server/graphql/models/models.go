@@ -22,6 +22,10 @@ type LoginUser struct {
 	RememberMe *bool  `json:"rememberMe,omitempty" gorm:"rememberMe"`
 }
 
+type Message struct {
+	Message string `json:"message" gorm:"message"`
+}
+
 type Mutation struct {
 }
 
@@ -65,7 +69,6 @@ type User struct {
 }
 
 type UserAuthResponse struct {
-	Success bool           `json:"success" gorm:"success"`
 	Message string         `json:"message" gorm:"message"`
 	User    *UserProfile   `json:"user,omitempty" gorm:"user"`
 	Token   *TokenResponse `json:"token,omitempty" gorm:"token"`

@@ -77,7 +77,6 @@ func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) 
 	}
 
 	return &models.UserAuthResponse{
-		Success: true,
 		Message: fmt.Sprintf("%s registered successfully", user.Name),
 		User: &models.UserProfile{
 			UserID:   &user.UserID,
@@ -137,7 +136,6 @@ func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 	}
 
 	return &models.UserAuthResponse{
-		Success: true,
 		Message: fmt.Sprintf("%s logged in successfully", user.Name),
 		User: &models.UserProfile{
 			UserID:   &user.UserID,
@@ -175,4 +173,11 @@ func GetUserProfile(userID string) (*models.UserProfile, error) {
 		Gender:   user.Gender,
 	}, nil
 
+}
+
+func DeleteAllUsers() (*models.Message, error) {
+	if err := database.DB.Exec("DELETE FROM users WHERE role = 'USER'").Error; err != nil {
+		return &models.Message{}, fmt.Errorf("Error deleting users")
+	}
+	return &models.Message{Message: "Successfully deleted all users"}, nil
 }
