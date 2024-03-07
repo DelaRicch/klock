@@ -42,7 +42,13 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, userID string, input 
 
 // DeleteUser is the resolver for the DeleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context, userID string) (*models.Message, error) {
-	panic(fmt.Errorf("not implemented: DeleteUser - DeleteUser"))
+	_, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+	}
+
+	return services.DeleteUser(userID)
 }
 
 // DeleteUsers is the resolver for the DeleteUsers field.

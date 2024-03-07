@@ -175,6 +175,20 @@ func GetUserProfile(userID string) (*models.UserProfile, error) {
 
 }
 
+func DeleteUser(userID string) (*models.Message, error) {
+	user := models.User{}
+	result := database.DB.Where("user_id = ?", userID).First(&user)
+	if result.RowsAffected == 0 {
+		return &models.Message{}, fmt.Errorf("User not found")
+	}
+
+	if err := database.DB.Exec("DELETE FROM users WHERE user_id = ?", userID).Error; err != nil {
+		return &models.Message{}, fmt.Errorf("Error deleting user")
+	}
+
+	return &models.Message{Message: fmt.Sprintf("Successfully deleted %s", user.Name)}, nil
+}
+
 func DeleteAllUsers() (*models.Message, error) {
 	if err := database.DB.Exec("DELETE FROM users WHERE role = 'USER'").Error; err != nil {
 		return &models.Message{}, fmt.Errorf("Error deleting users")
