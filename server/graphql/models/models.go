@@ -16,6 +16,11 @@ type CreateNewUser struct {
 	Role     *Role  `json:"role,omitempty" gorm:"role"`
 }
 
+type LoginUser struct {
+	Email    string `json:"email" gorm:"email"`
+	Password string `json:"password" gorm:"password"`
+}
+
 type Mutation struct {
 }
 

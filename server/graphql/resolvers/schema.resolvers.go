@@ -25,6 +25,11 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNe
 
 	provider := "Klock"
 
+	// Check if the input.Email is typeof email
+	if !helpers.IsValidEmail(input.Email) {
+		return &models.UserAuthResponse{Success: false, Message: "Invalid email"}, nil
+	}
+
 	user := &models.User{
 		Name:      input.Name,
 		Email:     input.Email,

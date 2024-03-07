@@ -67,6 +67,11 @@ input CreateNewUser {
 	role: Role
 }
 
+input LoginUser {
+	email: String!
+	password: String!
+}
+
 input UpdateUser {
 	name: String
 	email: String

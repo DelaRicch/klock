@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"math/rand"
+	"regexp"
 	"strings"
 	"time"
 
@@ -13,6 +14,12 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+func IsValidEmail(email string) bool {
+	const emailRegex = `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`
+
+	match, _ := regexp.MatchString(emailRegex, email)
+	return match
+}
 
 func GenerateRandomStrings(length int) string {
 	const charset = "01234ABCDEFGHIJKLM567890NOPQRSTUVWXYZ"

@@ -399,6 +399,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateNewUser,
+		ec.unmarshalInputLoginUser,
 		ec.unmarshalInputUpdateUser,
 	)
 	first := true
@@ -503,6 +504,7 @@ var sources = []*ast.Source{
 }
 
 scalar Time
+scalar Email
 
 type Token {
 	value: String!
@@ -561,9 +563,14 @@ type Mutation {
 
 input CreateNewUser {
 	name: String!
-	email: String!
+	email: Email!
 	password: String!
 	role: Role
+}
+
+input LoginUser {
+	email: String!
+	password: String!
 }
 
 input UpdateUser {
@@ -4221,7 +4228,7 @@ func (ec *executionContext) unmarshalInputCreateNewUser(ctx context.Context, obj
 			it.Name = data
 		case "email":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNEmail2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4240,6 +4247,40 @@ func (ec *executionContext) unmarshalInputCreateNewUser(ctx context.Context, obj
 				return it, err
 			}
 			it.Role = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputLoginUser(ctx context.Context, obj interface{}) (models.LoginUser, error) {
+	var it models.LoginUser
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"email", "password"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "email":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Email = data
+		case "password":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Password = data
 		}
 	}
 
@@ -5088,6 +5129,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 func (ec *executionContext) unmarshalNCreateNewUser2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐCreateNewUser(ctx context.Context, v interface{}) (models.CreateNewUser, error) {
 	res, err := ec.unmarshalInputCreateNewUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNEmail2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNEmail2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
