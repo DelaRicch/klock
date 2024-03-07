@@ -1,7 +1,6 @@
 package http
 
 import (
-
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	graphql "github.com/DelaRicch/klock/server/graphql/generated"
@@ -18,11 +17,10 @@ func PlaygroundHandler() gin.HandlerFunc {
 }
 
 func GrapghqlHandler() gin.HandlerFunc {
-	// NewExecutableSchema and Config are in the generated.go file
-	// Resolver is in the resolver.go file
 	h := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: &resolver.Resolver{}}))
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
+

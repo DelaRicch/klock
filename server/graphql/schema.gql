@@ -1,3 +1,10 @@
+enum Role {
+	ADMIN
+	USER
+}
+
+scalar Time
+
 type Token {
 	value: String!
 	expiration: Int!
@@ -7,7 +14,7 @@ type User {
 	name: String!
 	email: String!
 	userID: String!
-	role: String!
+	role: Role!
 	password: String!
 	rememberMe: Boolean
 	provider: String
@@ -15,13 +22,15 @@ type User {
 	phone: String
 	location: String
 	gender: String
+	createdAt: Time!
+	updatedAt: Time!
 }
 
 type UserProfile {
 	name: String
 	email: String
 	userID: String
-	role: String
+	role: Role
 	photo: String
 	phone: String
 	location: String
@@ -47,7 +56,7 @@ type Query {
 
 type Mutation {
 	CreateUser(input: CreateNewUser!): UserAuthResponse!
-	UpdateUser(UserID: String!, input: UpdateUser!): User!
+	UpdateUser(UserID: String!, input: UpdateUser!): UserAuthResponse!
 	DeleteUser(UserID: String!): UserAuthResponse!
 }
 
@@ -55,14 +64,13 @@ input CreateNewUser {
 	name: String!
 	email: String!
 	password: String!
-	role: String
+	role: Role
 }
 
 input UpdateUser {
 	name: String
 	email: String
 	password: String
-	role: String
 	photo: String
 	phone: String
 	location: String

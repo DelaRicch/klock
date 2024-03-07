@@ -2,11 +2,18 @@
 
 package models
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+	"time"
+)
+
 type CreateNewUser struct {
-	Name     string  `json:"name"`
-	Email    string  `json:"email"`
-	Password string  `json:"password"`
-	Role     *string `json:"role,omitempty"`
+	Name     string `json:"name" gorm:"name"`
+	Email    string `json:"email" gorm:"email"`
+	Password string `json:"password" gorm:"password"`
+	Role     *Role  `json:"role,omitempty" gorm:"role"`
 }
 
 type Mutation struct {
@@ -16,54 +23,96 @@ type Query struct {
 }
 
 type Token struct {
-	Value      string `json:"value"`
-	Expiration int64  `json:"expiration"`
+	Value      string `json:"value" gorm:"value"`
+	Expiration int64  `json:"expiration" gorm:"expiration"`
 }
 
 type TokenResponse struct {
-	AccessToken  *Token `json:"accessToken"`
-	RefreshToken *Token `json:"refreshToken"`
+	AccessToken  *Token `json:"accessToken" gorm:"accessToken"`
+	RefreshToken *Token `json:"refreshToken" gorm:"refreshToken"`
 }
 
 type UpdateUser struct {
-	Name     *string `json:"name,omitempty"`
-	Email    *string `json:"email,omitempty"`
-	Password *string `json:"password,omitempty"`
-	Role     *string `json:"role,omitempty"`
-	Photo    *string `json:"photo,omitempty"`
-	Phone    *string `json:"phone,omitempty"`
-	Location *string `json:"location,omitempty"`
-	Gender   *string `json:"gender,omitempty"`
+	Name     *string `json:"name,omitempty" gorm:"name"`
+	Email    *string `json:"email,omitempty" gorm:"email"`
+	Password *string `json:"password,omitempty" gorm:"password"`
+	Photo    *string `json:"photo,omitempty" gorm:"photo"`
+	Phone    *string `json:"phone,omitempty" gorm:"phone"`
+	Location *string `json:"location,omitempty" gorm:"location"`
+	Gender   *string `json:"gender,omitempty" gorm:"gender"`
 }
 
 type User struct {
-	Name       string  `json:"name"`
-	Email      string  `json:"email"`
-	UserID     string  `json:"userID"`
-	Role       string  `json:"role"`
-	Password   string  `json:"password"`
-	RememberMe *bool   `json:"rememberMe,omitempty"`
-	Provider   *string `json:"provider,omitempty"`
-	Photo      *string `json:"photo,omitempty"`
-	Phone      *string `json:"phone,omitempty"`
-	Location   *string `json:"location,omitempty"`
-	Gender     *string `json:"gender,omitempty"`
+	Name       string    `json:"name" gorm:"name"`
+	Email      string    `json:"email" gorm:"email"`
+	UserID     string    `json:"userID" gorm:"userID"`
+	Role       Role      `json:"role" gorm:"role"`
+	Password   string    `json:"password" gorm:"password"`
+	RememberMe *bool     `json:"rememberMe,omitempty" gorm:"rememberMe"`
+	Provider   *string   `json:"provider,omitempty" gorm:"provider"`
+	Photo      *string   `json:"photo,omitempty" gorm:"photo"`
+	Phone      *string   `json:"phone,omitempty" gorm:"phone"`
+	Location   *string   `json:"location,omitempty" gorm:"location"`
+	Gender     *string   `json:"gender,omitempty" gorm:"gender"`
+	CreatedAt  time.Time `json:"createdAt" gorm:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt" gorm:"updatedAt"`
 }
 
 type UserAuthResponse struct {
-	Success bool           `json:"success"`
-	Message string         `json:"message"`
-	User    *UserProfile   `json:"user,omitempty"`
-	Token   *TokenResponse `json:"token,omitempty"`
+	Success bool           `json:"success" gorm:"success"`
+	Message string         `json:"message" gorm:"message"`
+	User    *UserProfile   `json:"user,omitempty" gorm:"user"`
+	Token   *TokenResponse `json:"token,omitempty" gorm:"token"`
 }
 
 type UserProfile struct {
-	Name     *string `json:"name,omitempty"`
-	Email    *string `json:"email,omitempty"`
-	UserID   *string `json:"userID,omitempty"`
-	Role     *string `json:"role,omitempty"`
-	Photo    *string `json:"photo,omitempty"`
-	Phone    *string `json:"phone,omitempty"`
-	Location *string `json:"location,omitempty"`
-	Gender   *string `json:"gender,omitempty"`
+	Name     *string `json:"name,omitempty" gorm:"name"`
+	Email    *string `json:"email,omitempty" gorm:"email"`
+	UserID   *string `json:"userID,omitempty" gorm:"userID"`
+	Role     *Role   `json:"role,omitempty" gorm:"role"`
+	Photo    *string `json:"photo,omitempty" gorm:"photo"`
+	Phone    *string `json:"phone,omitempty" gorm:"phone"`
+	Location *string `json:"location,omitempty" gorm:"location"`
+	Gender   *string `json:"gender,omitempty" gorm:"gender"`
+}
+
+type Role string
+
+const (
+	RoleAdmin Role = "ADMIN"
+	RoleUser  Role = "USER"
+)
+
+var AllRole = []Role{
+	RoleAdmin,
+	RoleUser,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleAdmin, RoleUser:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

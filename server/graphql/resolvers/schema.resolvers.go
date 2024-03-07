@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/DelaRicch/klock/server/database"
 	graphql1 "github.com/DelaRicch/klock/server/graphql/generated"
@@ -14,7 +15,6 @@ import (
 	"github.com/DelaRicch/klock/server/helpers"
 )
 
-const errorRfTokenMsg string = "Error generating refresh token"
 // CreateUser is the resolver for the CreateUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNewUser) (*models.UserAuthResponse, error) {
 	_, err := GinContextFromContext(ctx)
@@ -26,10 +26,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNe
 	provider := "Klock"
 
 	user := &models.User{
-		Name:     input.Name,
-		Email:    input.Email,
-		Password: input.Password,
-		Role:     "USER",
+		Name:      input.Name,
+		Email:     input.Email,
+		Password:  input.Password,
+		Role:      models.RoleUser,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 	if input.Role != nil {
 		user.Role = *input.Role
@@ -78,7 +80,17 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNe
 
 	return &models.UserAuthResponse{
 		Success: true,
-		Message: "User created successfully",
+		Message: fmt.Sprintf("%s registered successfully", user.Name),
+		User: &models.UserProfile{
+			UserID:   &user.UserID,
+			Name:     &user.Name,
+			Email:    &user.Email,
+			Role:     &user.Role,
+			Photo:    user.Photo,
+			Phone:    user.Phone,
+			Location: user.Location,
+			Gender:   user.Gender,
+		},
 		Token: &models.TokenResponse{
 			AccessToken:  &accessToken,
 			RefreshToken: &refreshToken,
@@ -87,7 +99,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNe
 }
 
 // UpdateUser is the resolver for the UpdateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, userID string, input models.UpdateUser) (*models.User, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, userID string, input models.UpdateUser) (*models.UserAuthResponse, error) {
 	panic(fmt.Errorf("not implemented: UpdateUser - UpdateUser"))
 }
 
@@ -114,3 +126,11 @@ func (r *Resolver) Query() graphql1.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+const errorRfTokenMsg string = "Error generating refresh token"

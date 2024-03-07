@@ -15,6 +15,7 @@ resolver:
   package: resolver
   filename_template: "{name}.resolvers.go"
 
+
 autobind:
 
 models:

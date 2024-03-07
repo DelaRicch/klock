@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/99designs/gqlgen/plugin/modelgen"
 	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/graphql/models"
 	resolver "github.com/DelaRicch/klock/server/graphql/resolvers"
@@ -27,6 +28,16 @@ func loadDatabase() {
 	database.DB.AutoMigrate(&models.User{})
 }
 
+// Defining mutation function
+func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
+	for _, model := range b.Models {
+		for _, field := range model.Fields {
+			field.Tag += ` orm_binding:"` + model.Name + `.` +  field.Name + `"`
+		}
+	}
+
+	return b
+}
 
 func main() {
 
