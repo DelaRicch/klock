@@ -156,3 +156,23 @@ func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 	}, nil
 
 }
+
+func GetUserProfile(userID string) (*models.UserProfile, error) {
+	user := models.User{}
+	result := database.DB.Where("user_id = ?", userID).First(&user)
+	if result.RowsAffected == 0 {
+		return &models.UserProfile{}, fmt.Errorf("User not found")
+	}
+
+	return &models.UserProfile{
+		UserID:   &user.UserID,
+		Name:     &user.Name,
+		Email:    &user.Email,
+		Role:     &user.Role,
+		Photo:    user.Photo,
+		Phone:    user.Phone,
+		Location: user.Location,
+		Gender:   user.Gender,
+	}, nil
+
+}

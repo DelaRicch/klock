@@ -52,7 +52,13 @@ func (r *queryResolver) Users(ctx context.Context) ([]*models.UserProfile, error
 
 // User is the resolver for the User field.
 func (r *queryResolver) User(ctx context.Context, userID string) (*models.UserProfile, error) {
-	panic(fmt.Errorf("not implemented: User - User"))
+	_, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+	}
+
+	return services.GetUserProfile(userID)
 }
 
 // Mutation returns graphql1.MutationResolver implementation.
