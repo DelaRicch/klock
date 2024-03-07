@@ -15,6 +15,11 @@ const invalidEmailOrPass string = "Invalid email or password"
 func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) {
 	provider := "Klock"
 
+	// Check if name input field is valid
+	if !helpers.IsValidInput(input.Name) {
+		return &models.UserAuthResponse{Success: false, Message: "Invalid name"}, nil
+	}
+		
 	// Check if the input.Email is typeof email
 	if !helpers.IsValidEmail(input.Email) {
 		return &models.UserAuthResponse{Success: false, Message: "Invalid email"}, nil

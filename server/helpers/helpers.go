@@ -21,6 +21,13 @@ func IsValidEmail(email string) bool {
 	return match
 }
 
+func IsValidInput(input string) bool {
+	const validInputString = `^[a-zA-Z0-9\s]+$`
+
+	match, _ := regexp.MatchString(validInputString, input)
+	return match
+}
+
 func GenerateRandomStrings(length int) string {
 	const charset = "01234ABCDEFGHIJKLM567890NOPQRSTUVWXYZ"
 	result := make([]byte, length)
