@@ -24,6 +24,17 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNe
 	return services.RegisterUser(input)
 }
 
+// LoginUser is the resolver for the LoginUser field.
+func (r *mutationResolver) LoginUser(ctx context.Context, input models.LoginUser) (*models.UserAuthResponse, error) {
+	_, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+	}
+
+	return services.LoginUser(input)
+}
+
 // UpdateUser is the resolver for the UpdateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, userID string, input models.UpdateUser) (*models.UserAuthResponse, error) {
 	panic(fmt.Errorf("not implemented: UpdateUser - UpdateUser"))
@@ -52,11 +63,3 @@ func (r *Resolver) Query() graphql1.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-const errorRfTokenMsg string = "Error generating refresh token"

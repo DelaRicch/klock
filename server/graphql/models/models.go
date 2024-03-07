@@ -17,8 +17,9 @@ type CreateNewUser struct {
 }
 
 type LoginUser struct {
-	Email    string `json:"email" gorm:"email"`
-	Password string `json:"password" gorm:"password"`
+	Email      string `json:"email" gorm:"email"`
+	Password   string `json:"password" gorm:"password"`
+	RememberMe *bool  `json:"rememberMe,omitempty" gorm:"rememberMe"`
 }
 
 type Mutation struct {
