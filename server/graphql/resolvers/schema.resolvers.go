@@ -8,14 +8,81 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/DelaRicch/klock/server/database"
 	graphql1 "github.com/DelaRicch/klock/server/graphql/generated"
 	"github.com/DelaRicch/klock/server/graphql/models"
+	"github.com/DelaRicch/klock/server/helpers"
 )
 
+const errorRfTokenMsg string = "Error generating refresh token"
 // CreateUser is the resolver for the CreateUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNewUser) (*models.User, error) {
-	return &models.User{
-		Name: input.Name,
+func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNewUser) (*models.UserAuthResponse, error) {
+	_, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+	}
+
+	provider := "Klock"
+
+	user := &models.User{
+		Name:     input.Name,
+		Email:    input.Email,
+		Password: input.Password,
+		Role:     "USER",
+	}
+	if input.Role != nil {
+		user.Role = *input.Role
+	}
+
+	// Check if user already exist
+	var existingUser = models.User{}
+	result := database.DB.Where("email = ?", user.Email).First(&existingUser)
+	if result.RowsAffected > 0 {
+		return &models.UserAuthResponse{Success: false, Message: "User already exist"}, nil
+	}
+
+	// Hash password
+	hashedPassword, err := helpers.HashPassword(user.Password)
+	if err != nil {
+		return &models.UserAuthResponse{Success: false, Message: "Error hashing password"}, err
+	}
+	user.Password = hashedPassword
+
+	// Generate User ID and other fields
+	user.UserID = helpers.GenerateID("KLOCK-USER")
+	user.Provider = &provider
+
+	fmt.Println(user.UserID)
+
+	result = database.DB.Create(user)
+	if result.Error != nil {
+		return &models.UserAuthResponse{Success: false, Message: result.Error.Error()}, result.Error
+	}
+
+	// Generate JWT
+	refreshTkn, token, exp, rfExp, err := helpers.CreateJwtToken(user)
+	if err != nil {
+		return &models.UserAuthResponse{Success: false, Message: errorRfTokenMsg}, err
+	}
+
+	accessToken := models.Token{
+		Value:      token,
+		Expiration: exp,
+	}
+
+	refreshToken := models.Token{
+		Value:      refreshTkn,
+		Expiration: rfExp,
+	}
+
+	return &models.UserAuthResponse{
+		Success: true,
+		Message: "User created successfully",
+		Token: &models.TokenResponse{
+			AccessToken:  &accessToken,
+			RefreshToken: &refreshToken,
+		},
 	}, nil
 }
 
@@ -25,7 +92,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, userID string, input 
 }
 
 // DeleteUser is the resolver for the DeleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, userID string) (*models.DeleteUserResponse, error) {
+func (r *mutationResolver) DeleteUser(ctx context.Context, userID string) (*models.UserAuthResponse, error) {
 	panic(fmt.Errorf("not implemented: DeleteUser - DeleteUser"))
 }
 

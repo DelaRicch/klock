@@ -6,12 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/DelaRicch/klock/server/database"
-	"github.com/DelaRicch/klock/server/graphql/generated"
 	"github.com/DelaRicch/klock/server/graphql/models"
-	 "github.com/DelaRicch/klock/server/graphql/resolvers"
+	resolver "github.com/DelaRicch/klock/server/graphql/resolvers"
+	"github.com/DelaRicch/klock/server/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -30,33 +28,15 @@ func loadDatabase() {
 }
 
 
-func graphqlHandler() gin.HandlerFunc {
-	// NewExecutableSchema and Config are in the generated.go file
-	// Resolver is in the resolver.go file
-	h := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: &resolver.Resolver{}}))
-
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
-}
-
-// Defining the Playground handler
-func playgroundHandler() gin.HandlerFunc {
-	h := playground.Handler("GraphQL", "/query")
-
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
-}
-
 func main() {
 
 	loadEnv()
 	loadDatabase()
 	app := gin.Default()
 
-	app.POST("/query", graphqlHandler())
-	app.GET("/", playgroundHandler())
+	app.Use(resolver.GinContextToContextMiddleware())
+	app.POST("/query", http.GrapghqlHandler())
+	app.GET("/", http.PlaygroundHandler())
 
 	// set cors
 	app.Use(cors.New(cors.Config{
@@ -66,8 +46,6 @@ func main() {
 		// ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
-
-	app.Use(resolver.GinContextToContextMiddleware())
 
 	go func() {
 		c := make(chan os.Signal, 1)
@@ -81,7 +59,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	if err := app.Run(":8080"); err != nil {
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

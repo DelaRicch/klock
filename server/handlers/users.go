@@ -1,8 +1,7 @@
 package handlers
 
 
-const errorRfTokenMsg string = "Error generating refresh token"
-const invalidEmailOrPass string = "Invalid email or password"
+
 
 // func RegisterUser(ctx *gin.Context) {
 // 	user := new(models.User)

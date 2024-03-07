@@ -3,14 +3,10 @@
 package models
 
 type CreateNewUser struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type DeleteUserResponse struct {
-	UserID string `json:"userID"`
-	Status string `json:"status"`
+	Name     string  `json:"name"`
+	Email    string  `json:"email"`
+	Password string  `json:"password"`
+	Role     *string `json:"role,omitempty"`
 }
 
 type Mutation struct {
@@ -22,6 +18,11 @@ type Query struct {
 type Token struct {
 	Value      string `json:"value"`
 	Expiration int64  `json:"expiration"`
+}
+
+type TokenResponse struct {
+	AccessToken  *Token `json:"accessToken"`
+	RefreshToken *Token `json:"refreshToken"`
 }
 
 type UpdateUser struct {
@@ -47,6 +48,13 @@ type User struct {
 	Phone      *string `json:"phone,omitempty"`
 	Location   *string `json:"location,omitempty"`
 	Gender     *string `json:"gender,omitempty"`
+}
+
+type UserAuthResponse struct {
+	Success bool           `json:"success"`
+	Message string         `json:"message"`
+	User    *UserProfile   `json:"user,omitempty"`
+	Token   *TokenResponse `json:"token,omitempty"`
 }
 
 type UserProfile struct {

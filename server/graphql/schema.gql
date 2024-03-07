@@ -28,9 +28,16 @@ type UserProfile {
 	gender: String
 }
 
-type DeleteUserResponse {
-	userID: String!
-	status: String!
+type UserAuthResponse {
+	success: Boolean!
+	message: String!
+	user: UserProfile
+	token: TokenResponse
+}
+
+type TokenResponse {
+  accessToken: Token!
+  refreshToken: Token!
 }
 
 type Query {
@@ -39,15 +46,16 @@ type Query {
 }
 
 type Mutation {
-	CreateUser(input: CreateNewUser!): User!
+	CreateUser(input: CreateNewUser!): UserAuthResponse!
 	UpdateUser(UserID: String!, input: UpdateUser!): User!
-	DeleteUser(UserID: String!): DeleteUserResponse!
+	DeleteUser(UserID: String!): UserAuthResponse!
 }
 
 input CreateNewUser {
 	name: String!
 	email: String!
 	password: String!
+	role: String
 }
 
 input UpdateUser {
