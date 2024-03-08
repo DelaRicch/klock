@@ -52,7 +52,7 @@ func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) 
 	user.Password = hashedPassword
 
 	// Generate User ID and other fields
-	user.UserID = helpers.GenerateID("KLOCK-USER")
+	user.UserID = helpers.GenerateID()
 	user.Provider = &provider
 
 	result = database.DB.Create(user)
@@ -172,6 +172,28 @@ func GetUserProfile(userID string) (*models.UserProfile, error) {
 		Location: user.Location,
 		Gender:   user.Gender,
 	}, nil
+
+}
+
+func GetAllUsers() ([]*models.UserProfile, error) {
+	users := []models.User{}
+	database.DB.Find(&users)
+
+	var usersResponse []*models.UserProfile
+	for _, user := range users {
+		userResponse := &models.UserProfile{
+			UserID:   &user.UserID,
+			Name:     &user.Name,
+			Email:    &user.Email,
+			Role:     &user.Role,
+			Photo:    user.Photo,
+			Phone:    user.Phone,
+			Location: user.Location,
+			Gender:   user.Gender,
+		}
+		usersResponse = append(usersResponse, userResponse)
+	}
+	return usersResponse, nil
 
 }
 

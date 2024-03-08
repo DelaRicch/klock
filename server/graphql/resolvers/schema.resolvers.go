@@ -64,7 +64,13 @@ func (r *mutationResolver) DeleteUsers(ctx context.Context) (*models.Message, er
 
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*models.UserProfile, error) {
-	panic(fmt.Errorf("not implemented: Users - Users"))
+	_, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+	}
+
+	return services.GetAllUsers()
 }
 
 // User is the resolver for the User field.
