@@ -3,7 +3,6 @@ package resolver
 import (
 	"context"
 	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +11,9 @@ import (
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
+
+
+const notAuthorizedToPerformAction string = "Not authorized to perform this action"
 
 type Resolver struct {
 }
@@ -27,15 +29,15 @@ func GinContextToContextMiddleware() gin.HandlerFunc {
 }
 
 func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
-    ginContext := ctx.Value(contextKey("GinContextKey"))
-    if ginContext == nil {
-        err := fmt.Errorf("could not retrieve gin.Context")
-        return nil, err
-    }
-    gc, ok := ginContext.(*gin.Context)
-    if !ok {
-        err := fmt.Errorf("gin.Context has the wrong type")
-        return nil, err
-    }
-    return gc, nil
+	ginContext := ctx.Value(contextKey("GinContextKey"))
+	if ginContext == nil {
+		err := fmt.Errorf("could not retrieve gin.Context")
+		return nil, err
+	}
+	gc, ok := ginContext.(*gin.Context)
+	if !ok {
+		err := fmt.Errorf("gin.Context has the wrong type")
+		return nil, err
+	}
+	return gc, nil
 }

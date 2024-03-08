@@ -53,14 +53,14 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateUser  func(childComplexity int, input models.CreateNewUser) int
-		DeleteUser  func(childComplexity int, userID string) int
-		DeleteUsers func(childComplexity int) int
+		DeleteUser  func(childComplexity int) int
+		DeleteUsers func(childComplexity int, userID string) int
 		LoginUser   func(childComplexity int, input models.LoginUser) int
-		UpdateUser  func(childComplexity int, userID string, input models.UpdateUser) int
+		UpdateUser  func(childComplexity int, input models.UpdateUser) int
 	}
 
 	Query struct {
-		User  func(childComplexity int, userID string) int
+		User  func(childComplexity int) int
 		Users func(childComplexity int) int
 	}
 
@@ -111,13 +111,13 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input models.CreateNewUser) (*models.UserAuthResponse, error)
 	LoginUser(ctx context.Context, input models.LoginUser) (*models.UserAuthResponse, error)
-	UpdateUser(ctx context.Context, userID string, input models.UpdateUser) (*models.UserAuthResponse, error)
-	DeleteUser(ctx context.Context, userID string) (*models.Message, error)
-	DeleteUsers(ctx context.Context) (*models.Message, error)
+	UpdateUser(ctx context.Context, input models.UpdateUser) (*models.UserAuthResponse, error)
+	DeleteUser(ctx context.Context) (*models.Message, error)
+	DeleteUsers(ctx context.Context, userID string) (*models.Message, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*models.UserProfile, error)
-	User(ctx context.Context, userID string) (*models.UserProfile, error)
+	User(ctx context.Context) (*models.UserProfile, error)
 }
 
 type executableSchema struct {
@@ -163,19 +163,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Mutation_DeleteUser_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeleteUser(childComplexity, args["UserID"].(string)), true
+		return e.complexity.Mutation.DeleteUser(childComplexity), true
 
 	case "Mutation.DeleteUsers":
 		if e.complexity.Mutation.DeleteUsers == nil {
 			break
 		}
 
-		return e.complexity.Mutation.DeleteUsers(childComplexity), true
+		args, err := ec.field_Mutation_DeleteUsers_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteUsers(childComplexity, args["UserID"].(string)), true
 
 	case "Mutation.LoginUser":
 		if e.complexity.Mutation.LoginUser == nil {
@@ -199,19 +199,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateUser(childComplexity, args["UserID"].(string), args["input"].(models.UpdateUser)), true
+		return e.complexity.Mutation.UpdateUser(childComplexity, args["input"].(models.UpdateUser)), true
 
 	case "Query.User":
 		if e.complexity.Query.User == nil {
 			break
 		}
 
-		args, err := ec.field_Query_User_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.User(childComplexity, args["UserID"].(string)), true
+		return e.complexity.Query.User(childComplexity), true
 
 	case "Query.Users":
 		if e.complexity.Query.Users == nil {
@@ -580,15 +575,15 @@ type TokenResponse {
 
 type Query {
 	Users: [UserProfile]
-	User(UserID: String!): UserProfile!
+	User: UserProfile!
 }
 
 type Mutation {
 	CreateUser(input: CreateNewUser!): UserAuthResponse!
 	LoginUser(input: LoginUser!): UserAuthResponse!
-	UpdateUser(UserID: String!, input: UpdateUser!): UserAuthResponse!
-	DeleteUser(UserID: String!): Message!
-	DeleteUsers: Message!
+	UpdateUser(input: UpdateUser!): UserAuthResponse!
+	DeleteUser: Message!
+	DeleteUsers(UserID: String!): Message!
 }
 
 input CreateNewUser {
@@ -607,7 +602,6 @@ input LoginUser {
 input UpdateUser {
 	name: String
 	email: String
-	password: String
 	photo: String
 	phone: String
 	location: String
@@ -636,7 +630,7 @@ func (ec *executionContext) field_Mutation_CreateUser_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_DeleteUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_DeleteUsers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -669,39 +663,15 @@ func (ec *executionContext) field_Mutation_LoginUser_args(ctx context.Context, r
 func (ec *executionContext) field_Mutation_UpdateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["UserID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("UserID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["UserID"] = arg0
-	var arg1 models.UpdateUser
+	var arg0 models.UpdateUser
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNUpdateUser2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUpdateUser(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateUser2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUpdateUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_User_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["UserID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("UserID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["UserID"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -942,7 +912,7 @@ func (ec *executionContext) _Mutation_UpdateUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateUser(rctx, fc.Args["UserID"].(string), fc.Args["input"].(models.UpdateUser))
+		return ec.resolvers.Mutation().UpdateUser(rctx, fc.Args["input"].(models.UpdateUser))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1005,7 +975,7 @@ func (ec *executionContext) _Mutation_DeleteUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteUser(rctx, fc.Args["UserID"].(string))
+		return ec.resolvers.Mutation().DeleteUser(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1036,17 +1006,6 @@ func (ec *executionContext) fieldContext_Mutation_DeleteUser(ctx context.Context
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
 	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_DeleteUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
 	return fc, nil
 }
 
@@ -1064,7 +1023,7 @@ func (ec *executionContext) _Mutation_DeleteUsers(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteUsers(rctx)
+		return ec.resolvers.Mutation().DeleteUsers(rctx, fc.Args["UserID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1094,6 +1053,17 @@ func (ec *executionContext) fieldContext_Mutation_DeleteUsers(ctx context.Contex
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_DeleteUsers_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1171,7 +1141,7 @@ func (ec *executionContext) _Query_User(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().User(rctx, fc.Args["UserID"].(string))
+		return ec.resolvers.Query().User(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1215,17 +1185,6 @@ func (ec *executionContext) fieldContext_Query_User(ctx context.Context, field g
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserProfile", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_User_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
@@ -4448,7 +4407,7 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "email", "password", "photo", "phone", "location", "gender"}
+	fieldsInOrder := [...]string{"name", "email", "photo", "phone", "location", "gender"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4469,13 +4428,6 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 				return it, err
 			}
 			it.Email = data
-		case "password":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Password = data
 		case "photo":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("photo"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)

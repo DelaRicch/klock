@@ -92,12 +92,12 @@ func ValidateAccessToken(ctx *gin.Context) (*models.User, error) {
 	accessToken := ctx.GetHeader("Authorization")
 
 	if accessToken == "" {
-		return nil, fmt.Errorf("Unauthrized")
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	tokenParts := strings.Split(accessToken, " ")
 	if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-		return nil, fmt.Errorf("invalid access token format")		
+		return nil, fmt.Errorf("Invalid access token format")		
 	}
 
 	accessToken = tokenParts[1]
@@ -110,24 +110,24 @@ func ValidateAccessToken(ctx *gin.Context) (*models.User, error) {
 		return []byte("secret"), nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("invalid access token: %v", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return nil, fmt.Errorf("invalid access token")
+		return nil, fmt.Errorf("Invalid access token")
 	}
 
 	userId, ok := claims["userId"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid user ID in token claims")
+		return nil, fmt.Errorf("Invalid user ID in token claims")
 	}
 
 	var user models.User
 	result := database.DB.Where("user_id = ?", userId).First(&user)
 
 	if result.RowsAffected == 0 {
-		return nil, fmt.Errorf("user not found")
+		return nil, fmt.Errorf("User not found")
 	}
 
 	return &user, nil

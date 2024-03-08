@@ -23,4 +23,3 @@ func GrapghqlHandler() gin.HandlerFunc {
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
-

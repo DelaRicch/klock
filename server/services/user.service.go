@@ -7,10 +7,13 @@ import (
 	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/graphql/models"
 	"github.com/DelaRicch/klock/server/helpers"
+	"github.com/gin-gonic/gin"
 )
 
 const errorRfTokenMsg string = "Error generating refresh token"
 const invalidEmailOrPass string = "Invalid email or password"
+const userNotFound string = "User not found"
+const notAuthorizedToPerformAction string = "Not authorized to perform this action"
 
 func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) {
 	provider := "Klock"
@@ -155,11 +158,15 @@ func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 
 }
 
-func GetUserProfile(userID string) (*models.UserProfile, error) {
-	user := models.User{}
-	result := database.DB.Where("user_id = ?", userID).First(&user)
+func GetUserProfile(ctx *gin.Context) (*models.UserProfile, error) {
+	user, err := helpers.ValidateAccessToken(ctx)
+	if err != nil {
+		return &models.UserProfile{}, err
+	}
+
+	result := database.DB.Where("user_id = ?", user.UserID).First(&user)
 	if result.RowsAffected == 0 {
-		return &models.UserProfile{}, fmt.Errorf("User not found")
+		return &models.UserProfile{}, fmt.Errorf(userNotFound)
 	}
 
 	return &models.UserProfile{
@@ -171,6 +178,46 @@ func GetUserProfile(userID string) (*models.UserProfile, error) {
 		Phone:    user.Phone,
 		Location: user.Location,
 		Gender:   user.Gender,
+	}, nil
+
+}
+
+func UpdateUser(ctx *gin.Context, input models.UpdateUser) (*models.UserAuthResponse, error) {
+	
+	res, err := helpers.ValidateAccessToken(ctx)
+	if err != nil {
+		return &models.UserAuthResponse{}, err
+	}
+
+
+	user := models.User{}
+	userID := res.UserID
+
+
+	result := database.DB.Model(&user).Where("user_id = ?", userID).Updates(&input)
+
+	if result.Error != nil {
+		return &models.UserAuthResponse{}, fmt.Errorf("Error updating user")
+	}
+
+	var userProfile models.User
+	userResult := database.DB.Where("user_id = ?", userID).First(&userProfile)
+	if userResult.RowsAffected == 0 {
+		return &models.UserAuthResponse{}, fmt.Errorf(userNotFound)
+	}
+
+	return &models.UserAuthResponse{
+		Message: fmt.Sprintf("%s updated in successfully", userProfile.Name),
+		User: &models.UserProfile{
+			UserID:   &userProfile.UserID,
+			Name:     &userProfile.Name,
+			Email:    &userProfile.Email,
+			Role:     &userProfile.Role,
+			Photo:    userProfile.Photo,
+			Phone:    userProfile.Phone,
+			Location: userProfile.Location,
+			Gender:   userProfile.Gender,
+		},
 	}, nil
 
 }
@@ -197,23 +244,36 @@ func GetAllUsers() ([]*models.UserProfile, error) {
 
 }
 
-func DeleteUser(userID string) (*models.Message, error) {
-	user := models.User{}
-	result := database.DB.Where("user_id = ?", userID).First(&user)
-	if result.RowsAffected == 0 {
-		return &models.Message{}, fmt.Errorf("User not found")
+func DeleteUser(ctx *gin.Context) (*models.Message, error) {
+
+res, err := helpers.ValidateAccessToken(ctx)
+	if err != nil {
+		return &models.Message{}, err
 	}
 
-	if err := database.DB.Exec("DELETE FROM users WHERE user_id = ?", userID).Error; err != nil {
+	if err := database.DB.Exec("DELETE FROM users WHERE user_id = ?", res.UserID).Error; err != nil {
 		return &models.Message{}, fmt.Errorf("Error deleting user")
 	}
 
-	return &models.Message{Message: fmt.Sprintf("Successfully deleted %s", user.Name)}, nil
+	return &models.Message{Message: fmt.Sprintf("Successfully deleted %s", res.Name)}, nil
 }
 
-func DeleteAllUsers() (*models.Message, error) {
+func DeleteAllUsers(userID string) (*models.Message, error) {
+	user := models.User{}
+
+	result := database.DB.Where("user_id = ?", userID).First(&user)
+	if result.RowsAffected == 0 {
+		return &models.Message{}, fmt.Errorf(notAuthorizedToPerformAction)
+	}
+
+	res := database.DB.Where("role = 'ADMIN'").First(&user)
+	if res.RowsAffected == 0 {
+		return &models.Message{}, fmt.Errorf(notAuthorizedToPerformAction)
+	}
+
 	if err := database.DB.Exec("DELETE FROM users WHERE role = 'USER'").Error; err != nil {
 		return &models.Message{}, fmt.Errorf("Error deleting users")
 	}
 	return &models.Message{Message: "Successfully deleted all users"}, nil
+
 }

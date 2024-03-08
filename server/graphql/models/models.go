@@ -45,7 +45,6 @@ type TokenResponse struct {
 type UpdateUser struct {
 	Name     *string `json:"name,omitempty" gorm:"name"`
 	Email    *string `json:"email,omitempty" gorm:"email"`
-	Password *string `json:"password,omitempty" gorm:"password"`
 	Photo    *string `json:"photo,omitempty" gorm:"photo"`
 	Phone    *string `json:"phone,omitempty" gorm:"phone"`
 	Location *string `json:"location,omitempty" gorm:"location"`

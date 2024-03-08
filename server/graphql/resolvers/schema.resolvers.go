@@ -18,7 +18,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input models.CreateNe
 	_, err := GinContextFromContext(ctx)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
 	return services.RegisterUser(input)
@@ -29,37 +29,43 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input models.LoginUser
 	_, err := GinContextFromContext(ctx)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
 	return services.LoginUser(input)
 }
 
 // UpdateUser is the resolver for the UpdateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, userID string, input models.UpdateUser) (*models.UserAuthResponse, error) {
-	panic(fmt.Errorf("not implemented: UpdateUser - UpdateUser"))
+func (r *mutationResolver) UpdateUser(ctx context.Context, input models.UpdateUser) (*models.UserAuthResponse, error) {
+	ginCtx, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+
+	return services.UpdateUser(ginCtx, input)
 }
 
 // DeleteUser is the resolver for the DeleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, userID string) (*models.Message, error) {
-	_, err := GinContextFromContext(ctx)
+func (r *mutationResolver) DeleteUser(ctx context.Context) (*models.Message, error) {
+	ginCtx, err := GinContextFromContext(ctx)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.DeleteUser(userID)
+	return services.DeleteUser(ginCtx)
 }
 
 // DeleteUsers is the resolver for the DeleteUsers field.
-func (r *mutationResolver) DeleteUsers(ctx context.Context) (*models.Message, error) {
+func (r *mutationResolver) DeleteUsers(ctx context.Context, userID string) (*models.Message, error) {
 	_, err := GinContextFromContext(ctx)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.DeleteAllUsers()
+	return services.DeleteAllUsers(userID)
 }
 
 // Users is the resolver for the Users field.
@@ -67,21 +73,21 @@ func (r *queryResolver) Users(ctx context.Context) ([]*models.UserProfile, error
 	_, err := GinContextFromContext(ctx)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
 	return services.GetAllUsers()
 }
 
 // User is the resolver for the User field.
-func (r *queryResolver) User(ctx context.Context, userID string) (*models.UserProfile, error) {
-	_, err := GinContextFromContext(ctx)
+func (r *queryResolver) User(ctx context.Context) (*models.UserProfile, error) {
+	ginCtx, err := GinContextFromContext(ctx)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve gin.Context: %w", err)
+		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.GetUserProfile(userID)
+	return services.GetUserProfile(ginCtx)
 }
 
 // Mutation returns graphql1.MutationResolver implementation.

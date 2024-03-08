@@ -54,15 +54,15 @@ type TokenResponse {
 
 type Query {
 	Users: [UserProfile]
-	User(UserID: String!): UserProfile!
+	User: UserProfile!
 }
 
 type Mutation {
 	CreateUser(input: CreateNewUser!): UserAuthResponse!
 	LoginUser(input: LoginUser!): UserAuthResponse!
-	UpdateUser(UserID: String!, input: UpdateUser!): UserAuthResponse!
-	DeleteUser(UserID: String!): Message!
-	DeleteUsers: Message!
+	UpdateUser(input: UpdateUser!): UserAuthResponse!
+	DeleteUser: Message!
+	DeleteUsers(UserID: String!): Message!
 }
 
 input CreateNewUser {
@@ -81,7 +81,6 @@ input LoginUser {
 input UpdateUser {
 	name: String
 	email: String
-	password: String
 	photo: String
 	phone: String
 	location: String
