@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ClientOrders } from '@type/types';
 
 @Component({
-  selector: 'app-recent-orders',
+  selector: 'klock-recent-orders',
   standalone: true,
   imports: [],
   templateUrl: './recent-orders.component.html',

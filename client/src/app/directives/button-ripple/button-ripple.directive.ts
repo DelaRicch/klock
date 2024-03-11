@@ -1,39 +1,28 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  Input,
-  Renderer2,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
   selector: '[appButtonRipple]',
   standalone: true,
 })
 export class ButtonRippleDirective {
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  @Input() isRipple: boolean = false;
+  constructor(private el: ElementRef) {}
 
-  @HostListener('mousedown', ['$event'])
-  onMouseDown(event: MouseEvent) {
-    const button =this.el.nativeElement.classList.add('relative', 'overflow-hidden')
-    const ripple = this.renderer.createElement('span');
+  @HostListener('click', ['$event'])
+  onClick(event: MouseEvent) {
+    const x = event.clientX - (event.target as HTMLElement).offsetLeft;
+    const y = event.clientY - (event.target as HTMLElement).offsetTop;
 
-    console.log(button);
-    
-    this.renderer.addClass(ripple, 'ripple');
-    this.renderer.setStyle(ripple, 'left', `${event.offsetX - (window.screenX + 50)}px`);
-    this.renderer.setStyle(ripple, 'top', `${event.offsetY - (window.screenY + 80)}px`);
-
-    this.renderer.appendChild(this.el.nativeElement, ripple);
-
-    console.log(ripple, this.el.nativeElement)
-
-    const size = Math.max(this.el.nativeElement.offsetWidth, this.el.nativeElement.offsetHeight);
-    this.renderer.setStyle(ripple, 'width', `${size}px`);
-    this.renderer.setStyle(ripple, 'height', `${size}px`);
-
-    ripple.addEventListener('animationend', () => {
-      this.renderer.removeChild(this.el.nativeElement, ripple);
-    });
+    const ripple = document.createElement('span');
+    if (this.isRipple) {
+      ripple.classList.add('ripple', 'bg-black/30');
+      this.el.nativeElement.classList.add('relative', 'ripple-button');
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      this.el.nativeElement.appendChild(ripple);
+      setTimeout(() => {
+        ripple.remove();
+      }, 500);
+    }
   }
 }

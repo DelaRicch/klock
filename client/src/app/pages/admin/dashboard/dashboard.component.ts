@@ -1,15 +1,19 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from '@components/admin/sidebar/sidebar.component';
-import { TopbarComponent } from '@components/admin/topbar/topbar.component';
+import { BestSellersComponent } from '@components/admin/best-sellers/best-sellers.component';
+import { OrdersComponent } from '@components/admin/orders/orders.component';
+import { RecentOrdersComponent } from '@components/admin/recent-orders/recent-orders.component';
+import { SalesGraphComponent } from '@components/admin/sales-graph/sales-graph.component';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'klock-dashboard',
   standalone: true,
-  imports: [SidebarComponent, TopbarComponent, RouterOutlet],
+  imports: [
+    OrdersComponent,
+    SalesGraphComponent,
+    BestSellersComponent,
+    RecentOrdersComponent,
+  ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent {
-
-}
+export class DashboardComponent {}

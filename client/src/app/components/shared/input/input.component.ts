@@ -10,7 +10,7 @@ import {
 import { EyeComponent } from '@components/icons/eye/eye.component';
 
 @Component({
-  selector: 'app-input',
+  selector: 'klock-input',
   standalone: true,
   imports: [EyeComponent, ReactiveFormsModule, KeyValuePipe, NgFor, NgClass],
   templateUrl: './input.component.html',
@@ -38,7 +38,6 @@ export class InputComponent implements OnInit {
         mismatch: 'Passwords do not match',
       };
     } else if (this.type === 'email') {
- 
       return {
         required: "Field can't be empty",
         email: 'Invalid email address',
@@ -72,7 +71,10 @@ export class InputComponent implements OnInit {
       this.control.setValidators([Validators.pattern(this.pattern)]);
     }
     if (this.mismatch) {
-      this.control.setValidators([Validators.required, this.matchValidator(this.mismatch)]);
+      this.control.setValidators([
+        Validators.required,
+        this.matchValidator(this.mismatch),
+      ]);
     }
   }
 }

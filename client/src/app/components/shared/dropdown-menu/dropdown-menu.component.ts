@@ -7,7 +7,7 @@ import { DropdownItemProp } from '@type/types';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-dropdown-menu',
+  selector: 'klock-dropdown-menu',
   standalone: true,
   imports: [NgIf, NgFor],
   templateUrl: './dropdown-menu.component.html',
@@ -20,7 +20,7 @@ import { Router } from '@angular/router';
           '250ms ease-in',
           style({ opacity: 1, transform: 'translateY(0)' })
         ),
-        ]),
+      ]),
 
       transition(':leave', [
         animate(
@@ -29,12 +29,11 @@ import { Router } from '@angular/router';
         ),
       ]),
     ]),
-
   ],
 })
 export class DropdownMenuComponent {
   displayMenu = false;
-  dropdownItems = [] as DropdownItemProp[]
+  dropdownItems = [] as DropdownItemProp[];
 
   constructor(
     private dropdownService: DropdownService,
@@ -46,8 +45,6 @@ export class DropdownMenuComponent {
       this.displayMenu = this.dropdownService.dropdownMenu();
       this.dropdownItems = this.dropdownService.dropdownItems();
     });
-
-    console.log(this.dropdownItems, "dropdown items")
   }
 
   @HostListener('document:click', ['$event.target'])
@@ -71,7 +68,6 @@ export class DropdownMenuComponent {
       this.router.navigate([`/${dropdown.path}`]);
     }
 
-    this.dropdownService.closeDropdown()
+    this.dropdownService.closeDropdown();
   }
-
 }

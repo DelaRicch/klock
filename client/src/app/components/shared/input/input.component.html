@@ -1,6 +1,4 @@
-<div
-  class="flex flex-col gap-2.5 relative"
->
+<div class="flex flex-col gap-2.5 relative">
   <div class="flex gap-2">
     <label [for]="id" class="text-primary capitalize">{{ label }}</label>
     @if (isRequired) {
@@ -34,7 +32,7 @@
     class="eye absolute right-3 cursor-pointer"
   >
     @if (isPassword) {
-    <app-eye [showContent]="isShowPassword" />
+    <klock-eye [showContent]="isShowPassword" />
     }
   </span>
 </div>

@@ -35,6 +35,7 @@
       "@pipes/*":["./src/app/pipes/*"],
       "@directives/*":["./src/app/directives/*"],
       "@guards/*":["./src/app/guards/*"],
+      "@icons/*":["./src/app/icons/*"],
     }
   },
   "angularCompilerOptions": {

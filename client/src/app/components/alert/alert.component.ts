@@ -6,7 +6,7 @@ import { AlertService } from '@services/alert/alert.service';
 import { AlertProps } from '@type/types';
 
 @Component({
-  selector: 'app-alert',
+  selector: 'klock-alert',
   standalone: true,
   imports: [AlertIconComponent, NgIf],
   template: `
@@ -20,7 +20,7 @@ import { AlertProps } from '@type/types';
       "
       class="alert max-w-[30rem] min-w-[20rem] rounded-lg border min-h-[4rem] absolute px-4 py-2 right-8 top-8 flex gap-4"
     >
-      <app-alert-icon [status]="alert.status" />
+      <klock-alert-icon [status]="alert.status" />
       <div class="flex flex-col gap-1">
         <span class="font-bold">{{ alert.title }}</span>
         <span>{{ alert.message }}</span>
@@ -34,7 +34,6 @@ import { AlertProps } from '@type/types';
         animate(
           '500ms ease-in',
           style({ opacity: 1, transform: 'translateY(0)' })
-        
         ),
       ]),
 

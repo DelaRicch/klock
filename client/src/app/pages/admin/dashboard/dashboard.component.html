@@ -1,7 +1,33 @@
-<section class="flex w-screen h-screen bg-white">
-    <app-sidebar />
-    <div class="flex flex-col w-screen md:w-full">
-        <app-topbar />
-        <router-outlet></router-outlet>
+<div
+  class="container pl-5 pr-6 py-6 sm:px-0 md:px-[45px] md:py-[50px] flex flex-col gap-8 border-2 overflow-y-auto border-blue-600 mx-auto w-full"
+>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+    <klock-orders
+      title="Total Oders"
+      amount="126.500"
+      comparedYear="Jan 2024"
+      percentage="34.7"
+    />
+    <klock-orders
+      title="Total Oders"
+      amount="126.500"
+      comparedYear="Jan 2024"
+      percentage="34.7"
+    />
+    <klock-orders
+      title="Total Oders"
+      amount="126.500"
+      comparedYear="Jan 2024"
+      percentage="34.7"
+    />
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+    <div class="col-span-2 rounded-lg border border-grey-500">
+      <klock-sales-graph />
     </div>
-</section>
+    <div class="col-span-2 lg:col-span-1 h-full">
+      <klock-best-sellers />
+    </div>
+  </div>
+  <klock-recent-orders />
+</div>

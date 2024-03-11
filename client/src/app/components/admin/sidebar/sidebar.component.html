@@ -1,3 +1,44 @@
-<aside class="bg-[#F9FAFB] border-r h-full hidden md:flex md:w-[180px] lg:w-[254px] border-[#D0D5DD]">
+<aside
+  class="bg-[#F9FAFB] border-r h-full hidden md:flex md:flex-col gap-2 justify-between md:w-[180px] lg:w-[254px] px-1.5 py-3 border-[#D0D5DD]"
+>
+  <div class="flex flex-col gap-4 border-b-2 border-primary/50 h-full">
+    <klock-logo
+      class="transform scale-75 cursor-pointer mx-auto"
+      (click)="handleGoBackHome()"
+      innerColor="#1D2939"
+      outerColor="#FFFFFF"
+      labelColor="#1D2939"
+    />
+    <div class="mt-4 flex flex-col gap-8">
+      @for(item of sidebarItems; track item.id) {
+      <klock-button
+        [isRipple]="true"
+        [variant]="activeRoute === '/' + item.path ? 'primary' : 'secondary'"
+        (buttonClick)="handleNavigateRoute(item.path)"
+      >
+        <div class="flex gap-4">
+          <klock-sidebar-icon
+            [icon]="item.icon"
+            [color]="activeRoute === '/' + item.path ? '#FFFFFF' : '#1D2939'"
+          ></klock-sidebar-icon>
+          <span>{{ item.name }}</span>
+        </div>
+      </klock-button>
+      }
+    </div>
+  </div>
 
+  <klock-button
+    (buttonClick)="handleLogOut()"
+    [isRipple]="true"
+    variant="secondary"
+  >
+    <div class="flex gap-4">
+      <klock-sidebar-icon
+        [icon]="'logout'"
+        [color]="'#1D2939'"
+      ></klock-sidebar-icon>
+      <span>Logout</span>
+    </div>
+  </klock-button>
 </aside>
