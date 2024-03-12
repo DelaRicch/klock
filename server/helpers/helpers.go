@@ -29,7 +29,7 @@ func IsValidInput(input string) bool {
 }
 
 func GenerateRandomStrings(length int) string {
-	const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	result := make([]byte, length)
 	for i := range result {
 		result[i] = charset[rand.Intn(len(charset))]
@@ -38,7 +38,7 @@ func GenerateRandomStrings(length int) string {
 }
 
 func GenerateID() string {
-	randomString := GenerateRandomStrings(20)
+	randomString := GenerateRandomStrings(30)
 	generatedID := fmt.Sprintf(randomString)
 	return generatedID
 }

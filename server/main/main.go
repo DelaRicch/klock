@@ -6,12 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/99designs/gqlgen/plugin/modelgen"
 	"github.com/DelaRicch/klock/server/database"
+	ginhandler "github.com/DelaRicch/klock/server/gin-handler"
 	"github.com/DelaRicch/klock/server/graphql/models"
 	resolver "github.com/DelaRicch/klock/server/graphql/resolvers"
-	"github.com/DelaRicch/klock/server/http"
-
+	"github.com/DelaRicch/klock/server/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -28,26 +27,20 @@ func loadDatabase() {
 	database.DB.AutoMigrate(&models.User{})
 }
 
-// Defining mutation function
-func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
-	for _, model := range b.Models {
-		for _, field := range model.Fields {
-			field.Tag += ` orm_binding:"` + model.Name + `.` +  field.Name + `"`
-		}
-	}
-
-	return b
-}
-
 func main() {
 
 	loadEnv()
 	loadDatabase()
+
 	app := gin.Default()
 
 	app.Use(resolver.GinContextToContextMiddleware())
-	app.POST("/query", http.GrapghqlHandler())
-	app.GET("/", http.PlaygroundHandler())
+	app.POST("/query", ginhandler.GrapghqlHandler())
+	app.GET("/", ginhandler.PlaygroundHandler())
+
+	// Google auth 
+	app.GET("auth/google", services.GoogleLogin)
+	app.GET("auth/google/callback", services.GoogleCallback)
 
 	// set cors
 	app.Use(cors.New(cors.Config{

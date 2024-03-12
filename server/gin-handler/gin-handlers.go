@@ -1,4 +1,4 @@
-package http
+package ginhandler
 
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -6,6 +6,7 @@ import (
 	graphql "github.com/DelaRicch/klock/server/graphql/generated"
 	resolver "github.com/DelaRicch/klock/server/graphql/resolvers"
 	"github.com/gin-gonic/gin"
+
 )
 
 func PlaygroundHandler() gin.HandlerFunc {
@@ -23,3 +24,4 @@ func GrapghqlHandler() gin.HandlerFunc {
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
+

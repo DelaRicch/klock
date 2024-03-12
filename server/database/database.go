@@ -30,9 +30,9 @@ func Connect() {
 			log.Fatalf("Error migrating user model: %v", err)
 		}
 
-		if err := db.AutoMigrate(&models.Token{}); err != nil {
-			log.Fatalf("Error migrating token model: %v", err)
-		}
+		// if err := db.AutoMigrate(&models.Token{}); err != nil {
+		// 	log.Fatalf("Error migrating token model: %v", err)
+		// }
 	}
 
 	DB = db

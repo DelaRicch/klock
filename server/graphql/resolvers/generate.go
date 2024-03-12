@@ -11,7 +11,6 @@ import (
 	"github.com/99designs/gqlgen/plugin/modelgen"
 )
 
-
 // Defining mutation function
 func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
 	for _, model := range b.Models {

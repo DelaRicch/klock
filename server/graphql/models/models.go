@@ -29,6 +29,18 @@ type Message struct {
 type Mutation struct {
 }
 
+type Product struct {
+	ProductName        *string        `json:"productName,omitempty" gorm:"productName"`
+	ProductDescription *string        `json:"productDescription,omitempty" gorm:"productDescription"`
+	ProductCategory    *string        `json:"productCategory,omitempty" gorm:"productCategory"`
+	OrderID            *string        `json:"orderId,omitempty" gorm:"orderId"`
+	Date               *time.Time     `json:"date,omitempty" gorm:"date"`
+	CustomerName       *string        `json:"customerName,omitempty" gorm:"customerName"`
+	ProductStatus      *ProductStatus `json:"productStatus,omitempty" gorm:"productStatus"`
+	ProductPrice       *float64       `json:"productPrice,omitempty" gorm:"productPrice"`
+	DiscountPercentage *float64       `json:"discountPercentage,omitempty" gorm:"discountPercentage"`
+}
+
 type Query struct {
 }
 
@@ -82,6 +94,88 @@ type UserProfile struct {
 	Phone    *string `json:"phone,omitempty" gorm:"phone"`
 	Location *string `json:"location,omitempty" gorm:"location"`
 	Gender   *string `json:"gender,omitempty" gorm:"gender"`
+}
+
+type PaymentMethod string
+
+const (
+	PaymentMethodVisa   PaymentMethod = "VISA"
+	PaymentMethodPaypal PaymentMethod = "PAYPAL"
+)
+
+var AllPaymentMethod = []PaymentMethod{
+	PaymentMethodVisa,
+	PaymentMethodPaypal,
+}
+
+func (e PaymentMethod) IsValid() bool {
+	switch e {
+	case PaymentMethodVisa, PaymentMethodPaypal:
+		return true
+	}
+	return false
+}
+
+func (e PaymentMethod) String() string {
+	return string(e)
+}
+
+func (e *PaymentMethod) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PaymentMethod(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PaymentMethod", str)
+	}
+	return nil
+}
+
+func (e PaymentMethod) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ProductStatus string
+
+const (
+	ProductStatusCompleted ProductStatus = "COMPLETED"
+	ProductStatusPending   ProductStatus = "PENDING"
+)
+
+var AllProductStatus = []ProductStatus{
+	ProductStatusCompleted,
+	ProductStatusPending,
+}
+
+func (e ProductStatus) IsValid() bool {
+	switch e {
+	case ProductStatusCompleted, ProductStatusPending:
+		return true
+	}
+	return false
+}
+
+func (e ProductStatus) String() string {
+	return string(e)
+}
+
+func (e *ProductStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProductStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProductStatus", str)
+	}
+	return nil
+}
+
+func (e ProductStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Role string

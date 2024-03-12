@@ -1,3 +1,5 @@
+# User section
+
 enum Role {
 	ADMIN
 	USER
@@ -55,6 +57,7 @@ type TokenResponse {
 type Query {
 	Users: [UserProfile]
 	User: UserProfile!
+	SocialLogin: UserAuthResponse!
 }
 
 type Mutation {
@@ -85,4 +88,27 @@ input UpdateUser {
 	phone: String
 	location: String
 	gender: String
+}
+
+# Product section
+enum ProductStatus {
+	COMPLETED
+	PENDING
+}
+
+enum PaymentMethod {
+	VISA
+	PAYPAL
+}
+
+type Product {
+	productName: String
+	productDescription: String
+	productCategory: String
+	orderId: String
+	date: Time
+	customerName: String
+	productStatus: ProductStatus
+	productPrice: Float
+	discountPercentage: Float
 }

@@ -1,8 +1,13 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"time"
+
+	config "github.com/DelaRicch/klock/server/auth-config"
 
 	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/graphql/models"
@@ -10,22 +15,164 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const errorRfTokenMsg string = "Error generating refresh token"
-const invalidEmailOrPass string = "Invalid email or password"
-const userNotFound string = "User not found"
-const notAuthorizedToPerformAction string = "Not authorized to perform this action"
+const (
+	errorRfTokenMsg              = "error generating refresh token"
+	invalidEmailOrPass           = "invalid email or password"
+	userNotFound                 = "user not found"
+	notAuthorizedToPerformAction = "not authorized to perform this action"
+)
+
+func GoogleLogin(ctx *gin.Context) {
+	googleConfig := config.GoogleSetUpConfig()
+	url := googleConfig.AuthCodeURL("randomstate")
+
+	ctx.Redirect(http.StatusSeeOther, url)
+}
+
+func GoogleCallback(ctx *gin.Context) {
+	state := ctx.Query("state")
+
+	if state != "randomstate" {
+		ctx.String(http.StatusForbidden, "state did not match")
+		return
+	}
+
+	code := ctx.Query("code")
+
+	googleConfig := config.GoogleSetUpConfig()
+
+	token, err := googleConfig.Exchange(ctx, code)
+	if err != nil {
+		fmt.Fprintln(ctx.Writer, "could not get token")
+	}
+
+	resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	if err != nil {
+		fmt.Fprintln(ctx.Writer, "could not get user info")
+	}
+
+	userData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Fprintln(ctx.Writer, "Json parsing failed")
+	}
+
+	var data map[string]interface{}
+	err = json.Unmarshal(userData, &data)
+	if err != nil {
+		fmt.Fprintln(ctx.Writer, "Json unmarshaling failed")
+	}
+
+	GoogleAuthValue(ctx, data)
+
+	ctx.Redirect(http.StatusSeeOther, "http://localhost:4200/")
+
+}
+
+func GoogleAuthValue(ctx *gin.Context, data map[string]interface{}) (*models.UserAuthResponse, error) {
+
+	authProvider := "Google"
+
+	user := &models.User{
+		Name:      data["name"].(string),
+		Email:     data["email"].(string),
+		Password:  "",
+		Provider:  &authProvider,
+		Role:      models.RoleUser,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+		// Generate JWT
+		refreshTkn, token, exp, rfExp, err := helpers.CreateJwtToken(user)
+		if err != nil {
+			return &models.UserAuthResponse{}, fmt.Errorf(errorRfTokenMsg)
+		}
+	
+		accessToken := models.Token{
+			Value:      token,
+			Expiration: exp,
+		}
+	
+		refreshToken := models.Token{
+			Value:      refreshTkn,
+			Expiration: rfExp,
+		}
+
+	// Check for the uniqueness of the email
+	var existingUser models.User
+	result := database.DB.Where("email = ?", user.Email).First(&existingUser)
+	if result.RowsAffected > 0 {
+
+		if existingUser.Password != "" {
+			return &models.UserAuthResponse{}, fmt.Errorf("Social login not allowed for this account")
+		}
+
+		return &models.UserAuthResponse{
+			Message: fmt.Sprintf("Welcome %s", existingUser.Name),
+			User: &models.UserProfile{
+				UserID:   &existingUser.UserID,
+				Name:     &existingUser.Name,
+				Email:    &existingUser.Email,
+				Role:     &existingUser.Role,
+				Photo:    existingUser.Photo,
+				Phone:    existingUser.Phone,
+				Location: existingUser.Location,
+				Gender:   existingUser.Gender,
+			},
+			Token: &models.TokenResponse{
+				AccessToken:  &accessToken,
+				RefreshToken: &refreshToken,
+			},
+		}, nil
+
+
+	}
+
+	// Generate User ID
+	user.UserID = helpers.GenerateID()
+
+	result = database.DB.Create(user)
+	if result.Error != nil {
+		return &models.UserAuthResponse{}, result.Error
+	}
+
+
+
+	fmt.Println("**********************************************")
+	fmt.Println(user)
+	fmt.Println("**********************************************")
+
+	return &models.UserAuthResponse{
+		Message: fmt.Sprintf("Welcome %s", user.Name),
+		User: &models.UserProfile{
+			UserID:   &user.UserID,
+			Name:     &user.Name,
+			Email:    &user.Email,
+			Role:     &user.Role,
+			Photo:    user.Photo,
+			Phone:    user.Phone,
+			Location: user.Location,
+			Gender:   user.Gender,
+		},
+		Token: &models.TokenResponse{
+			AccessToken:  &accessToken,
+			RefreshToken: &refreshToken,
+		},
+	}, nil
+
+}
 
 func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) {
 	provider := "Klock"
 
 	// Check if name input field is valid
 	if !helpers.IsValidInput(input.Name) {
-		return &models.UserAuthResponse{}, fmt.Errorf("Invalid name")
+		return &models.UserAuthResponse{}, fmt.Errorf("invalid name")
 	}
 
 	// Check if the input.Email is typeof email
 	if !helpers.IsValidEmail(input.Email) {
-		return &models.UserAuthResponse{}, fmt.Errorf("Invalid email")
+		return &models.UserAuthResponse{}, fmt.Errorf("invalid email")
 	}
 
 	user := &models.User{
@@ -44,13 +191,13 @@ func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) 
 	var existingUser = models.User{}
 	result := database.DB.Where("email = ?", user.Email).First(&existingUser)
 	if result.RowsAffected > 0 {
-		return &models.UserAuthResponse{}, fmt.Errorf("User already exist")
+		return &models.UserAuthResponse{}, fmt.Errorf("user already exist")
 	}
 
 	// Hash password
 	hashedPassword, err := helpers.HashPassword(user.Password)
 	if err != nil {
-		return &models.UserAuthResponse{}, fmt.Errorf("Error hashing password")
+		return &models.UserAuthResponse{}, fmt.Errorf("rrror hashing password")
 	}
 	user.Password = hashedPassword
 
@@ -101,7 +248,7 @@ func RegisterUser(input models.CreateNewUser) (*models.UserAuthResponse, error) 
 func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 	// Check if email input field is valid
 	if !helpers.IsValidEmail(input.Email) {
-		return &models.UserAuthResponse{}, fmt.Errorf("Invalid email")
+		return &models.UserAuthResponse{}, fmt.Errorf("invalid email")
 	}
 
 	user := models.User{}
@@ -125,7 +272,7 @@ func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 	if *input.RememberMe {
 		tokenExpiry = time.Now().Add(time.Hour * 24).Unix()
 	} else {
-		tokenExpiry = time.Now().Add(time.Minute * 1).Unix()
+		tokenExpiry = time.Now().Add(time.Hour * 1).Unix()
 	}
 
 	accessToken := models.Token{
@@ -139,7 +286,7 @@ func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 	}
 
 	return &models.UserAuthResponse{
-		Message: fmt.Sprintf("%s logged in successfully", user.Name),
+		Message: fmt.Sprintf("Welcome %s", user.Name),
 		User: &models.UserProfile{
 			UserID:   &user.UserID,
 			Name:     &user.Name,
@@ -183,21 +330,19 @@ func GetUserProfile(ctx *gin.Context) (*models.UserProfile, error) {
 }
 
 func UpdateUser(ctx *gin.Context, input models.UpdateUser) (*models.UserAuthResponse, error) {
-	
+
 	res, err := helpers.ValidateAccessToken(ctx)
 	if err != nil {
 		return &models.UserAuthResponse{}, err
 	}
 
-
 	user := models.User{}
 	userID := res.UserID
-
 
 	result := database.DB.Model(&user).Where("user_id = ?", userID).Updates(&input)
 
 	if result.Error != nil {
-		return &models.UserAuthResponse{}, fmt.Errorf("Error updating user")
+		return &models.UserAuthResponse{}, fmt.Errorf("error updating user")
 	}
 
 	var userProfile models.User
@@ -223,12 +368,14 @@ func UpdateUser(ctx *gin.Context, input models.UpdateUser) (*models.UserAuthResp
 }
 
 func GetAllUsers() ([]*models.UserProfile, error) {
-	users := []models.User{}
-	database.DB.Find(&users)
-
-	var usersResponse []*models.UserProfile
+	var users []*models.User
+	if err := database.DB.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	
+	var userProfiles []*models.UserProfile
 	for _, user := range users {
-		userResponse := &models.UserProfile{
+		userProfile := &models.UserProfile{
 			UserID:   &user.UserID,
 			Name:     &user.Name,
 			Email:    &user.Email,
@@ -238,21 +385,21 @@ func GetAllUsers() ([]*models.UserProfile, error) {
 			Location: user.Location,
 			Gender:   user.Gender,
 		}
-		usersResponse = append(usersResponse, userResponse)
+		userProfiles = append(userProfiles, userProfile)
 	}
-	return usersResponse, nil
-
+	
+	return userProfiles, nil
 }
 
 func DeleteUser(ctx *gin.Context) (*models.Message, error) {
 
-res, err := helpers.ValidateAccessToken(ctx)
+	res, err := helpers.ValidateAccessToken(ctx)
 	if err != nil {
 		return &models.Message{}, err
 	}
 
 	if err := database.DB.Exec("DELETE FROM users WHERE user_id = ?", res.UserID).Error; err != nil {
-		return &models.Message{}, fmt.Errorf("Error deleting user")
+		return &models.Message{}, fmt.Errorf("error deleting user")
 	}
 
 	return &models.Message{Message: fmt.Sprintf("Successfully deleted %s", res.Name)}, nil
@@ -272,7 +419,7 @@ func DeleteAllUsers(userID string) (*models.Message, error) {
 	}
 
 	if err := database.DB.Exec("DELETE FROM users WHERE role = 'USER'").Error; err != nil {
-		return &models.Message{}, fmt.Errorf("Error deleting users")
+		return &models.Message{}, fmt.Errorf("error deleting users")
 	}
 	return &models.Message{Message: "Successfully deleted all users"}, nil
 
