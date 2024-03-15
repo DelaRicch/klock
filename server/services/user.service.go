@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	config "github.com/DelaRicch/klock/server/auth-config"
@@ -64,7 +65,9 @@ func GoogleCallback(ctx *gin.Context) {
 
 	GoogleAuthValue(ctx, data)
 
-	ctx.Redirect(http.StatusSeeOther, "http://localhost:4200/")
+	frontendUrl := os.Getenv("FRONTEND_URL")
+
+	ctx.Redirect(http.StatusSeeOther, frontendUrl)
 
 }
 
@@ -82,21 +85,21 @@ func GoogleAuthValue(ctx *gin.Context, data map[string]interface{}) (*models.Use
 		UpdatedAt: time.Now(),
 	}
 
-		// Generate JWT
-		refreshTkn, token, exp, rfExp, err := helpers.CreateJwtToken(user)
-		if err != nil {
-			return &models.UserAuthResponse{}, fmt.Errorf(errorRfTokenMsg)
-		}
-	
-		accessToken := models.Token{
-			Value:      token,
-			Expiration: exp,
-		}
-	
-		refreshToken := models.Token{
-			Value:      refreshTkn,
-			Expiration: rfExp,
-		}
+	// Generate JWT
+	refreshTkn, token, exp, rfExp, err := helpers.CreateJwtToken(user)
+	if err != nil {
+		return &models.UserAuthResponse{}, fmt.Errorf(errorRfTokenMsg)
+	}
+
+	accessToken := models.Token{
+		Value:      token,
+		Expiration: exp,
+	}
+
+	refreshToken := models.Token{
+		Value:      refreshTkn,
+		Expiration: rfExp,
+	}
 
 	// Check for the uniqueness of the email
 	var existingUser models.User
@@ -125,7 +128,6 @@ func GoogleAuthValue(ctx *gin.Context, data map[string]interface{}) (*models.Use
 			},
 		}, nil
 
-
 	}
 
 	// Generate User ID
@@ -135,12 +137,6 @@ func GoogleAuthValue(ctx *gin.Context, data map[string]interface{}) (*models.Use
 	if result.Error != nil {
 		return &models.UserAuthResponse{}, result.Error
 	}
-
-
-
-	fmt.Println("**********************************************")
-	fmt.Println(user)
-	fmt.Println("**********************************************")
 
 	return &models.UserAuthResponse{
 		Message: fmt.Sprintf("Welcome %s", user.Name),
@@ -367,12 +363,31 @@ func UpdateUser(ctx *gin.Context, input models.UpdateUser) (*models.UserAuthResp
 
 }
 
+func UpdatePassword(ctx *gin.Context, input *string) (*models.Message, error) {
+	res, err := helpers.ValidateAccessToken(ctx)
+	if err != nil {
+		return &models.Message{}, err
+	}
+
+	user := models.User{}
+	userID := res.UserID
+
+	result := database.DB.Model(&user).Where("user_id = ?", userID).Update("password", &input)
+	if result.Error != nil {
+		return &models.Message{}, fmt.Errorf("error updating password")
+	}
+
+	return &models.Message{
+		Message: "Password updated successfully",
+	}, nil
+}
+
 func GetAllUsers() ([]*models.UserProfile, error) {
 	var users []*models.User
 	if err := database.DB.Find(&users).Error; err != nil {
 		return nil, err
 	}
-	
+
 	var userProfiles []*models.UserProfile
 	for _, user := range users {
 		userProfile := &models.UserProfile{
@@ -387,7 +402,7 @@ func GetAllUsers() ([]*models.UserProfile, error) {
 		}
 		userProfiles = append(userProfiles, userProfile)
 	}
-	
+
 	return userProfiles, nil
 }
 

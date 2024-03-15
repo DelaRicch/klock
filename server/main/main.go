@@ -34,17 +34,19 @@ func main() {
 
 	app := gin.Default()
 
+	frontendUrl := os.Getenv("FRONTEND_URL")
+
 	app.Use(resolver.GinContextToContextMiddleware())
 	app.POST("/query", ginhandler.GrapghqlHandler())
 	app.GET("/", ginhandler.PlaygroundHandler())
 
-	// Google auth 
+	// Google auth
 	app.GET("auth/google", services.GoogleLogin)
 	app.GET("auth/google/callback", services.GoogleCallback)
 
 	// set cors
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*", "http://localhost:4200/"},
+		AllowOrigins: []string{"*", frontendUrl},
 		// AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 		// ExposeHeaders:    []string{"Content-Length"},

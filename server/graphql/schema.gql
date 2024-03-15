@@ -64,6 +64,7 @@ type Mutation {
 	CreateUser(input: CreateNewUser!): UserAuthResponse!
 	LoginUser(input: LoginUser!): UserAuthResponse!
 	UpdateUser(input: UpdateUser!): UserAuthResponse!
+	UpdatePassword(input: String): Message!
 	DeleteUser: Message!
 	DeleteUsers(UserID: String!): Message!
 }

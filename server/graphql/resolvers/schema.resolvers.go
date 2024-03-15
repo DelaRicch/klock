@@ -46,6 +46,17 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input models.UpdateUs
 	return services.UpdateUser(ginCtx, input)
 }
 
+// UpdatePassword is the resolver for the UpdatePassword field.
+func (r *mutationResolver) UpdatePassword(ctx context.Context, input *string) (*models.Message, error) {
+	ginCtx, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+
+	return services.UpdatePassword(ginCtx, input)
+}
+
 // DeleteUser is the resolver for the DeleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context) (*models.Message, error) {
 	ginCtx, err := GinContextFromContext(ctx)
