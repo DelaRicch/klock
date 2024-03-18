@@ -56,7 +56,7 @@ type ComplexityRoot struct {
 		DeleteUser     func(childComplexity int) int
 		DeleteUsers    func(childComplexity int, userID string) int
 		LoginUser      func(childComplexity int, input models.LoginUser) int
-		UpdatePassword func(childComplexity int, input *string) int
+		UpdatePassword func(childComplexity int, input models.UpdatePassword) int
 		UpdateUser     func(childComplexity int, input models.UpdateUser) int
 	}
 
@@ -126,7 +126,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input models.CreateNewUser) (*models.UserAuthResponse, error)
 	LoginUser(ctx context.Context, input models.LoginUser) (*models.UserAuthResponse, error)
 	UpdateUser(ctx context.Context, input models.UpdateUser) (*models.UserAuthResponse, error)
-	UpdatePassword(ctx context.Context, input *string) (*models.Message, error)
+	UpdatePassword(ctx context.Context, input models.UpdatePassword) (*models.Message, error)
 	DeleteUser(ctx context.Context) (*models.Message, error)
 	DeleteUsers(ctx context.Context, userID string) (*models.Message, error)
 }
@@ -215,7 +215,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdatePassword(childComplexity, args["input"].(*string)), true
+		return e.complexity.Mutation.UpdatePassword(childComplexity, args["input"].(models.UpdatePassword)), true
 
 	case "Mutation.UpdateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -519,6 +519,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateNewUser,
 		ec.unmarshalInputLoginUser,
+		ec.unmarshalInputUpdatePassword,
 		ec.unmarshalInputUpdateUser,
 	)
 	first := true
@@ -683,7 +684,7 @@ type Mutation {
 	CreateUser(input: CreateNewUser!): UserAuthResponse!
 	LoginUser(input: LoginUser!): UserAuthResponse!
 	UpdateUser(input: UpdateUser!): UserAuthResponse!
-	UpdatePassword(input: String): Message!
+	UpdatePassword(input: UpdatePassword!): Message!
 	DeleteUser: Message!
 	DeleteUsers(UserID: String!): Message!
 }
@@ -708,6 +709,11 @@ input UpdateUser {
 	phone: String
 	location: String
 	gender: String
+}
+
+input UpdatePassword {
+	currentPassword: String!
+	newPassword: String!
 }
 
 # Product section
@@ -787,10 +793,10 @@ func (ec *executionContext) field_Mutation_LoginUser_args(ctx context.Context, r
 func (ec *executionContext) field_Mutation_UpdatePassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
+	var arg0 models.UpdatePassword
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdatePassword2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUpdatePassword(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1114,7 +1120,7 @@ func (ec *executionContext) _Mutation_UpdatePassword(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdatePassword(rctx, fc.Args["input"].(*string))
+		return ec.resolvers.Mutation().UpdatePassword(rctx, fc.Args["input"].(models.UpdatePassword))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5019,6 +5025,40 @@ func (ec *executionContext) unmarshalInputLoginUser(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdatePassword(ctx context.Context, obj interface{}) (models.UpdatePassword, error) {
+	var it models.UpdatePassword
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"currentPassword", "newPassword"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "currentPassword":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentPassword"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrentPassword = data
+		case "newPassword":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newPassword"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NewPassword = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj interface{}) (models.UpdateUser, error) {
 	var it models.UpdateUser
 	asMap := map[string]interface{}{}
@@ -6067,6 +6107,11 @@ func (ec *executionContext) marshalNToken2ᚖgithubᚗcomᚋDelaRicchᚋklockᚋ
 		return graphql.Null
 	}
 	return ec._Token(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdatePassword2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUpdatePassword(ctx context.Context, v interface{}) (models.UpdatePassword, error) {
+	res, err := ec.unmarshalInputUpdatePassword(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateUser2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUpdateUser(ctx context.Context, v interface{}) (models.UpdateUser, error) {

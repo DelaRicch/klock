@@ -54,6 +54,11 @@ type TokenResponse struct {
 	RefreshToken *Token `json:"refreshToken" gorm:"refreshToken"`
 }
 
+type UpdatePassword struct {
+	CurrentPassword string `json:"currentPassword" gorm:"currentPassword"`
+	NewPassword     string `json:"newPassword" gorm:"newPassword"`
+}
+
 type UpdateUser struct {
 	Name     *string `json:"name,omitempty" gorm:"name"`
 	Email    *string `json:"email,omitempty" gorm:"email"`

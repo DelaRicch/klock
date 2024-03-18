@@ -88,8 +88,8 @@ func CreateJwtToken(user *models.User) (string, string, int64, int64, error) {
 	return refreshTkn, tkn, exp, rfExp, nil
 }
 
-func ValidateAccessToken(ctx *gin.Context) (*models.User, error) {
-	accessToken := ctx.GetHeader("Authorization")
+func ValidateAccessToken(c *gin.Context) (*models.User, error) {
+	accessToken := c.GetHeader("Authorization")
 
 	if accessToken == "" {
 		return nil, fmt.Errorf("Unauthorized")
@@ -97,12 +97,12 @@ func ValidateAccessToken(ctx *gin.Context) (*models.User, error) {
 
 	tokenParts := strings.Split(accessToken, " ")
 	if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-		return nil, fmt.Errorf("Invalid access token format")		
+		return nil, fmt.Errorf("Invalid access token format")
 	}
 
 	accessToken = tokenParts[1]
 
-	// parse and validate access token 
+	// parse and validate access token
 	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

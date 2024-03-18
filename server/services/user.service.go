@@ -23,55 +23,55 @@ const (
 	notAuthorizedToPerformAction = "not authorized to perform this action"
 )
 
-func GoogleLogin(ctx *gin.Context) {
+func GoogleLogin(c *gin.Context) {
 	googleConfig := config.GoogleSetUpConfig()
 	url := googleConfig.AuthCodeURL("randomstate")
 
-	ctx.Redirect(http.StatusSeeOther, url)
+	c.Redirect(http.StatusSeeOther, url)
 }
 
-func GoogleCallback(ctx *gin.Context) {
-	state := ctx.Query("state")
+func GoogleCallback(c *gin.Context) {
+	state := c.Query("state")
 
 	if state != "randomstate" {
-		ctx.String(http.StatusForbidden, "state did not match")
+		c.String(http.StatusForbidden, "state did not match")
 		return
 	}
 
-	code := ctx.Query("code")
+	code := c.Query("code")
 
 	googleConfig := config.GoogleSetUpConfig()
 
-	token, err := googleConfig.Exchange(ctx, code)
+	token, err := googleConfig.Exchange(c, code)
 	if err != nil {
-		fmt.Fprintln(ctx.Writer, "could not get token")
+		fmt.Fprintln(c.Writer, "could not get token")
 	}
 
 	resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
-		fmt.Fprintln(ctx.Writer, "could not get user info")
+		fmt.Fprintln(c.Writer, "could not get user info")
 	}
 
 	userData, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Fprintln(ctx.Writer, "Json parsing failed")
+		fmt.Fprintln(c.Writer, "Json parsing failed")
 	}
 
 	var data map[string]interface{}
 	err = json.Unmarshal(userData, &data)
 	if err != nil {
-		fmt.Fprintln(ctx.Writer, "Json unmarshaling failed")
+		fmt.Fprintln(c.Writer, "Json unmarshaling failed")
 	}
 
-	GoogleAuthValue(ctx, data)
+	GoogleAuthValue(c, data)
 
 	frontendUrl := os.Getenv("FRONTEND_URL")
 
-	ctx.Redirect(http.StatusSeeOther, frontendUrl)
+	c.Redirect(http.StatusSeeOther, frontendUrl)
 
 }
 
-func GoogleAuthValue(ctx *gin.Context, data map[string]interface{}) (*models.UserAuthResponse, error) {
+func GoogleAuthValue(c *gin.Context, data map[string]interface{}) (*models.UserAuthResponse, error) {
 
 	authProvider := "Google"
 
@@ -301,8 +301,8 @@ func LoginUser(input models.LoginUser) (*models.UserAuthResponse, error) {
 
 }
 
-func GetUserProfile(ctx *gin.Context) (*models.UserProfile, error) {
-	user, err := helpers.ValidateAccessToken(ctx)
+func GetUserProfile(c *gin.Context) (*models.UserProfile, error) {
+	user, err := helpers.ValidateAccessToken(c)
 	if err != nil {
 		return &models.UserProfile{}, err
 	}
@@ -325,9 +325,9 @@ func GetUserProfile(ctx *gin.Context) (*models.UserProfile, error) {
 
 }
 
-func UpdateUser(ctx *gin.Context, input models.UpdateUser) (*models.UserAuthResponse, error) {
+func UpdateUser(c *gin.Context, input models.UpdateUser) (*models.UserAuthResponse, error) {
 
-	res, err := helpers.ValidateAccessToken(ctx)
+	res, err := helpers.ValidateAccessToken(c)
 	if err != nil {
 		return &models.UserAuthResponse{}, err
 	}
@@ -363,16 +363,36 @@ func UpdateUser(ctx *gin.Context, input models.UpdateUser) (*models.UserAuthResp
 
 }
 
-func UpdatePassword(ctx *gin.Context, input *string) (*models.Message, error) {
-	res, err := helpers.ValidateAccessToken(ctx)
+func UpdatePassword(c *gin.Context, input models.UpdatePassword) (*models.Message, error) {
+
+	res, err := helpers.ValidateAccessToken(c)
 	if err != nil {
 		return &models.Message{}, err
 	}
 
-	user := models.User{}
-	userID := res.UserID
+	var (
+		user            = models.User{}
+		userID          = res.UserID
+		currentPassword = input.CurrentPassword
+	)
 
-	result := database.DB.Model(&user).Where("user_id = ?", userID).Update("password", &input)
+	r := database.DB.Where("user_id = ?", userID).First(&user)
+	if r.RowsAffected == 0 {
+		return &models.Message{}, fmt.Errorf("user not found")
+	}
+
+	// Check if password is correct
+	if !helpers.VerifyPassword(user.Password, currentPassword) {
+		return &models.Message{}, fmt.Errorf("incorrect password. Try again")
+	}
+
+	// Hash password
+	hashedPassword, err := helpers.HashPassword(input.NewPassword)
+	if err != nil {
+		return &models.Message{}, fmt.Errorf("error hashing password")
+	}
+
+	result := database.DB.Model(&user).Where("user_id = ?", userID).Update("password", &hashedPassword)
 	if result.Error != nil {
 		return &models.Message{}, fmt.Errorf("error updating password")
 	}
@@ -384,7 +404,7 @@ func UpdatePassword(ctx *gin.Context, input *string) (*models.Message, error) {
 
 func GetAllUsers() ([]*models.UserProfile, error) {
 	var users []*models.User
-	if err := database.DB.Find(&users).Error; err != nil {
+	if err := database.DB.Find(&users).Where("role = 'USER'").Error; err != nil {
 		return nil, err
 	}
 
@@ -406,9 +426,9 @@ func GetAllUsers() ([]*models.UserProfile, error) {
 	return userProfiles, nil
 }
 
-func DeleteUser(ctx *gin.Context) (*models.Message, error) {
+func DeleteUser(c *gin.Context) (*models.Message, error) {
 
-	res, err := helpers.ValidateAccessToken(ctx)
+	res, err := helpers.ValidateAccessToken(c)
 	if err != nil {
 		return &models.Message{}, err
 	}

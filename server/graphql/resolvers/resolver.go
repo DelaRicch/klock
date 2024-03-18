@@ -3,6 +3,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,7 +12,6 @@ import (
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
-
 
 const notAuthorizedToPerformAction string = "Not authorized to perform this action"
 
@@ -22,14 +22,14 @@ type contextKey string
 
 func GinContextToContextMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx := context.WithValue(c.Request.Context(), contextKey("GinContextKey"), c)
+		ctx := context.WithValue(c.Request.Context(), contextKey("Klock-gin-context"), c)
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}
 }
 
-func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
-	ginContext := ctx.Value(contextKey("GinContextKey"))
+func GinContextFromContext(c context.Context) (*gin.Context, error) {
+	ginContext := c.Value(contextKey("Klock-gin-context"))
 	if ginContext == nil {
 		err := fmt.Errorf("could not retrieve gin.Context")
 		return nil, err

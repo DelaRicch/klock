@@ -37,35 +37,35 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input models.LoginUser
 
 // UpdateUser is the resolver for the UpdateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, input models.UpdateUser) (*models.UserAuthResponse, error) {
-	ginCtx, err := GinContextFromContext(ctx)
+	ginc, err := GinContextFromContext(ctx)
 
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.UpdateUser(ginCtx, input)
+	return services.UpdateUser(ginc, input)
 }
 
 // UpdatePassword is the resolver for the UpdatePassword field.
-func (r *mutationResolver) UpdatePassword(ctx context.Context, input *string) (*models.Message, error) {
-	ginCtx, err := GinContextFromContext(ctx)
+func (r *mutationResolver) UpdatePassword(ctx context.Context, input models.UpdatePassword) (*models.Message, error) {
+	ginc, err := GinContextFromContext(ctx)
 
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.UpdatePassword(ginCtx, input)
+	return services.UpdatePassword(ginc, input)
 }
 
 // DeleteUser is the resolver for the DeleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context) (*models.Message, error) {
-	ginCtx, err := GinContextFromContext(ctx)
+	ginc, err := GinContextFromContext(ctx)
 
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.DeleteUser(ginCtx)
+	return services.DeleteUser(ginc)
 }
 
 // DeleteUsers is the resolver for the DeleteUsers field.
@@ -92,13 +92,13 @@ func (r *queryResolver) Users(ctx context.Context) ([]*models.UserProfile, error
 
 // User is the resolver for the User field.
 func (r *queryResolver) User(ctx context.Context) (*models.UserProfile, error) {
-	ginCtx, err := GinContextFromContext(ctx)
+	ginc, err := GinContextFromContext(ctx)
 
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return services.GetUserProfile(ginCtx)
+	return services.GetUserProfile(ginc)
 }
 
 // SocialLogin is the resolver for the SocialLogin field.
@@ -109,7 +109,7 @@ func (r *queryResolver) SocialLogin(ctx context.Context) (*models.UserAuthRespon
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	// return services.GoogleAuthValue(ginCtx, map[string]interface{}{})
+	// return services.GoogleAuthValue(ginc, map[string]interface{}{})
 	return nil, nil
 }
 
