@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	config "github.com/DelaRicch/klock/server/auth-config"
 	"github.com/golang-jwt/jwt"
 
@@ -388,7 +389,6 @@ func UpdatePassword(c *gin.Context, input models.UpdatePassword) (*models.Messag
 		return &models.Message{}, fmt.Errorf("incorrect password. Try again")
 	}
 
-	// Hash password
 	hashedPassword, err := helpers.HashPassword(input.NewPassword)
 	if err != nil {
 		return &models.Message{}, fmt.Errorf("error hashing password")
@@ -404,28 +404,26 @@ func UpdatePassword(c *gin.Context, input models.UpdatePassword) (*models.Messag
 	}, nil
 }
 
-func GetAllUsers() ([]*models.UserProfile, error) {
-	var users []*models.User
-	if err := database.DB.Find(&users).Where("role = 'USER'").Error; err != nil {
-		return nil, err
+func UpdateAvatar(c *gin.Context, input graphql.Upload) (*models.Message, error) {
+	//  Validate access token
+	user, err := helpers.ValidateAccessToken(c)
+	if err != nil {
+		return &models.Message{}, err
 	}
 
-	var userProfiles []*models.UserProfile
-	for _, user := range users {
-		userProfile := &models.UserProfile{
-			UserID:   &user.UserID,
-			Name:     &user.Name,
-			Email:    &user.Email,
-			Role:     &user.Role,
-			Photo:    user.Photo,
-			Phone:    user.Phone,
-			Location: user.Location,
-			Gender:   user.Gender,
-		}
-		userProfiles = append(userProfiles, userProfile)
+	profilePic, er := helpers.UploadToCloudinary(input, user.UserID, "avatar")
+	if er != nil {
+		return &models.Message{}, er
 	}
 
-	return userProfiles, nil
+	result := database.DB.Model(&user).Where("user_id = ?", user.UserID).Update("photo", profilePic)
+	if result.Error != nil {
+		return &models.Message{}, fmt.Errorf("error updating avatar")
+	}
+
+	return &models.Message{
+		Message: "profile picture updated successfully",
+	}, nil
 }
 
 func RequestNewToken(c *gin.Context) (*models.UserAuthResponse, error) {
@@ -485,6 +483,30 @@ func RequestNewToken(c *gin.Context) (*models.UserAuthResponse, error) {
 		},
 	}, nil
 
+}
+
+func GetAllUsers() ([]*models.UserProfile, error) {
+	var users []*models.User
+	if err := database.DB.Find(&users).Where("role = 'USER'").Error; err != nil {
+		return nil, err
+	}
+
+	var userProfiles []*models.UserProfile
+	for _, user := range users {
+		userProfile := &models.UserProfile{
+			UserID:   &user.UserID,
+			Name:     &user.Name,
+			Email:    &user.Email,
+			Role:     &user.Role,
+			Photo:    user.Photo,
+			Phone:    user.Phone,
+			Location: user.Location,
+			Gender:   user.Gender,
+		}
+		userProfiles = append(userProfiles, userProfile)
+	}
+
+	return userProfiles, nil
 }
 
 func DeleteUser(c *gin.Context) (*models.Message, error) {

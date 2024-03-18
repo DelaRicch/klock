@@ -6,6 +6,7 @@ enum Role {
 }
 
 scalar Time
+scalar Upload
 
 type Token {
 	value: String!
@@ -66,6 +67,7 @@ type Mutation {
 	LoginUser(input: LoginUser!): UserAuthResponse!
 	UpdateUser(input: UpdateUser!): UserAuthResponse!
 	UpdatePassword(input: UpdatePassword!): Message!
+	UpdateAvatar(input: Upload!): Message!
 	DeleteUser: Message!
 	DeleteUsers(UserID: String!): Message!
 }

@@ -5,6 +5,7 @@ go 1.21.5
 require (
 	github.com/99designs/gqlgen v0.17.45
 	github.com/alexedwards/argon2id v1.0.0
+	github.com/cloudinary/cloudinary-go/v2 v2.7.0
 	github.com/gin-contrib/cors v1.7.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/joho/godotenv v1.5.1
@@ -21,7 +22,6 @@ require (
 	github.com/bytedance/sonic v1.11.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
-	github.com/cloudinary/cloudinary-go/v2 v2.7.0 // indirect
 	github.com/creasty/defaults v1.5.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

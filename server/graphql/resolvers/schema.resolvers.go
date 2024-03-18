@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/99designs/gqlgen/graphql"
 	graphql1 "github.com/DelaRicch/klock/server/graphql/generated"
 	"github.com/DelaRicch/klock/server/graphql/models"
 	"github.com/DelaRicch/klock/server/services"
@@ -55,6 +56,17 @@ func (r *mutationResolver) UpdatePassword(ctx context.Context, input models.Upda
 	}
 
 	return services.UpdatePassword(ginc, input)
+}
+
+// UpdateAvatar is the resolver for the UpdateAvatar field.
+func (r *mutationResolver) UpdateAvatar(ctx context.Context, input graphql.Upload) (*models.Message, error) {
+	ginc, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+
+	return services.UpdateAvatar(ginc, input)
 }
 
 // DeleteUser is the resolver for the DeleteUser field.

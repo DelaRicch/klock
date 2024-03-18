@@ -56,6 +56,7 @@ type ComplexityRoot struct {
 		DeleteUser     func(childComplexity int) int
 		DeleteUsers    func(childComplexity int, userID string) int
 		LoginUser      func(childComplexity int, input models.LoginUser) int
+		UpdateAvatar   func(childComplexity int, input graphql.Upload) int
 		UpdatePassword func(childComplexity int, input models.UpdatePassword) int
 		UpdateUser     func(childComplexity int, input models.UpdateUser) int
 	}
@@ -128,6 +129,7 @@ type MutationResolver interface {
 	LoginUser(ctx context.Context, input models.LoginUser) (*models.UserAuthResponse, error)
 	UpdateUser(ctx context.Context, input models.UpdateUser) (*models.UserAuthResponse, error)
 	UpdatePassword(ctx context.Context, input models.UpdatePassword) (*models.Message, error)
+	UpdateAvatar(ctx context.Context, input graphql.Upload) (*models.Message, error)
 	DeleteUser(ctx context.Context) (*models.Message, error)
 	DeleteUsers(ctx context.Context, userID string) (*models.Message, error)
 }
@@ -206,6 +208,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.LoginUser(childComplexity, args["input"].(models.LoginUser)), true
+
+	case "Mutation.UpdateAvatar":
+		if e.complexity.Mutation.UpdateAvatar == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_UpdateAvatar_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateAvatar(childComplexity, args["input"].(graphql.Upload)), true
 
 	case "Mutation.UpdatePassword":
 		if e.complexity.Mutation.UpdatePassword == nil {
@@ -635,6 +649,7 @@ enum Role {
 }
 
 scalar Time
+scalar Upload
 
 type Token {
 	value: String!
@@ -695,6 +710,7 @@ type Mutation {
 	LoginUser(input: LoginUser!): UserAuthResponse!
 	UpdateUser(input: UpdateUser!): UserAuthResponse!
 	UpdatePassword(input: UpdatePassword!): Message!
+	UpdateAvatar(input: Upload!): Message!
 	DeleteUser: Message!
 	DeleteUsers(UserID: String!): Message!
 }
@@ -792,6 +808,21 @@ func (ec *executionContext) field_Mutation_LoginUser_args(ctx context.Context, r
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNLoginUser2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐLoginUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_UpdateAvatar_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 graphql.Upload
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1169,6 +1200,65 @@ func (ec *executionContext) fieldContext_Mutation_UpdatePassword(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_UpdatePassword_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_UpdateAvatar(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_UpdateAvatar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateAvatar(rctx, fc.Args["input"].(graphql.Upload))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Message)
+	fc.Result = res
+	return ec.marshalNMessage2ᚖgithubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐMessage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_UpdateAvatar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_Message_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_UpdateAvatar_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5277,6 +5367,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "UpdateAvatar":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_UpdateAvatar(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "DeleteUser":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_DeleteUser(ctx, field)
@@ -6201,6 +6298,21 @@ func (ec *executionContext) unmarshalNUpdatePassword2githubᚗcomᚋDelaRicchᚋ
 func (ec *executionContext) unmarshalNUpdateUser2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUpdateUser(ctx context.Context, v interface{}) (models.UpdateUser, error) {
 	res, err := ec.unmarshalInputUpdateUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (graphql.Upload, error) {
+	res, err := graphql.UnmarshalUpload(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v graphql.Upload) graphql.Marshaler {
+	res := graphql.MarshalUpload(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalNUserAuthResponse2githubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUserAuthResponse(ctx context.Context, sel ast.SelectionSet, v models.UserAuthResponse) graphql.Marshaler {
