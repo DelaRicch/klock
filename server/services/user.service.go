@@ -6,9 +6,11 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	config "github.com/DelaRicch/klock/server/auth-config"
+	"github.com/golang-jwt/jwt"
 
 	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/graphql/models"
@@ -424,6 +426,65 @@ func GetAllUsers() ([]*models.UserProfile, error) {
 	}
 
 	return userProfiles, nil
+}
+
+func RequestNewToken(c *gin.Context) (*models.UserAuthResponse, error) {
+	refreshToken := c.GetHeader("Authorization")
+
+	if refreshToken == "" {
+		return &models.UserAuthResponse{}, fmt.Errorf("refresh token required")
+	}
+
+	// Extract the token part from "Bearer <token>"
+	tokenParts := strings.Split(refreshToken, " ")
+	if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+		return &models.UserAuthResponse{}, fmt.Errorf("invalid refresh token format")
+	}
+
+	refreshToken = tokenParts[1]
+
+	// Parse and validate the refresh token
+	tokenByte, err := jwt.Parse(refreshToken, func(jwtToken *jwt.Token) (interface{}, error) {
+		if _, ok := jwtToken.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", jwtToken.Header["alg"])
+		}
+		return []byte("rf_secret"), nil
+	})
+
+	if err != nil {
+		return &models.UserAuthResponse{}, fmt.Errorf("invalid refresh token")
+	}
+
+	// Extract claims from the refresh token
+	claims, ok := tokenByte.Claims.(jwt.MapClaims)
+	if !ok || !tokenByte.Valid {
+		return &models.UserAuthResponse{}, fmt.Errorf("invalid token claim")
+	}
+
+	// Call the function to generate a new access token
+	refreshTkn, accessToken, tokenExpiry, refreshTknExpiry, er := helpers.CreateJwtToken(&models.User{UserID: claims["userId"].(string)})
+	if er != nil {
+		return &models.UserAuthResponse{}, fmt.Errorf(er.Error())
+	}
+
+	accessTokenVal := models.Token{
+		Value:      accessToken,
+		Expiration: tokenExpiry,
+	}
+
+	refreshTokenVal := models.Token{
+		Value:      refreshTkn,
+		Expiration: refreshTknExpiry,
+	}
+
+	return &models.UserAuthResponse{
+		Message: "Token refreshed successfully",
+		Token: &models.TokenResponse{
+			AccessToken:  &accessTokenVal,
+			RefreshToken: &refreshTokenVal,
+		},
+	}, nil
+
 }
 
 func DeleteUser(c *gin.Context) (*models.Message, error) {

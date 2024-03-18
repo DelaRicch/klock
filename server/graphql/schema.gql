@@ -58,6 +58,7 @@ type Query {
 	Users: [UserProfile]
 	User: UserProfile!
 	SocialLogin: UserAuthResponse!
+	RequestNewToken: UserAuthResponse!
 }
 
 type Mutation {

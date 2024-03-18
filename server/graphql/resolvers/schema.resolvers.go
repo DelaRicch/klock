@@ -113,6 +113,17 @@ func (r *queryResolver) SocialLogin(ctx context.Context) (*models.UserAuthRespon
 	return nil, nil
 }
 
+// RequestNewToken is the resolver for the RequestNewToken field.
+func (r *queryResolver) RequestNewToken(ctx context.Context) (*models.UserAuthResponse, error) {
+	ginC, err := GinContextFromContext(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+
+	return services.RequestNewToken(ginC)
+}
+
 // Mutation returns graphql1.MutationResolver implementation.
 func (r *Resolver) Mutation() graphql1.MutationResolver { return &mutationResolver{r} }
 
