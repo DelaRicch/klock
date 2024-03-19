@@ -406,20 +406,27 @@ func UpdatePassword(c *gin.Context, input models.UpdatePassword) (*models.Messag
 
 func UpdateAvatar(c *gin.Context, input graphql.Upload) (*models.Message, error) {
 	//  Validate access token
-	user, err := helpers.ValidateAccessToken(c)
+	_, err := helpers.ValidateAccessToken(c)
 	if err != nil {
 		return &models.Message{}, err
 	}
 
-	profilePic, er := helpers.UploadToCloudinary(input, user.UserID, "avatar")
-	if er != nil {
-		return &models.Message{}, er
+	content, err := io.ReadAll(input.File)
+	if err != nil {
+		return nil, err
 	}
 
-	result := database.DB.Model(&user).Where("user_id = ?", user.UserID).Update("photo", profilePic)
-	if result.Error != nil {
-		return &models.Message{}, fmt.Errorf("error updating avatar")
-	}
+	fmt.Println(string(content), "***** file content *****")
+
+	// profilePic, er := helpers.UploadToCloudinary(content, user.UserID, "avatar")
+	// if er != nil {
+	// 	return &models.Message{}, er
+	// }
+
+	// result := database.DB.Model(&user).Where("user_id = ?", user.UserID).Update("photo", profilePic)
+	// if result.Error != nil {
+	// 	return &models.Message{}, fmt.Errorf("error updating avatar")
+	// }
 
 	return &models.Message{
 		Message: "profile picture updated successfully",

@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/DelaRicch/klock/server/database"
 	"github.com/DelaRicch/klock/server/graphql/models"
 	"github.com/alexedwards/argon2id"
@@ -159,7 +159,7 @@ func CloudinaryCredentials() (*cloudinary.Cloudinary, error) {
 	return cld, nil
 }
 
-// func UploadToCloudinary(f *multipart.FileHeader, Id string, subFolder string) (string, error) {
+// func UploadToCloudinary(f multipart.FileHeader, Id string, subFolder string) (string, error) {
 // 	c := context.Background()
 // 	cld, err := CloudinaryCredentials()
 // 	if err != nil {
@@ -192,25 +192,32 @@ func CloudinaryCredentials() (*cloudinary.Cloudinary, error) {
 // 	imageUrl := result.SecureURL
 // 	return imageUrl, nil
 // }
-func UploadToCloudinary(f graphql.Upload, Id string, subFolder string) (string, error) {
+func UploadToCloudinary(f multipart.FileHeader, Id string, subFolder string) (string, error) {
 	c := context.Background()
 	cld, err := CloudinaryCredentials()
 	if err != nil {
 		return "", fmt.Errorf("unable to connect to image database")
 	}
 
+	// Open the uploaded file
+	openedFile, err := f.Open()
+	if err != nil {
+		return "", err
+	}
+	defer openedFile.Close()
+
 	// Construct the folder path in Cloudinary
 	folderPath := fmt.Sprintf("klock-ecommerce/%s/%s", subFolder, Id)
 
 	// Remove file extension from file name
-	fileName := f.Filename
+	fileName := filepath.Base(f.Filename)
 	nameWithoutExt := fileName[:len(fileName)-len(filepath.Ext(fileName))]
 
 	uploadParams := uploader.UploadParams{
 		PublicID: folderPath + "/" + nameWithoutExt,
 	}
 
-	result, err := cld.Upload.Upload(c, f.File, uploadParams)
+	result, err := cld.Upload.Upload(c, openedFile, uploadParams)
 	if err != nil {
 		return "", fmt.Errorf("unable to upload image")
 	}
