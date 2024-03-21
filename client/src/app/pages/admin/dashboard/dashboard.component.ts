@@ -14,6 +14,5 @@ import { SalesGraphComponent } from '@components/admin/sales-graph/sales-graph.c
     RecentOrdersComponent,
   ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {}
