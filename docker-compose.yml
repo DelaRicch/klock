@@ -13,16 +13,31 @@ services:
     ports:
       - '4200:4200'
     tty: true
-      
+  
+  # Development Server 
   server:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       context: './server'
       args:
-        - "--no-cache"
+        - "--no-cache --build-arg=APP_ENV=development"
     volumes:
       - ./server:/app
     ports:
-      - '8000:8000'
+      - '8080:8080'
     command: ["air", "-c", ".air.toml"]
+    tty: true
+
+  # Production Server 
+  server-prod:
+    build:
+      dockerfile: Dockerfile.prod
+      context: './server'
+      args:
+        - "--no-cache --build-arg=APP_ENV=production"
+    volumes:
+      - ./server:/app
+    ports:
+      - '8080:8080'
+    # command: ["air", "-c", ".air.toml"]
     tty: true
