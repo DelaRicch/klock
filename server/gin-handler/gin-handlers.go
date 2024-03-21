@@ -10,7 +10,7 @@ import (
 )
 
 func PlaygroundHandler() gin.HandlerFunc {
-	h := playground.Handler("Klock GraphQL", "/query")
+	h := playground.Handler("Klock GraphQL", "/graphql")
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)

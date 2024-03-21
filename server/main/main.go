@@ -37,7 +37,7 @@ func main() {
 	frontendUrl := os.Getenv("FRONTEND_URL")
 
 	app.Use(resolver.GinContextToContextMiddleware())
-	app.POST("/query", ginhandler.GrapghqlHandler())
+	app.POST("/graphql", ginhandler.GrapghqlHandler())
 	app.GET("/", ginhandler.PlaygroundHandler())
 
 	// Google auth
