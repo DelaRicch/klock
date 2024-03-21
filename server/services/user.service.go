@@ -494,7 +494,7 @@ func RequestNewToken(c *gin.Context) (*models.UserAuthResponse, error) {
 
 func GetAllUsers() ([]*models.UserProfile, error) {
 	var users []*models.User
-	if err := database.DB.Find(&users).Where("role = 'USER'").Error; err != nil {
+	if err := database.DB.Where("role = ?", "USER").Find(&users).Error; err != nil {
 		return nil, err
 	}
 

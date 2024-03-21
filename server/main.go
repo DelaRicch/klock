@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -31,6 +32,11 @@ func main() {
 
 	loadEnv()
 	loadDatabase()
+
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	app := gin.Default()
 
@@ -65,7 +71,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	if err := app.Run(); err != nil {
+	if err := app.Run(fmt.Sprintf(":%s", port)); err != nil {
 		panic(err)
 	}
 }
