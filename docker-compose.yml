@@ -29,15 +29,15 @@ services:
     tty: true
 
   # Production Server 
-  server-prod:
-    build:
-      dockerfile: Dockerfile.prod
-      context: './server'
-      args:
-        - "--no-cache --build-arg=APP_ENV=production"
-    volumes:
-      - ./server:/app
-    ports:
-      - '8000:8000'
+  # server-prod:
+  #   build:
+  #     dockerfile: Dockerfile.prod
+  #     context: './server'
+  #     args:
+  #       - "--no-cache --build-arg=APP_ENV=production"
+  #   volumes:
+  #     - ./server:/app
+  #   ports:
+      # - '8000:8000'
     # command: ["air", "-c", ".air.toml"]
-    tty: true
+    # tty: true

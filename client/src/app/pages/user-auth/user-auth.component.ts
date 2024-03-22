@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, inject, OnInit } from '@angular/core';
 
 import {
   AbstractControl,
@@ -9,19 +9,9 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { UserService } from '@services/user/user.service';
-import { Store } from '@ngrx/store';
 
 import { AlertProps, LoginUserType, RegisterUserType } from '@type/types';
-import {
-  UserProfileFailure,
-  UserProfileSuccess,
-} from '@store/user/user.actions';
-import {
-  LoginUserFailure,
-  LoginUserSuccess,
-  RegisterUser,
-} from '@store/auth/auth.actions';
+
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
 import { CheckboxComponent } from '@components/shared/checkbox/checkbox.component';
@@ -42,23 +32,20 @@ import { LogoComponent } from '@icons/logo/logo.component';
   styleUrl: './user-auth.component.css',
 })
 export class UserAuthComponent implements OnInit {
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  alertService = inject(AlertService);
+
+  @HostBinding("class") get hostClass(){
+    return "flex flex-col";
+  }
+
   isSignUp = false;
   isSubmitting = false;
   displayPassword = false;
   displayConfirmPassword = false;
   emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService,
-    private store: Store,
-    private alertService: AlertService
-  ) {
-    this.route.data.subscribe((data) => {
-      this.isSignUp = data['isSignUp'];
-    });
-  }
 
   userAuthForm = new FormGroup({
     name: new FormControl(''),
@@ -102,54 +89,7 @@ export class UserAuthComponent implements OnInit {
         remember: this.userAuthForm.value.rememberMe,
       };
 
-      this.userService.register(request as RegisterUserType).subscribe({
-        next: (msg) => {
-          const alert: AlertProps = {
-            display: true,
-            status: 'success',
-            title: 'Success',
-            message: msg.message,
-          };
-          this.store.dispatch(RegisterUser({ res: msg }));
 
-          this.alertService.showAlert(alert);
-          setTimeout(() => {
-            alert.display = false;
-          }, 5000);
-
-          this.userService.getProfile().subscribe({
-            next: (res) => {
-              this.store.dispatch(UserProfileSuccess({ res }));
-              setTimeout(() => {
-                if (res.user.role === 'ADMIN') {
-                  this.router.navigate(['admin-dashboard']);
-                } else {
-                  this.router.navigate(['']);
-                }
-                this.userAuthForm.reset();
-                this.isSubmitting = false;
-              }, 1000);
-            },
-            error: (error) => {
-              this.store.dispatch(UserProfileFailure({ error }));
-            },
-          });
-        },
-        error: (error) => {
-          const alert: AlertProps = {
-            display: true,
-            status: 'error',
-            title: 'Error',
-            message: error.error.message,
-          };
-
-          this.alertService.showAlert(alert);
-          setTimeout(() => {
-            alert.display = false;
-          }, 5000);
-          this.isSubmitting = false;
-        },
-      });
     } else {
       const request = {
         email: this.userAuthForm.value.email,
@@ -157,63 +97,12 @@ export class UserAuthComponent implements OnInit {
         remember: this.userAuthForm.value.rememberMe,
       };
 
-      this.userService.login(request as LoginUserType).subscribe({
-        next: (msg) => {
-          const alert: AlertProps = {
-            display: true,
-            status: 'success',
-            title: 'Success',
-            message: msg.message,
-          };
-
-          this.alertService.showAlert(alert);
-          setTimeout(() => {
-            alert.display = false;
-          }, 5000);
-          this.store.dispatch(LoginUserSuccess({ res: msg }));
-
-          this.userService.getProfile().subscribe({
-            next: (res) => {
-              this.store.dispatch(UserProfileSuccess({ res }));
-              setTimeout(() => {
-                if (res.user.role === 'ADMIN') {
-                  this.router.navigate(['admin-dashboard']);
-                } else {
-                  this.router.navigate(['']);
-                }
-                this.isSubmitting = false;
-              }, 1000);
-            },
-            error: (error) => {
-              this.store.dispatch(UserProfileFailure({ error }));
-            },
-          });
-        },
-        error: (err) => {
-          const error = {
-            message: err.error.message,
-            success: false,
-          };
-
-          const alert: AlertProps = {
-            display: true,
-            status: 'error',
-            title: 'Error',
-            message: err.error.message,
-          };
-
-          this.alertService.showAlert(alert);
-          setTimeout(() => {
-            alert.display = false;
-          }, 5000);
-          this.store.dispatch(LoginUserFailure({ error }));
-          this.isSubmitting = false;
-        },
-      });
     }
   }
 
   ngOnInit(): void {
+    this.isSignUp = this.route.snapshot.data['isSignUp'];
+
     if (this.isSignUp) {
       this.userAuthForm
         .get('name')

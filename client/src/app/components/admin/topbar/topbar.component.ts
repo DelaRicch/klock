@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { selectUser } from '@store/user/user.selector';
 import { UserInfoType } from '@type/types';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
 import { ButtonRippleDirective } from '@directives/button-ripple/button-ripple.directive';
@@ -75,11 +73,6 @@ import { ButtonComponent } from '@components/shared/button/button.component';
 export class TopbarComponent implements OnInit {
   user = {} as Readonly<UserInfoType>;
   display = false;
-  constructor(private store: Store) {
-    this.store.select(selectUser).subscribe((user) => {
-      this.user = user;
-    });
-  }
 
   ngOnInit(): void {
     // console.log(this.user)

@@ -1,4 +1,3 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -21,22 +20,48 @@
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",
-      "dom"
+      "dom",
+      "esnext.asynciterable"
     ],
     "paths": {
-      "@environment/*": ["./src/environments/*"],
-      "@pages/*": ["./src/app/pages/*"],
-      "@components/*": ["./src/app/components/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@services/*": ["./src/app/services/*"],
-      "@store/*":["./src/app/store/*"],
-      "@type/*":["./src/types/*"],
-      "@utils/*":["./src/app/utils/*"],
-      "@pipes/*":["./src/app/pipes/*"],
-      "@directives/*":["./src/app/directives/*"],
-      "@guards/*":["./src/app/guards/*"],
-      "@icons/*":["./src/app/icons/*"],
-    }
+      "@environment/*": [
+        "./src/environments/*"
+      ],
+      "@pages/*": [
+        "./src/app/pages/*"
+      ],
+      "@components/*": [
+        "./src/app/components/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@services/*": [
+        "./src/app/services/*"
+      ],
+      "@store/*": [
+        "./src/app/store/*"
+      ],
+      "@type/*": [
+        "./src/types/*"
+      ],
+      "@utils/*": [
+        "./src/app/utils/*"
+      ],
+      "@pipes/*": [
+        "./src/app/pipes/*"
+      ],
+      "@directives/*": [
+        "./src/app/directives/*"
+      ],
+      "@guards/*": [
+        "./src/app/guards/*"
+      ],
+      "@icons/*": [
+        "./src/app/icons/*"
+      ]
+    },
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

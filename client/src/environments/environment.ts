@@ -1,4 +1,4 @@
 export const environment = {
-    production: true,
-    apiUrl: 'http://localhost:8000/',
+  production: true,
+  KLOCK_GRAPHQL_URI: 'https://klock.onrender.com',
 };

@@ -1,4 +1,3 @@
-import { AuthService } from '@services/auth/auth.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { NgFor, NgIf } from '@angular/common';
 import { Component, ElementRef, HostListener, effect } from '@angular/core';
@@ -38,7 +37,6 @@ export class DropdownMenuComponent {
   constructor(
     private dropdownService: DropdownService,
     private elementRef: ElementRef,
-    private authService: AuthService,
     private router: Router
   ) {
     effect(() => {
@@ -62,7 +60,6 @@ export class DropdownMenuComponent {
 
   handleNavigate(dropdown: DropdownItemProp) {
     if (dropdown.name === 'Log Out') {
-      this.authService.logOut();
       this.router.navigate(['/sign-in']);
     } else {
       this.router.navigate([`/${dropdown.path}`]);

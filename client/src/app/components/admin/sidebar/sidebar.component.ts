@@ -3,7 +3,6 @@ import { NavigationEnd, Router, RouterLinkActive } from '@angular/router';
 import { SidebarIconComponent } from '@components/admin/sidebar-icon/sidebar-icon.component';
 import { ButtonComponent } from '@components/shared/button/button.component';
 import { LogoComponent } from '@icons/logo/logo.component';
-import { AuthService } from '@services/auth/auth.service';
 
 @Component({
   selector: 'klock-sidebar',
@@ -18,7 +17,7 @@ import { AuthService } from '@services/auth/auth.service';
 })
 export class SidebarComponent {
   activeRoute = '';
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.activeRoute = event.url;
@@ -51,6 +50,5 @@ export class SidebarComponent {
   }
 
   handleLogOut() {
-    this.authService.logOut();
   }
 }

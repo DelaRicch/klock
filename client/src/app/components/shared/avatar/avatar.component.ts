@@ -1,8 +1,6 @@
-import { selectUser } from '@store/user/user.selector';
 import { UserInfoType } from '@type/types';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { GetInitialsPipe } from '@pipes/get-initials.pipe';
-import { Store } from '@ngrx/store';
 import { DropdownService } from '@services/dropdown/dropdown.service';
 
 @Component({
@@ -26,11 +24,8 @@ import { DropdownService } from '@services/dropdown/dropdown.service';
 export class AvatarComponent {
   user = {} as UserInfoType;
 
-  constructor(private store: Store, private dropdownService: DropdownService) {
-    this.store.select(selectUser).subscribe((user) => {
-      this.user = user;
-    });
-  }
+
+  dropdownService = inject(DropdownService);
 
   toggleDropdownUserMenu() {
     this.dropdownService.toggleDropdown();

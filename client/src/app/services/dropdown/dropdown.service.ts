@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { selectUser } from '@store/user/user.selector';
+
 import { DropdownItemProp, UserInfoType } from '@type/types';
 
 @Injectable({
@@ -12,27 +11,6 @@ export class DropdownService {
   dropdownMenu = signal<boolean>(false);
   dropdownItems = signal<DropdownItemProp[]>([]);
 
-  constructor(private store: Store) {
-    this.store.select(selectUser).subscribe((user) => {
-      this.user = user;
-    });
-
-    if (this.user.role === 'ADMIN') {
-      this.dropdownItems.set([
-        {
-          name: 'Dashboard',
-          path: 'dashboard',
-        },
-        {
-          name: 'Users',
-          path: 'users',
-        },
-        {
-          name: 'Log Out',
-        },
-      ]);
-    }
-  }
 
   toggleDropdown() {
     this.dropdownMenu.set(!this.dropdownMenu());
