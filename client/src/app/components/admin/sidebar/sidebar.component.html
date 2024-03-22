@@ -13,7 +13,6 @@
       @for(item of sidebarItems; track item.id) {
       <klock-button
         [isRipple]="true"
-        [variant]="activeRoute === '/' + item.path ? 'primary' : 'secondary'"
         (buttonClick)="handleNavigateRoute(item.path)"
       >
         <div class="flex gap-4">

@@ -1,100 +1,99 @@
-  <div class="container h-auto relative sm:hidden">
-    <img src="assets/auth-bg.png" class="h-full w-full" alt="auth-bg" />
+<div class="container h-auto relative sm:hidden">
+  <img src="assets/auth-bg.png" class="h-full w-full" alt="auth-bg" />
+  <div
+    class="absolute w-full h-full left-0 top-0 flex flex-col gap-4 sm:gap-8 justify-center items-center z-10"
+  >
+    <klock-logo
+      innerColor="#FFFFFF"
+      outerColor="#1D2939"
+      labelColor="#FFFFFF"
+    />
+    <h4 class="login-sigup-label">{{ isSignUp ? "sign up" : "sign in" }}</h4>
+  </div>
+</div>
+<div
+  class="py-8 px-[5vw] sm:flex sm:items-center sm:justify-center sm:h-screen"
+>
+  <form
+    class="bg-[#FBFBFB] rounded-lg flex flex-col gap-8 py-6 w-full sm:w-[30rem] md:w-[33rem]"
+    [formGroup]="userAuthForm"
+  >
     <div
-      class="absolute w-full h-full left-0 top-0 flex flex-col gap-4 sm:gap-8 justify-center items-center z-10"
+      class="w-full h-full left-0 top-0 hidden sm:flex flex-col gap-8 justify-center items-center"
     >
       <klock-logo
-        innerColor="#FFFFFF"
-        outerColor="#1D2939"
-        labelColor="#FFFFFF"
+        innerColor="#1D2939"
+        outerColor="#FFFFFF"
+        labelColor="#1D2939"
       />
-      <h4 class="login-sigup-label">{{ isSignUp ? "sign up" : "sign in" }}</h4>
+      <h4 class="login-sigup-label">
+        {{ isSignUp ? "sign up" : "sign in" }}
+      </h4>
     </div>
-  </div>
-  <div
-    class="py-8 px-[5vw] sm:flex sm:items-center sm:justify-center sm:h-screen"
-  >
-    <form
-      class="bg-[#FBFBFB] rounded-lg flex flex-col gap-8 py-6 w-full sm:w-[30rem] md:w-[33rem]"
-      [formGroup]="userAuthForm"
-      (submit)="onSubmit($event)"
+    <div
+      class="flex flex-col gap-8 max-h-[38vh] overflow-y-auto px-4 sm:px-8 md:px-10"
     >
-      <div
-        class="w-full h-full left-0 top-0 hidden sm:flex flex-col gap-8 justify-center items-center"
-      >
-        <klock-logo
-          innerColor="#1D2939"
-          outerColor="#FFFFFF"
-          labelColor="#1D2939"
+      @if (isSignUp) {
+      <klock-input
+        id="name"
+        placeholder="Enter your full name"
+        label="name"
+        [control]="userAuthForm.controls.name"
+      />
+      }
+
+      <klock-input
+        id="email"
+        placeholder="Enter your email"
+        label="email"
+        type="email"
+        [control]="userAuthForm.controls.email"
+      />
+
+      <klock-input
+        id="password"
+        label="password"
+        placeholder="Enter your password"
+        type="password"
+        [control]="userAuthForm.controls.password"
+        [isPassword]="true"
+      />
+
+      @if (isSignUp) {
+      <klock-input
+        id="confirm-password"
+        label="confirm password"
+        placeholder="Confirm password"
+        type="password"
+        [control]="userAuthForm.controls.confirmPassword"
+        [isPassword]="true"
+        [mismatch]="userAuthForm.controls.password"
+      />
+      }
+
+      <div class="flex gap-1">
+        <klock-checkbox
+          id="terms"
+          [label]="isSignUp ? 'I agree the' : 'Remember Me'"
+          [control]="
+            isSignUp
+              ? userAuthForm.controls.termsAndConditions
+              : userAuthForm.controls.rememberMe
+          "
+          [isRequired]="isSignUp"
         />
-        <h4 class="login-sigup-label">
-          {{ isSignUp ? "sign up" : "sign in" }}
-        </h4>
-      </div>
-      <div
-        class="flex flex-col gap-8 max-h-[38vh] overflow-y-auto px-4 sm:px-8 md:px-10"
-      >
         @if (isSignUp) {
-        <klock-input
-          id="name"
-          placeholder="Enter your full name"
-          label="name"
-          [control]="userAuthForm.controls.name"
-        />
+        <a
+          [routerLink]="['/terms-and-conditions']"
+          target="_blank"
+          class="text-blue hover:underline transition-all duration-200 ease-linear"
+          >Terms and conditions</a
+        >
         }
-
-        <klock-input
-          id="email"
-          placeholder="Enter your email"
-          label="email"
-          type="email"
-          [control]="userAuthForm.controls.email"
-        />
-
-        <klock-input
-          id="password"
-          label="password"
-          placeholder="Enter your password"
-          type="password"
-          [control]="userAuthForm.controls.password"
-          [isPassword]="true"
-        />
-
-        @if (isSignUp) {
-        <klock-input
-          id="confirm-password"
-          label="confirm password"
-          placeholder="Confirm password"
-          type="password"
-          [control]="userAuthForm.controls.confirmPassword"
-          [isPassword]="true"
-          [mismatch]="userAuthForm.controls.password"
-        />
-        }
-
-        <div class="flex gap-1">
-          <klock-checkbox
-            id="terms"
-            [label]="isSignUp ? 'I agree the' : 'Remember Me'"
-            [control]="
-              isSignUp
-                ? userAuthForm.controls.termsAndConditions
-                : userAuthForm.controls.rememberMe
-            "
-            [isRequired]="isSignUp"
-          />
-          @if (isSignUp) {
-          <a
-            [routerLink]="['/terms-and-conditions']"
-            target="_blank"
-            class="text-blue hover:underline transition-all duration-200 ease-linear"
-            >Terms and conditions</a
-          >
-          }
-        </div>
       </div>
+    </div>
 
-      <div class="px-4 sm:px-8 md:px-10">
+    <!-- <div class="px-4 sm:px-8 md:px-10">
         <button
           type="submit"
           [disabled]="isSubmitting || userAuthForm.invalid"
@@ -108,15 +107,26 @@
           </span>
           }
         </button>
-      </div>
+      </div> -->
 
-      <div class="flex items-center justify-center gap-1 text-sm">
-        <span>{{
-          isSignUp ? "Alredy have an account?" : "Don’t have an account?"
-        }}</span>
-        <a [routerLink]="isSignUp ? '/sign-in' : '/sign-up'" class="link">{{
-          isSignUp ? "Sign In" : "Sign Up"
-        }}</a>
-      </div>
-    </form>
-  </div>
+    <klock-button
+      role="button"
+      (click)="onSubmit()"
+      [tabindex]="(isSubmitting || userAuthForm.invalid) ? '-1' : '0'"
+      [isLoading]="isSubmitting"
+      [disabled]="isSubmitting || userAuthForm.invalid"
+      label="sign in"
+      className="max-w-[219px] mx-auto"
+      loaderClassName="border-white border-t-transparent"
+    ></klock-button>
+
+    <div class="flex items-center justify-center gap-1 text-sm">
+      <span>{{
+        isSignUp ? "Alredy have an account?" : "Don’t have an account?"
+      }}</span>
+      <a [routerLink]="isSignUp ? '/sign-in' : '/sign-up'" class="link">{{
+        isSignUp ? "Sign In" : "Sign Up"
+      }}</a>
+    </div>
+  </form>
+</div>

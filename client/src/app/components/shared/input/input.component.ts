@@ -1,4 +1,4 @@
-import { KeyValuePipe, NgClass, NgFor } from '@angular/common';
+import { KeyValuePipe, NgFor } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -8,11 +8,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { EyeComponent } from '@components/icons/eye/eye.component';
+import { cn } from '@utils/helpers';
 
 @Component({
   selector: 'klock-input',
   standalone: true,
-  imports: [EyeComponent, ReactiveFormsModule, KeyValuePipe, NgFor, NgClass],
+  imports: [EyeComponent, ReactiveFormsModule, KeyValuePipe, NgFor],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css',
 })
@@ -28,6 +29,8 @@ export class InputComponent implements OnInit {
   @Input() className: string = '';
   @Input() pattern?: string;
   @Input() mismatch?: FormControl;
+
+  cn = cn;
 
   getErrorMessages(): Record<string, string> {
     if (this.type === 'password' || this.mismatch) {

@@ -43,12 +43,7 @@ func main() {
 	frontendUrl := os.Getenv("FRONTEND_URL")
 
 	app.Use(resolver.GinContextToContextMiddleware())
-	app.POST("/graphql", ginhandler.GrapghqlHandler())
-	app.GET("/", ginhandler.PlaygroundHandler())
 
-	// Google auth
-	app.GET("auth/google", services.GoogleLogin)
-	app.GET("auth/google/callback", services.GoogleCallback)
 
 	// set cors
 	app.Use(cors.New(cors.Config{
@@ -58,6 +53,13 @@ func main() {
 		// ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
+
+	app.POST("/graphql", ginhandler.GrapghqlHandler())
+	app.GET("/", ginhandler.PlaygroundHandler())
+
+	// Google auth
+	app.GET("auth/google", services.GoogleLogin)
+	app.GET("auth/google/callback", services.GoogleCallback)
 
 	go func() {
 		c := make(chan os.Signal, 1)

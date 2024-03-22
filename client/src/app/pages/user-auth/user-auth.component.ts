@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
 
 import { AlertProps, LoginUserType, RegisterUserType } from '@type/types';
 
@@ -16,6 +15,9 @@ import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
 import { CheckboxComponent } from '@components/shared/checkbox/checkbox.component';
 import { LogoComponent } from '@icons/logo/logo.component';
+import { ButtonComponent } from '@components/shared/button/button.component';
+import { Apollo, gql } from 'apollo-angular';
+import { LOGIN_USER } from '../../graphql/user.mutations';
 
 @Component({
   selector: 'klock-user-auth',
@@ -23,10 +25,10 @@ import { LogoComponent } from '@icons/logo/logo.component';
   imports: [
     LogoComponent,
     ReactiveFormsModule,
-    NgClass,
     RouterLink,
     InputComponent,
     CheckboxComponent,
+    ButtonComponent,
   ],
   templateUrl: './user-auth.component.html',
   styleUrl: './user-auth.component.css',
@@ -35,9 +37,10 @@ export class UserAuthComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
   alertService = inject(AlertService);
+  apollo = inject(Apollo);
 
-  @HostBinding("class") get hostClass(){
-    return "flex flex-col";
+  @HostBinding('class') get hostClass() {
+    return 'flex flex-col';
   }
 
   isSignUp = false;
@@ -45,7 +48,6 @@ export class UserAuthComponent implements OnInit {
   displayPassword = false;
   displayConfirmPassword = false;
   emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
 
   userAuthForm = new FormGroup({
     name: new FormControl(''),
@@ -77,8 +79,7 @@ export class UserAuthComponent implements OnInit {
     return null;
   }
 
-  onSubmit(event: SubmitEvent) {
-    event.preventDefault();
+  onSubmit() {
     this.isSubmitting = true;
 
     if (this.isSignUp) {
@@ -88,18 +89,30 @@ export class UserAuthComponent implements OnInit {
         password: this.userAuthForm.value.password,
         remember: this.userAuthForm.value.rememberMe,
       };
-
-
     } else {
       const request = {
         email: this.userAuthForm.value.email,
         password: this.userAuthForm.value.password,
         remember: this.userAuthForm.value.rememberMe,
       };
-
+      this.apollo
+        .mutate({
+          mutation: LOGIN_USER,
+          variables: request,
+          errorPolicy: 'all',
+        })
+        .subscribe({
+          next(value) {
+              console.log(value, "value")
+          },
+          error(err) {
+              console.log(err, "Error")
+          },
+        }).add(() => {
+          this.isSubmitting = false;
+        });
     }
   }
-
   ngOnInit(): void {
     this.isSignUp = this.route.snapshot.data['isSignUp'];
 
