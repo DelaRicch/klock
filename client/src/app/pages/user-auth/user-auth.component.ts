@@ -20,6 +20,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { LOGIN_USER } from '../../graphql/user.mutations';
 import { environment } from '@environment/environment';
 import { UserService } from '@services/user/user.service';
+import { AuthService } from '@services/auth/auth.service';
 
 @Component({
   selector: 'klock-user-auth',
@@ -40,6 +41,7 @@ export class UserAuthComponent implements OnInit {
   route = inject(ActivatedRoute);
   alertService = inject(AlertService);
   userService = inject(UserService);
+  authService = inject(AuthService);
   apollo = inject(Apollo);
 
   @HostBinding('class') get hostClass() {
@@ -121,6 +123,8 @@ export class UserAuthComponent implements OnInit {
             } as AlertProps;
             this.alertService.showAlert(success);
             this.userService.setUserProfile(res.LoginUser.user);
+            this.authService.setAccessToken(res.LoginUser.token.accessToken);
+            this.authService.setRefreshToken(res.LoginUser.token.refreshToken);
             // this.router.navigate(['/']);
           }
 

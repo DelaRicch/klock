@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -21,16 +22,17 @@ export type UserInfoType = Omit<
   'password' | 'confirmPassword' | 'termsAndConditions' | 'rememberMe'
 >;
 
+export interface TokenType {
+  value: string;
+  expiration: number;
+}
+
 export interface AuthResponseType {
   message: string;
-  accessToken: {
-    value: string;
-    expiration: number;
-  };
-  refreshToken: {
-    value: string;
-    expiration: number;
-  };
+  token: {
+    accessToken: TokenType;
+    refreshToken: TokenType;
+  }
   user: UserInfoType;
 }
 
