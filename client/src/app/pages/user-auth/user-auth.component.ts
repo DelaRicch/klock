@@ -19,6 +19,7 @@ import { ButtonComponent } from '@components/shared/button/button.component';
 import { Apollo, gql } from 'apollo-angular';
 import { LOGIN_USER } from '../../graphql/user.mutations';
 import { environment } from '@environment/environment';
+import { UserService } from '@services/user/user.service';
 
 @Component({
   selector: 'klock-user-auth',
@@ -38,6 +39,7 @@ export class UserAuthComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
   alertService = inject(AlertService);
+  userService = inject(UserService);
   apollo = inject(Apollo);
 
   @HostBinding('class') get hostClass() {
@@ -118,6 +120,7 @@ export class UserAuthComponent implements OnInit {
               title: 'Success',
             } as AlertProps;
             this.alertService.showAlert(success);
+            this.userService.setUserProfile(res.LoginUser.user);
             // this.router.navigate(['/']);
           }
 
