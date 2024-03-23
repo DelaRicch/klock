@@ -141,8 +141,8 @@ export class UserAuthComponent implements OnInit {
   }
 
   googleSignIn(): void {
-    // window.location.href = environment.KLOCK_GRAPHQL_URI + "/auth/google"
-    window.location.href = 'http://localhost:8080/auth/google';
+    window.location.href = environment.KLOCK_GRAPHQL_URI + "/auth/google"
+    // window.location.href = 'http://localhost:8080/auth/google';
   }
 
   ngOnInit(): void {
