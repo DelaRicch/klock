@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { AlertProps, LoginUserType, RegisterUserType } from '@type/types';
+import { AlertProps, LoginResponse, LoginUserType, RegisterUserType } from '@type/types';
 
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
@@ -18,6 +18,7 @@ import { LogoComponent } from '@icons/logo/logo.component';
 import { ButtonComponent } from '@components/shared/button/button.component';
 import { Apollo, gql } from 'apollo-angular';
 import { LOGIN_USER } from '../../graphql/user.mutations';
+import { environment } from '@environment/environment';
 
 @Component({
   selector: 'klock-user-auth',
@@ -87,32 +88,50 @@ export class UserAuthComponent implements OnInit {
         name: this.userAuthForm.value.name,
         email: this.userAuthForm.value.email,
         password: this.userAuthForm.value.password,
-        remember: this.userAuthForm.value.rememberMe,
+        rememberMe: this.userAuthForm.value.rememberMe,
       };
     } else {
       const request = {
         email: this.userAuthForm.value.email,
         password: this.userAuthForm.value.password,
-        remember: this.userAuthForm.value.rememberMe,
+        rememberMe: this.userAuthForm.value.rememberMe,
       };
       this.apollo
         .mutate({
           mutation: LOGIN_USER,
-          variables: request,
+          variables: { input: request },
           errorPolicy: 'all',
         })
-        .subscribe({
-          next(value) {
-              console.log(value, "value")
-          },
-          error(err) {
-              console.log(err, "Error")
-          },
-        }).add(() => {
-          this.isSubmitting = false;
+        .subscribe(({ data, errors, loading }) => {
+          if(!loading) {
+            this.isSubmitting = false;
+          }
+
+          if(data) {
+            const res = data as LoginResponse
+            console.log(res.LoginUser);
+
+            const success = {
+              message: res.LoginUser.message,
+              status: 'success',
+              display: true,
+              title: 'Success',
+            } as AlertProps;
+            this.alertService.showAlert(success);
+            // this.router.navigate(['/']);
+          }
+
+          if (errors) {
+            this.alertService.getErrorMessages([...errors]);
+          }
         });
     }
   }
+
+  googleSignIn(): void {
+    window.location.href = environment.KLOCK_GRAPHQL_URI + "/auth/google"
+  }
+
   ngOnInit(): void {
     this.isSignUp = this.route.snapshot.data['isSignUp'];
 

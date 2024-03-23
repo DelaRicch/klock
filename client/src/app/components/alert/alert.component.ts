@@ -23,7 +23,7 @@ import { AlertProps } from '@type/types';
       <klock-alert-icon [status]="alert.status" />
       <div class="flex flex-col gap-1">
         <span class="font-bold">{{ alert.title }}</span>
-        <span>{{ alert.message }}</span>
+        <span>{{ alert.message.charAt(0).toUpperCase() + alert.message.slice(1) }}</span>
       </div>
     </div>
   `,

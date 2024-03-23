@@ -1,17 +1,3 @@
-import { ElementRef } from '@angular/core';
-
-export interface AppState {
-  user: UserStateType;
-  auth: AuthStateType;
-}
-
-export interface UserStateType {
-  isLoading?: boolean;
-  success: boolean;
-  user: UserInfoType;
-  message?: string;
-}
-
 export interface User {
   id: string;
   name: string;
@@ -35,8 +21,7 @@ export type UserInfoType = Omit<
   'password' | 'confirmPassword' | 'termsAndConditions' | 'rememberMe'
 >;
 
-export interface AuthStateType {
-  success: boolean;
+export interface AuthResponseType {
   message: string;
   accessToken: {
     value: string;
@@ -46,6 +31,11 @@ export interface AuthStateType {
     value: string;
     expiration: number;
   };
+  user: UserInfoType;
+}
+
+export interface LoginResponse {
+  LoginUser: AuthResponseType;
 }
 
 export interface ClientOrders {

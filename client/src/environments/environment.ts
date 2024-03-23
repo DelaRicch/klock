@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  KLOCK_GRAPHQL_URI: 'https://klock.onrender.com/graphql',
+  KLOCK_GRAPHQL_URI: 'https://klock.onrender.com',
 };
