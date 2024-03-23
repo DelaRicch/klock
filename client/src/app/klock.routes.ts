@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard, notLoggedInGuard } from '@guards/auth-guard/auth.guard';
+import { adminGuard, notLoggedInGuard } from '@guards/auth.guard';
 import { HomeComponent } from '@pages/home/home.component';
 
 const UserAuthComponent = () =>
@@ -14,12 +14,14 @@ const AdminDashboard = () =>
   import('@pages/admin/dashboard/dashboard.component').then(
     (m) => m.DashboardComponent
   );
-const AdminAllProducts = () => import('@pages/admin/all-products/all-products.component').then(
-  m => m.AllProductsComponent
-);
-const AdminOrderList = () => import('@pages/admin/order-list/order-list.component').then(
-  m => m.OrderListComponent
-)
+const AdminAllProducts = () =>
+  import('@pages/admin/all-products/all-products.component').then(
+    (m) => m.AllProductsComponent
+  );
+const AdminOrderList = () =>
+  import('@pages/admin/order-list/order-list.component').then(
+    (m) => m.OrderListComponent
+  );
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -60,7 +62,6 @@ export const routes: Routes = [
         path: 'order-list',
         loadComponent: AdminOrderList,
       },
-
     ],
   },
   {

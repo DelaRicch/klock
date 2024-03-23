@@ -125,7 +125,7 @@ export class UserAuthComponent implements OnInit {
             this.userService.setUserProfile(res.LoginUser.user);
             this.authService.setAccessToken(res.LoginUser.token.accessToken);
             this.authService.setRefreshToken(res.LoginUser.token.refreshToken);
-            // this.router.navigate(['/']);
+            this.router.navigate(['admin-dashboard']);
           }
 
           if (errors) {
