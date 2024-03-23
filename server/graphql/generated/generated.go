@@ -75,7 +75,6 @@ type ComplexityRoot struct {
 
 	Query struct {
 		RequestNewToken func(childComplexity int) int
-		SocialLogin     func(childComplexity int) int
 		User            func(childComplexity int) int
 		Users           func(childComplexity int) int
 	}
@@ -136,7 +135,6 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*models.UserProfile, error)
 	User(ctx context.Context) (*models.UserProfile, error)
-	SocialLogin(ctx context.Context) (*models.UserAuthResponse, error)
 	RequestNewToken(ctx context.Context) (*models.UserAuthResponse, error)
 }
 
@@ -314,13 +312,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.RequestNewToken(childComplexity), true
-
-	case "Query.SocialLogin":
-		if e.complexity.Query.SocialLogin == nil {
-			break
-		}
-
-		return e.complexity.Query.SocialLogin(childComplexity), true
 
 	case "Query.User":
 		if e.complexity.Query.User == nil {
@@ -701,7 +692,6 @@ type TokenResponse {
 type Query {
 	Users: [UserProfile]
 	User: UserProfile!
-	SocialLogin: UserAuthResponse!
 	RequestNewToken: UserAuthResponse!
 }
 
@@ -1857,58 +1847,6 @@ func (ec *executionContext) fieldContext_Query_User(ctx context.Context, field g
 				return ec.fieldContext_UserProfile_gender(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserProfile", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_SocialLogin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_SocialLogin(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SocialLogin(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*models.UserAuthResponse)
-	fc.Result = res
-	return ec.marshalNUserAuthResponse2ᚖgithubᚗcomᚋDelaRicchᚋklockᚋserverᚋgraphqlᚋmodelsᚐUserAuthResponse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_SocialLogin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "message":
-				return ec.fieldContext_UserAuthResponse_message(ctx, field)
-			case "user":
-				return ec.fieldContext_UserAuthResponse_user(ctx, field)
-			case "token":
-				return ec.fieldContext_UserAuthResponse_token(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type UserAuthResponse", field.Name)
 		},
 	}
 	return fc, nil
@@ -5511,28 +5449,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_User(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "SocialLogin":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_SocialLogin(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

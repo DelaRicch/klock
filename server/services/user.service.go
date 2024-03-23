@@ -66,15 +66,18 @@ func GoogleCallback(c *gin.Context) {
 		fmt.Fprintln(c.Writer, "Json unmarshaling failed")
 	}
 
-	GoogleAuthValue(c, data)
+	val, ero := GoogleAuthValue(c, data)
+	if ero != nil {
+		fmt.Fprintln(c.Writer, ero)
+	}
 
 	frontendUrl := os.Getenv("FRONTEND_URL")
 
-	c.Redirect(http.StatusSeeOther, frontendUrl)
+	c.Redirect(http.StatusSeeOther, fmt.Sprintf("%vklock-google-auth/?token=%v", frontendUrl, string(val.AccessToken.Value)))
 
 }
 
-func GoogleAuthValue(c *gin.Context, data map[string]interface{}) (*models.UserAuthResponse, error) {
+func GoogleAuthValue(c *gin.Context, data map[string]interface{}) (*models.TokenResponse, error) {
 
 	authProvider := "Google"
 
@@ -89,9 +92,9 @@ func GoogleAuthValue(c *gin.Context, data map[string]interface{}) (*models.UserA
 	}
 
 	// Generate JWT
-	refreshTkn, token, exp, rfExp, err := helpers.CreateJwtToken(user)
+	refreshTkn, token, exp, rfExp, err := helpers.CreateSocialJwtToken(user)
 	if err != nil {
-		return &models.UserAuthResponse{}, fmt.Errorf(errorRfTokenMsg)
+		return &models.TokenResponse{}, fmt.Errorf(errorRfTokenMsg)
 	}
 
 	accessToken := models.Token{
@@ -110,26 +113,13 @@ func GoogleAuthValue(c *gin.Context, data map[string]interface{}) (*models.UserA
 	if result.RowsAffected > 0 {
 
 		if existingUser.Password != "" {
-			return &models.UserAuthResponse{}, fmt.Errorf("Social login not allowed for this account")
+			return &models.TokenResponse{}, fmt.Errorf("Social login not allowed for this account")
 		}
 
-		return &models.UserAuthResponse{
-			Message: fmt.Sprintf("Welcome %s", existingUser.Name),
-			User: &models.UserProfile{
-				UserID:   &existingUser.UserID,
-				Name:     &existingUser.Name,
-				Email:    &existingUser.Email,
-				Role:     &existingUser.Role,
-				Photo:    existingUser.Photo,
-				Phone:    existingUser.Phone,
-				Location: existingUser.Location,
-				Gender:   existingUser.Gender,
-			},
-			Token: &models.TokenResponse{
-				AccessToken:  &accessToken,
+		return &models.TokenResponse{
+				AccessToken: &accessToken,
 				RefreshToken: &refreshToken,
-			},
-		}, nil
+			}, nil
 
 	}
 
@@ -138,25 +128,12 @@ func GoogleAuthValue(c *gin.Context, data map[string]interface{}) (*models.UserA
 
 	result = database.DB.Create(user)
 	if result.Error != nil {
-		return &models.UserAuthResponse{}, result.Error
+		return &models.TokenResponse{}, result.Error
 	}
 
-	return &models.UserAuthResponse{
-		Message: fmt.Sprintf("Welcome %s", user.Name),
-		User: &models.UserProfile{
-			UserID:   &user.UserID,
-			Name:     &user.Name,
-			Email:    &user.Email,
-			Role:     &user.Role,
-			Photo:    user.Photo,
-			Phone:    user.Phone,
-			Location: user.Location,
-			Gender:   user.Gender,
-		},
-		Token: &models.TokenResponse{
-			AccessToken:  &accessToken,
-			RefreshToken: &refreshToken,
-		},
+	return &models.TokenResponse{
+		AccessToken: &accessToken,
+		RefreshToken: &refreshToken,
 	}, nil
 
 }

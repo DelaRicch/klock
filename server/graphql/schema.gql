@@ -58,7 +58,6 @@ type TokenResponse {
 type Query {
 	Users: [UserProfile]
 	User: UserProfile!
-	SocialLogin: UserAuthResponse!
 	RequestNewToken: UserAuthResponse!
 }
 

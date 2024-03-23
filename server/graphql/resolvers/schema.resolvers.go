@@ -113,18 +113,6 @@ func (r *queryResolver) User(ctx context.Context) (*models.UserProfile, error) {
 	return services.GetUserProfile(ginc)
 }
 
-// SocialLogin is the resolver for the SocialLogin field.
-func (r *queryResolver) SocialLogin(ctx context.Context) (*models.UserAuthResponse, error) {
-	_, err := GinContextFromContext(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf(err.Error())
-	}
-
-	// return services.GoogleAuthValue(ginc, map[string]interface{}{})
-	return nil, nil
-}
-
 // RequestNewToken is the resolver for the RequestNewToken field.
 func (r *queryResolver) RequestNewToken(ctx context.Context) (*models.UserAuthResponse, error) {
 	ginC, err := GinContextFromContext(ctx)

@@ -9,7 +9,12 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { AlertProps, LoginResponse, LoginUserType, RegisterUserType } from '@type/types';
+import {
+  AlertProps,
+  LoginResponse,
+  LoginUserType,
+  RegisterUserType,
+} from '@type/types';
 
 import { InputComponent } from '@components/shared/input/input.component';
 import { AlertService } from '@services/alert/alert.service';
@@ -107,12 +112,12 @@ export class UserAuthComponent implements OnInit {
           errorPolicy: 'all',
         })
         .subscribe(({ data, errors, loading }) => {
-          if(!loading) {
+          if (!loading) {
             this.isSubmitting = false;
           }
 
-          if(data) {
-            const res = data as LoginResponse
+          if (data) {
+            const res = data as LoginResponse;
             console.log(res.LoginUser);
 
             const success = {
@@ -136,7 +141,8 @@ export class UserAuthComponent implements OnInit {
   }
 
   googleSignIn(): void {
-    window.location.href = environment.KLOCK_GRAPHQL_URI + "/auth/google"
+    // window.location.href = environment.KLOCK_GRAPHQL_URI + "/auth/google"
+    window.location.href = 'http://localhost:8080/auth/google';
   }
 
   ngOnInit(): void {

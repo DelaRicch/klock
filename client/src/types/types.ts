@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string;
@@ -11,6 +10,7 @@ export interface User {
   photo: string;
   location: string;
   gender: string;
+  exp?: string;
 }
 
 export type RegisterUserType = Pick<User, 'name' | 'email' | 'password'>;
@@ -32,7 +32,7 @@ export interface AuthResponseType {
   token: {
     accessToken: TokenType;
     refreshToken: TokenType;
-  }
+  };
   user: UserInfoType;
 }
 
@@ -60,6 +60,5 @@ export interface DropdownItemProp {
   name: string;
   path?: string;
 }
-
 
 export type PaginationItem = number | '...';

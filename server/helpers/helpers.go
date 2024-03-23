@@ -94,6 +94,43 @@ func CreateJwtToken(user *models.User) (string, string, int64, int64, error) {
 	return refreshTkn, tkn, exp, rfExp, nil
 }
 
+func CreateSocialJwtToken(user *models.User) (string, string, int64, int64, error) {
+	exp := time.Now().Add(time.Hour * 1).Unix()
+	rfExp := time.Now().Add(time.Hour * 24 * 30).Unix()
+	claims := jwt.MapClaims{
+		"exp":     exp,
+		"userId":  user.UserID,
+		"name": user.Name,
+		"email": user.Email,
+		"role": user.Role,
+		"photo": user.Photo,
+		"phone": user.Phone,
+		"location": user.Location,
+		"gender": user.Gender,
+	}
+
+	rfClaims := jwt.MapClaims{
+		"exp":    rfExp,
+		"userId": user.UserID,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tkn, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return "", "", 0, 0, err
+	}
+
+	rfToken := jwt.NewWithClaims(jwt.SigningMethodHS256, rfClaims)
+	refreshTkn, rfErr := rfToken.SignedString([]byte("rf_secret"))
+	if rfErr != nil {
+		return "", "", 0, 0, rfErr
+	}
+
+	return refreshTkn, tkn, exp, rfExp, nil
+}
+
+
+
 func ValidateAccessToken(c *gin.Context) (*models.User, error) {
 	accessToken := c.GetHeader("Authorization")
 

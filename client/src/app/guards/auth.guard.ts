@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '@services/auth/auth.service';
 import { UserService } from '@services/user/user.service';
+import { TokenType } from '@type/types';
 
 export const adminGuard: CanActivateFn = () => {
   const router: Router = inject(Router);
@@ -11,7 +12,7 @@ export const adminGuard: CanActivateFn = () => {
 
   if (
     !(
-      authService.getAccessToken() &&
+      authService.getAccessToken().value &&
       userService.getUserProfile().role === 'ADMIN'
     )
   ) {
@@ -24,8 +25,10 @@ export const notLoggedInGuard: CanActivateFn = () => {
   const location = inject(Location);
   const authService = inject(AuthService);
 
-  if (authService.getAccessToken()) {
+  if (authService.getAccessToken().value) {
+    console.log(authService.getAccessToken());
     location.back();
+    return false;
   }
 
   return true;
