@@ -1,0 +1,107 @@
+<section
+  class="border border-grey-500 w-full min-h-max rounded-lg flex flex-col gap-5 pt-3 pb-1"
+>
+  <span class="font-semibold text-xl px-2 capitalize">{{title}}</span>
+  <div [class]="cn('w-full overflow-x-auto', {
+    'min-h-[380px]': !tableData.length
+  })">
+    <table class="w-full min-w-[980px]">
+      <thead>
+        <tr class="border border-y-grey-G400 h-14">
+          @for(thead of tableHeaders; track thead["key"]){
+          <th>{{ thead["name"] }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for(tr of tableData | paginate: config; track tr){
+        <tr class="h-8">
+          @for(th of tableHeaders; track th["key"]){
+          <td class="text-center">
+            @if(th["key"] === "status"){
+            <span
+              [class]="
+              cn(
+                'w-24 h-6 rounded-2xl bg-green-G50 text-green-G700 flex items-center gap-2 px-2.5 mx-auto',
+                {
+                  'bg-yellow-Y50 text-yellow-Y800' : (tr[th['key']]).toString().toLowerCase() === 'pending',
+                }
+              )
+            "
+            >
+              <span
+                [class]="cn('w-1.5 h-1.5 rounded-full bg-green-G500', {
+              'bg-yellow-Y500': (tr[th['key']]).toString().toLowerCase() === 'pending',
+            })"
+              ></span>
+              <span class="text-xs capitalize">{{ tr[th["key"]] }}</span>
+            </span>
+            } @else if (th["key"] === "orderId"){ #{{ tr[th["key"]] }} } 
+            @else if (th["key"] === "amount"){ {{ tr[th["key"]] | currency : "USD" }}
+            } @else{
+            {{ tr[th["key"]] }}
+            }
+          </td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="w-full flex justify-center">
+      @if(!tableData.length){
+        <klock-empty></klock-empty>
+      }
+    </div>
+
+  </div>
+</section>
+
+<!-- Pagination Template -->
+@if (tableData.length > itemsPerPage) {
+<pagination-template
+  #p="paginationApi"
+  [id]="config.id || ''"
+  (pageChange)="config.currentPage = $event"
+>
+  <div class="w-max h-max flex items-center mx-auto mt-12">
+    <button
+      (click)="p.previous()"
+      [disabled]="p.isFirstPage()"
+      class="border min-w-10 h-10 outline-blue-500 hover:bg-blue-B400 hover:text-white transition duration-200 flex items-center justify-center"
+    >
+      <klock-svg-icon svgName="arrow-left" color="#1D2939"></klock-svg-icon>
+    </button>
+
+    @for(page of p.pages; track page){
+    <button
+      (click)="p.setCurrent(page.value)"
+      [disabled]="p.getCurrent() === page.value"
+      [class]="
+          cn(
+            'border min-w-10 h-10 outline-blue-500 hover:bg-blue-B400 hover:text-white transition duration-200',
+            {
+              'bg-blue-B500 text-white': p.getCurrent() === page.value,
+              'hover:bg-blue-B500 hover:text-white': p.getCurrent() === page.value,
+            }
+          )
+        "
+    >
+      {{ page.label }}
+    </button>
+    }
+
+    <button
+      (click)="p.previous()"
+      [disabled]="p.isLastPage()"
+      class="border min-w-10 h-10 outline-blue-500 hover:bg-blue-B400 hover:text-white transition duration-200 flex items-center justify-center"
+    >
+      <klock-svg-icon
+        svgName="arrow-left"
+        class="transform rotate-180"
+        color="#1D2939"
+      ></klock-svg-icon>
+    </button>
+  </div>
+</pagination-template>
+}

@@ -1,0 +1,36 @@
+.login-signup-label {
+  @apply font-black text-white text-2xl sm:text-base sm:font-medium sm:text-black uppercase;
+}
+
+.container::after {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: black;
+  opacity: 0.3;
+}
+
+label {
+  @apply text-[#1D2939] text-sm;
+}
+
+.eye-position {
+  top: 50%;
+  transform: translateY(30%);
+}
+
+.link {
+  @apply text-[#181CF9];
+}
+
+input[type="text"],
+input[type="password"] {
+  @apply !pr-7;
+}
+
+input::placeholder {
+  @apply text-sm;
+}

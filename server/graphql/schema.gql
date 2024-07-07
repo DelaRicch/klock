@@ -1,0 +1,152 @@
+# User section
+
+enum Role {
+	ADMIN
+	USER
+}
+
+scalar Time
+scalar Upload
+
+
+type User {
+	name: String!
+	email: String!
+	userID: String!
+	role: Role!
+	password: String!
+	rememberMe: Boolean
+	provider: String
+	photo: String
+	phone: String
+	location: String
+	gender: String
+	createdAt: Time!
+	updatedAt: Time!
+}
+
+type UserProfile {
+	name: String
+	email: String
+	userID: String
+	role: Role
+	photo: String
+	phone: String
+	location: String
+	gender: String
+}
+
+type UserAuthResponse {
+	message: String!
+	token: String!
+}
+
+type Message {
+	message: String!
+}
+
+
+input CreateNewUser {
+	name: String!
+	email: String!
+	password: String!
+	role: Role
+}
+
+input LoginUser {
+	email: String!
+	password: String!
+	rememberMe: Boolean
+}
+
+input GoogleOneTap {
+	name: String!
+	email: String!
+	picture: String!
+
+}
+
+input UpdateUser {
+	name: String
+	email: String
+	photo: String
+	phone: String
+	location: String
+	gender: String
+}
+
+input UpdatePassword {
+	currentPassword: String!
+	newPassword: String!
+}
+
+# Product section
+enum ProductStatus {
+	COMPLETED
+	PENDING
+}
+
+enum PaymentMethod {
+	VISA
+	PAYPAL
+}
+
+type productGalleryImage {
+	ID: Int!
+	imageUrl: String!
+	productId: String!
+}
+
+type Product {
+	ID: Int!
+	productName: String!
+	productDescription: String!
+	productCategory: String!
+	productPrice: Float!
+	productDiscountPercentage: Float!
+	productQuantity: Int!
+	productBrand: String!
+	productCoverImage: String!
+	productGalleryImages: [productGalleryImage]!
+	productId: String!
+	productsRemaining: Int!
+	productsSold: Int!
+	createdAt: Time!
+	updatedAt: Time!
+}
+
+type AdminProduct {
+	productName: String
+	productDescription: String
+	productCategory: String
+	productPrice: Float
+	productDiscountPercentage: Float
+	productQuantity: Int
+	productBrand: String
+	productCoverImage: String
+	productId: String
+	productsRemaining: Int
+	productsSold: Int
+}
+
+type Query {
+	# User queries
+	Users: [UserProfile]
+	User: UserProfile!
+	RequestNewToken: UserAuthResponse!
+
+	# Product queries
+	AdminAllProducts: [AdminProduct]
+}
+
+type Mutation {
+	CreateUser(input: CreateNewUser!): UserAuthResponse!
+	LoginUser(input: LoginUser!): UserAuthResponse!
+	GoogleOneTap(input: GoogleOneTap!): UserAuthResponse!
+	UpdateUser(input: UpdateUser!): UserAuthResponse!
+	UpdatePassword(input: UpdatePassword!): Message!
+	UpdateAvatar(input: Upload!): Message!
+	DeleteUser: Message!
+	DeleteUsers(UserID: String!): Message!
+	CheckPassword(input: String!): Message!
+}

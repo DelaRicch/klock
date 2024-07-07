@@ -1,0 +1,118 @@
+<section class="flex flex-col gap-6">
+  <klock-input
+    label="product name"
+    id="product_name"
+    placeholder="Enter name of product"
+    [control]="addProductForm.controls.productName"
+    className="border-grey-G600"
+  ></klock-input>
+
+  <klock-input
+    inputType="textarea"
+    label="product description"
+    id="product_description"
+    placeholder="Enter prooduct description"
+    [control]="addProductForm.controls.productDescription"
+    className="border-grey-G600 pt-2"
+  ></klock-input>
+
+  <klock-select
+    label="category"
+    placeholder="Select an option"
+    [control]="addProductForm.controls.productCategory"
+    [options]="categoryOptions"
+  ></klock-select>
+
+  <div class="grid grid-cols-2 gap-10">
+    <klock-input
+      type="number"
+      inputmode="numeric"
+      id="product_price"
+      label="Regular Price"
+      placeholder="Enter regular price"
+      [control]="addProductForm.controls.productPrice"
+      className="border-grey-G600"
+    ></klock-input>
+
+    <klock-input
+      type="number"
+      inputmode="numeric"
+      id="product_discount"
+      label="discount percentage"
+      placeholder="Enter discount percent"
+      [control]="addProductForm.controls.productDiscount"
+      className="border-grey-G600"
+    ></klock-input>
+
+    <klock-input
+      type="number"
+      inputmode="numeric"
+      id="product_quantity"
+      label="stock quantity"
+      placeholder="Enter items in stock"
+      [control]="addProductForm.controls.productQuantity"
+      className="border-grey-G600"
+    ></klock-input>
+
+    <klock-input
+      id="product_brand"
+      label="brand name"
+      placeholder="Enter brand name"
+      [control]="addProductForm.controls.productBrandName"
+      className="border-grey-G600"
+    ></klock-input>
+  </div>
+</section>
+
+<section class="flex flex-col gap-6">
+  <klock-input
+    type="file"
+    label="cover image"
+    (uploadImage)="updateCoverImage($event)"
+  >
+    <div
+      class="flex flex-col items-center justify-center cursor-pointer pointer-events-none w-full h-full"
+    >
+      <klock-svg-icon svgName="upload"></klock-svg-icon>
+      <span class="text-center w-[400px] text-grey-G500">
+        <span class="text-blue-B500">Click to upload </span>
+        <span>or drag and drop </span>
+        <br/>
+        <span class="text-sm">SVG, PNG, JPG or GIF (max. 5000 x 4450px)</span>
+      </span>
+    </div>
+  </klock-input>
+
+  <div class="flex flex-col gap-3">
+    <span class="capitalize text-grey-G800 font-medium">product gallery</span>
+    <span class="text-grey-G500 text-sm line-clamp-1"
+    >Enhance your product showcase. Add an Image to your product
+      gallery.</span
+    >
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-6 lg:mt-8">
+      @for (image of addProductForm.controls.productGalleryImages.controls; track
+        image.value?.id) {
+        <klock-input
+          [id]="image.value?.id ?? ''"
+          type="file"
+          (uploadImage)="updateGalleryImages($event, image.value?.id ?? '')"
+          className="!h-[95px] cursor-pointer"
+          fileClass="!gap-2"
+        >
+        <span class="flex flex-col items-center justify-center w-full h-full">
+          <klock-svg-icon svgName="image-plus"></klock-svg-icon>
+          <span class="text-grey-G800 text-sm">Add image {{ $index + 1 }}</span>
+        </span>
+        </klock-input>
+      }
+    </div>
+  </div>
+<!-- 
+  <klock-button
+    role="button"
+    (click)="addProducts()"
+    [disabled]="!addProductForm.valid"
+    class="mt-4 md:mt-10 lg:mt-14 w-full">
+    Add product
+  </klock-button> -->
+</section>

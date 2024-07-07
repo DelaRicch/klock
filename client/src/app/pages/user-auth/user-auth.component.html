@@ -1,0 +1,136 @@
+<div class="h-auto relative sm:hidden">
+  <img alt="auth-bg" class="h-full w-full" src="assets/auth-bg.png" />
+  <div
+    class="absolute w-full h-full left-0 top-0 flex flex-col gap-4 sm:gap-6 justify-center items-center z-10"
+  >
+    <klock-logo
+      innerColor="#FFFFFF"
+      labelColor="#FFFFFF"
+      outerColor="#1D2939"
+    />
+    <h4 class="login-signup-label">{{ isSignUp ? "sign up" : "sign in" }}</h4>
+  </div>
+</div>
+<div
+  class="py-8 px-[5vw] sm:flex sm:items-center sm:justify-center sm:h-screen"
+>
+  <form
+    [formGroup]="userAuthForm"
+    class="bg-[#FBFBFB] rounded-lg flex flex-col gap-6 py-4 w-full sm:w-[30rem] md:w-[33rem]"
+  >
+    <div
+      class="w-full h-full left-0 top-0 hidden sm:flex flex-col gap-6 justify-center items-center"
+    >
+      <klock-logo
+        innerColor="#1D2939"
+        labelColor="#1D2939"
+        outerColor="#FFFFFF"
+      />
+      <h4 class="login-signup-label">
+        {{ isSignUp ? "sign up" : "sign in" }}
+      </h4>
+    </div>
+    <div
+      class="flex flex-col gap-8 max-h-[38vh] overflow-y-auto px-4 pb-5 sm:px-8 md:px-10"
+    >
+      @if (isSignUp) {
+        <klock-input
+          id="name"
+          placeholder="Enter your full name"
+          label="name"
+          [control]="userAuthForm.controls.name"
+        />
+      }
+
+      <klock-input
+        [control]="userAuthForm.controls.email"
+        id="email"
+        label="email"
+        placeholder="Enter your email"
+        type="email"
+      />
+
+      <klock-input
+        [control]="userAuthForm.controls.password"
+        [isPassword]="true"
+        id="password"
+        label="password"
+        placeholder="Enter your password"
+        type="password"
+      />
+
+      @if (isSignUp) {
+        <klock-input
+          id="confirm-password"
+          label="confirm password"
+          placeholder="Confirm password"
+          type="password"
+          [control]="userAuthForm.controls.confirmPassword"
+          [isPassword]="true"
+          [mismatch]="userAuthForm.controls.password"
+        />
+      }
+
+      @if (isSignUp) {
+        <div class="flex items-center gap-3">
+          <klock-checkbox
+          id="termsAndConditions"
+          label="I agree to the"
+          [control]="userAuthForm.controls.termsAndConditions"
+          ></klock-checkbox>
+          <a
+          [routerLink]="['/terms-and-conditions']"
+          target="_blank"
+          class="text-blue-700 hover:underline transition-all duration-200 ease-linear"
+          >Terms and conditions</a
+          >
+        </div>
+      }
+      @else {
+        <div class="flex items-center justify-between w-full -mt-4 -mb-2">
+          <klock-checkbox
+          id="rememberMe"
+          label="Remember me"
+          [control]="userAuthForm.controls.rememberMe"
+          ></klock-checkbox>
+          <a
+          [routerLink]="['/forgor-password']"
+          target="_blank"
+          class="text-blue-700 hover:underline transition-all duration-200 ease-linear"
+          >Forgot Password?</a
+          >
+        </div>
+      }
+    </div>
+
+    <klock-button
+      (buttonClick)="onSubmit()"
+      [disabled]="userAuthForm.invalid"
+      className="w-10/12 mx-auto"
+    >
+      <span ngProjectAs="button-label">{{
+        isSignUp ? "Sign Up" : "Sign In"
+      }}</span>
+    </klock-button>
+
+    <span class="text-md uppercase text-center -my-5">or</span>
+
+    <klock-button
+      (buttonClick)="googleSignIn()"
+      className="w-10/12 mx-auto bg-transparent text-grey-G700 text-sm border border-grey-G300"
+    >
+    <span class="text-gray-900 font-medium" ngProjectAs="button-label">Sign in with Google</span>
+      <klock-svg-icon ngProjectAs="button-icon" svgName="google"></klock-svg-icon>
+    </klock-button>
+
+
+    <div class="flex items-center justify-center gap-1 text-sm">
+      <span>{{
+        isSignUp ? "Already have an account?" : "Don’t have an account?"
+      }}</span>
+      <a [routerLink]="isSignUp ? '/sign-in' : '/sign-up'" class="link">{{
+        isSignUp ? "Sign In" : "Sign Up"
+      }}</a>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,136 @@
+<div class="flex gap-2">
+  @if (label !== "") {
+    <label
+      [for]="id"
+      class="text-grey-G800 font-medium capitalize line-clamp-1"
+      >{{ label }}</label
+    >
+  }
+  @if (isRequired) {
+    <span class="text-error text-xl">*</span>
+  }
+</div>
+
+@if (inputType === "text" && type !== "file") {
+  <input
+    [id]="id"
+    [type]="type"
+    [formControl]="control"
+    min="0"
+    [autocomplete]="id"
+    [class]="
+      cn(
+        'rounded-lg transition duration-200 ease-linear h-12 pl-4 pr-10 focus:ring-2 hover:ring-2 ring-offset-2 ring-blue-B800 hover:ring-blue-B800 outline-none border border-white',
+        {
+          ' ring-error ring-2 ring-offset-2 border-error hover:ring-error hover:border-error text-error':
+            control.invalid && (control.touched || control.dirty)
+        },
+        className
+      )
+    "
+    [placeholder]="placeholder"
+  />
+}
+@if (inputType == "textarea") {
+  <textarea
+    [id]="id"
+    [formControl]="control"
+    [class]="
+      cn(
+        'rounded-lg transition duration-200 resize-none h-[10rem] ease-linear pl-4 pr-10 focus:ring-2 hover:ring-2 ring-offset-2 ring-blue-B800 hover:ring-blue-B800 outline-none border border-white',
+        {
+          ' ring-error ring-2 ring-offset-2 border-error hover:ring-error hover:border-error text-error':
+            control.invalid && (control.touched || control.dirty)
+        },
+        className
+      )
+    "
+    [placeholder]="placeholder"
+  ></textarea>
+}
+@if (type === "file") {
+  <div
+    (dragover)="dragOver($event)"
+    (dragenter)="dragOver($event)"
+    (dragleave)="dragLeave($event)"
+    (drop)="[fileDrop($event), dragLeave($event)]"
+    (mouseleave)="mouseLeave($event)"
+    [class]="
+      cn(
+        'relative border border-grey-G600 w-full h-[265px] rounded-lg flex flex-col items-center justify-center overflow-clip hover:bg-blue-B50 hover:text-blue-B500 transition-all duration-200 ease-linear',
+        className
+      )
+    "
+  >
+    <input
+      (change)="uploadFile($event)"
+      hidden
+      [type]="type"
+      #uploadImage
+      [formControl]="control"
+      id="upload"
+      accept=".svg, .png, .jpg, .jpeg, .gif"
+    />
+
+    @if (selectedImage() && !isDragOver()) {
+      <img
+        [src]="previewImage()"
+        alt="selected cover"
+        class="h-full w-full object-cover"
+        (mouseover)="mouseOver($event)"
+      />
+    } @else if (isDragOver()) {
+      <span class="font-medium capitalize text-grey-G500 pointer-events-none">
+        drop file here
+      </span>
+    } @else {
+      <button (click)="updateImage()" class="h-full w-full">
+        <ng-content></ng-content>
+      </button>
+    }
+    @if (selectedImage() && displayUpdateActions()) {
+      <div
+        [@actionHoverMenu]="selectedImage()"
+        [class]="
+          cn(
+            'flex items-center justify-center gap-[10vw] lg:gap-24 w-full h-full absolute z-[100] bg-black/50',
+            fileClass
+          )
+        "
+      >
+        <!-- <klock-button
+          (click)="deleteImage()"
+          role="button"
+          [isIcon]="true"
+          class="border-grey-G500 bg-white/60 flex items-center justify-center"
+        >
+          <klock-svg-icon svgName="trash" stroke="#EF0816"></klock-svg-icon>
+        </klock-button> -->
+        <!-- <klock-button
+          role="button"
+          [isIcon]="true"
+          (click)="updateImage()"
+          class="border-grey-G500 bg-white/60 flex items-center justify-center"
+        >
+          <klock-svg-icon svgName="edit" stroke="#0000FF"></klock-svg-icon>
+        </klock-button> -->
+      </div>
+    }
+  </div>
+}
+@if (control.invalid && (control.touched || control.dirty)) {
+  <span
+    *ngFor="let err of control.errors | keyvalue"
+    class="text-error font-medium text-xs my-2 absolute left-0 -bottom-7"
+  >
+    {{ getErrorMessages()[err.key] }}</span
+  >
+}
+@if (isPassword && displyEyeIcon()) {
+  <klock-svg-icon
+  (keydown.enter)="toggleIsShowPassword()"
+  (click)="toggleIsShowPassword()"
+    class="eye absolute right-3 cursor-pointer"
+    [svgName]="showPassword() ? 'eye-slash' : 'eye'"
+  ></klock-svg-icon>
+}

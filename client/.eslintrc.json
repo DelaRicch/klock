@@ -1,0 +1,21 @@
+{
+  "root": true,
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "no-duplicate-imports": "error",
+        "no-console": "warn",
+        "quotes": ["error", "double", ""],
+        "semi": "error",
+        "no-duplicate-case": "error",
+        "getter-return": "error",
+        "no-empty": "error",
+        "no-unsafe-finally": "warn",
+        "no-func-assign": "warn",
+        "no-var": "error"
+      }
+    }
+  ],
+  "ignorePatterns": ["./src/app/assets/*.(png|jpg|jpeg|gif)"]
+}

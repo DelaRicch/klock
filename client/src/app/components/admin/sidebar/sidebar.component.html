@@ -1,0 +1,41 @@
+<section class="flex flex-col gap-4 border-b-2 border-primary/50 h-full">
+  <klock-logo
+    class="transform scale-75 cursor-pointer mx-auto"
+    (click)="handleGoBackHome()"
+    innerColor="#1D2939"
+    outerColor="#FFFFFF"
+    labelColor="#1D2939"
+  />
+  <div class="mt-4 flex flex-col gap-8">
+    @for(item of sidebarItems; track item.id) {
+    <!-- <klock-button
+      role="button"
+      [isRipple]="true"
+      (click)="handleNavigateRoute(item.path)"
+      [className]="cn('capitalize bg-transparent text-grey-G800 border-none',
+      {
+        'bg-blue-B500 text-white': activeRoute === '/' + item.path,
+      })"
+    >
+      <klock-sidebar-icon
+        [icon]="item.icon"
+        [color]="activeRoute === '/' + item.path ? '#FFFFFF' : '#1D2939'"
+      ></klock-sidebar-icon>
+      <span>{{ item.name }}</span>
+    </klock-button> -->
+    }
+  </div>
+</section>
+
+<!-- <klock-button
+  (click)="handleLogOut()"
+  [isRipple]="true"
+  role="button"
+  className="bg-transparent text-grey-G800 border-0"
+>
+  <klock-sidebar-icon
+    [icon]="'logout'"
+    [color]="'#1D2939'"
+  ></klock-sidebar-icon>
+  <span>Logout</span>
+</klock-button> -->
